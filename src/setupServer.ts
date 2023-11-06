@@ -15,8 +15,8 @@ import { createAdapter } from '@socket.io/redis-adapter';
 // custom file
 import { config } from '@root/config';
 import applicationRoutes from '@root/routes';
-import { IErrorResponse } from './shared/types/errorTypes';
 import { CustomError } from '@globals/helpers/errorHandler';
+import { IErrorResponse } from '@shared/types/errorTypes';
 
 const log = config.createLogger('setup server');
 
