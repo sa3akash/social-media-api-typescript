@@ -20,20 +20,16 @@
     "strictFunctionTypes": true,
     "skipLibCheck": true /* Skip type checking all .d.ts files. */,
 
-    "plugins": [
-      // { "transform": "typescript-transform-paths" },
-      // { "transform":   "typescript-transform-paths", "afterDeclarations": true }
-    ],
+    // "plugins": [
+    //   // { "transform": "typescript-transform-paths" },
+    //   // { "transform":   "typescript-transform-paths", "afterDeclarations": true }
+    // ],
     "paths": {
-      // "@auth/*": ["src/features/auth/*"],
-      // "@user/*": ["src/features/user/*"],
-      // "@post/*": ["src/features/post/*"],
-      // "@reaction/*": ["src/features/reactions/*"],
-      // "@comment/*": ["src/features/comments/*"],
-      "@db/*": ["src/features/db/*"],
-      "@cache/*": ["src/features/cache/*"],
-      "@emails/*": ["src/features/emails/*"],
-      "@queues/*": ["src/features/queues/*"],
+      "@auth/*": ["src/features/auth/*"],
+      "@user/*": ["src/features/user/*"],
+      "@post/*": ["src/features/post/*"],
+      "@reaction/*": ["src/features/reaction/*"],
+      "@comment/*": ["src/features/comment/*"],
       "@globals/*": ["src/shared/globals/*"],
       "@services/*": ["src/shared/services/*"],
       "@sockets/*": ["src/shared/sockets/*"],
