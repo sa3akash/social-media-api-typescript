@@ -1,15 +1,17 @@
 // external libraries
 import mongoose from 'mongoose';
 import { config } from '@root/config';
+import { redisConnection } from '@services/cache/redis.connection';
 
 const log = config.createLogger('database connection');
 
 export default () => {
   const connect = () => {
     mongoose
-      .connect(config.DATABASE_URL as string)
+      .connect('mongodb://localhost:27017/social')
       .then(() => {
         log.info('DB SUCCESSFULLY CONNECTED');
+        redisConnection.connection();
       })
       .catch((err) => {
         log.error(err.message);
