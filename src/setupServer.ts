@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // internal module
 import http from 'http';
 // external libraries
-import { Application, json, urlencoded, Response, Request } from 'express';
+import { Application, json, urlencoded, Response, Request, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import hpp from 'hpp';
@@ -12,11 +13,12 @@ import 'express-async-errors';
 import { Server } from 'socket.io';
 import { createClient } from 'redis';
 import { createAdapter } from '@socket.io/redis-adapter';
-// custom file
+// // custom file
 import { config } from '@root/config';
 import applicationRoutes from '@root/routes';
 import { CustomError } from '@globals/helpers/errorHandler';
 import { IErrorResponse } from '@shared/types/errorTypes';
+import { MulterError } from 'multer';
 
 const log = config.createLogger('setup server');
 
@@ -78,11 +80,14 @@ export class SetupServer {
       res.status(HTTP_STATUS.NOT_FOUND).json({ message: `${req.originalUrl} not found.` });
     });
 
-    app.use((err: IErrorResponse, req: Request, res: Response) => {
+    app.use((err: IErrorResponse, _req: Request, res: Response, _next: NextFunction) => {
       if (err instanceof CustomError) {
-        return res.status(err.statusCode).json(err.serializeErrors());
+        res.status(err.statusCode).json(err.serializeErrors());
+      } else {
+        res
+          .status(500)
+          .json({ message: err.message || 'Internal Server Error', status: err.status || 'error', statusCode: err.statusCode || 500 });
       }
- 
     });
   }
 
@@ -105,7 +110,7 @@ export class SetupServer {
         credentials: true
       }
     });
-    const pubClient = createClient({ url: config.REDIS_URL });
+    const pubClient = createClient({ url: config.REDIS_URL! });
     const subClient = pubClient.duplicate();
     await Promise.all([pubClient.connect(), subClient.connect()]);
     io.adapter(createAdapter(pubClient, subClient));
@@ -118,5 +123,5 @@ export class SetupServer {
     });
   }
 
-  private socketIoConnection(io: Server): void {}
+  private socketIoConnection(_io: Server): void {}
 }

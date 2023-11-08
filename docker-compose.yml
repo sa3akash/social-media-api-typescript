@@ -1,0 +1,53 @@
+#docker-compose -f mongodb-expressui.yml up -d
+version: "3.8"
+
+services:
+  redis-stack:
+    image: redis/redis-stack
+    ports:
+      - 6379:6379
+      - 8001:8001
+    volumes:
+      - /data/cache:/data
+
+
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    # environment:
+    #  - MONGO_INITDB_ROOT_USERNAME=root
+    #  - MONGO_INITDB_ROOT_PASSWORD=pass12345
+    volumes:
+      #local dir/files: docker dir/files
+      - /data/mongo:/data/db
+      - /datao/backup/mong:/backup
+    ports:
+      - 27017:27017
+    networks:
+      - mongo
+    #echo 'db.runCommand("ping").ok' | mongo 10.10.10.60:27017/test --quiet
+
+  mongo-express:
+    image: mongo-express
+    container_name: mongo-express
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongodb
+      #- ME_CONFIG_MONGODB_ENABLE_ADMIN=true
+      #- ME_CONFIG_MONGODB_ADMINUSERNAME=root
+      #- ME_CONFIG_MONGODB_ADMINPASSWORD=pass12345
+      - ME_CONFIG_BASICAUTH_USERNAME=root
+      - ME_CONFIG_BASICAUTH_PASSWORD=root
+    volumes:
+      - /data/cache
+    ports:
+      - 8002:8081
+    networks:
+      - mongo
+    # wget --quiet --tries=3 --spider http://admin:admin123@10.10.10.60:8081 || exit 1
+
+networks:
+  mongo: # docker-compose-files_mongo
+    driver: bridge
+# networks: -- To use above network services in other projects add this networks property
+#  docker-compose-files_mongo: -- {{directory_name}}_{{network_name}}
+#    external: true -- are you using external network?
