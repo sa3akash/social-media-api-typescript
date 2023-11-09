@@ -1,4 +1,5 @@
 import { CurrentUser } from '@auth/controllers/currentUser.controller';
+import { PasswordController } from '@auth/controllers/password.controller';
 import { SigninController } from '@auth/controllers/signin.controller';
 import { SignOut } from '@auth/controllers/signout.controller';
 import { SignupController } from '@auth/controllers/signup.controller';
@@ -14,6 +15,8 @@ class AuthRoutes {
   public routes(): Router {
     this.router.post('/signup', SignupController.prototype.signup);
     this.router.post('/signin', SigninController.prototype.read);
+    this.router.post('/forgot-password', PasswordController.prototype.resetPassword);
+    this.router.post('/reset-password/:token', PasswordController.prototype.changePassword);
     this.protectedRoutes();
     return this.router;
   }

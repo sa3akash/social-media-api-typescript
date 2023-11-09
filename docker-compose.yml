@@ -8,19 +8,20 @@ services:
       - 6379:6379
       - 8001:8001
     volumes:
-      - /data/cache:/data
-
+      - redis-data:/data
+    environment:
+      - REDIS_ARGS:--appendonly yes
+      # command: redis-server --save 20 1
+      # command: redis-server --dir /data --save 60 1 --appendonly yes
 
   mongodb:
     image: mongo
     container_name: mongodb
-    # environment:
     #  - MONGO_INITDB_ROOT_USERNAME=root
     #  - MONGO_INITDB_ROOT_PASSWORD=pass12345
     volumes:
       #local dir/files: docker dir/files
-      - /data/mongo:/data/db
-      - /datao/backup/mong:/backup
+      - mongodata:/data/db
     ports:
       - 27017:27017
     networks:
@@ -38,7 +39,7 @@ services:
       - ME_CONFIG_BASICAUTH_USERNAME=root
       - ME_CONFIG_BASICAUTH_PASSWORD=root
     volumes:
-      - /data/cache
+      - mongodata:/data/db
     ports:
       - 8002:8081
     networks:
@@ -51,3 +52,7 @@ networks:
 # networks: -- To use above network services in other projects add this networks property
 #  docker-compose-files_mongo: -- {{directory_name}}_{{network_name}}
 #    external: true -- are you using external network?
+
+volumes:
+    mongodata:
+    redis-data:
