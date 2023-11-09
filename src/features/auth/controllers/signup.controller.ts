@@ -33,7 +33,7 @@ export class SignupController {
     const authObjectId: ObjectId = new ObjectId();
     const userObjectId: ObjectId = new ObjectId();
     // prepire auth data for db
-    const authData: IAuthDocument = await SignupController.prototype.signupData({
+    const authData: IAuthDocument = SignupController.prototype.signupData({
       _id: authObjectId,
       name: {
         first: firstname,
@@ -71,13 +71,14 @@ export class SignupController {
     });
   }
 
-  private async signupData(data: ISignUpData): Promise<IAuthDocument> {
+  private signupData(data: ISignUpData): IAuthDocument {
     const { _id, name, email, password } = data;
     return {
       _id,
       uId: `${Utils.generateRandomIntegers(12)}`,
       name,
-      username: await authService.validateUsername(name.first + name.last),
+      username: Utils.generateRandomString(8),
+      // username: await authService.validateUsername(name.first + name.last),
       email: email.toLowerCase(),
       password,
       profilePicture: {
