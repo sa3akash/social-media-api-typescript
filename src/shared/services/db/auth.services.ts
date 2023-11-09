@@ -11,11 +11,35 @@ class AuthService {
   }
   /**
    *
-   * validate username
+   * validate create auth user
    *
    */
   public async createAuthUser(data: IAuthDocument): Promise<void> {
     await AuthModel.create(data);
+  }
+  /**
+   *
+   * get auth user by email
+   *
+   */
+  public async getAuthUserByEmail(email: string): Promise<IAuthDocument> {
+    return (await AuthModel.findOne({ email: email.toLowerCase() })) as IAuthDocument;
+  }
+
+  public async updatePasswordToken(authId: string, token: string, tokenExpiration: number): Promise<void> {
+    await AuthModel.updateOne(
+      { _id: authId },
+      {
+        passwordResetToken: token,
+        passwordResetExpires: tokenExpiration
+      }
+    );
+  }
+  public async getAuthByPasswordToken(token: string): Promise<IAuthDocument> {
+    return (await AuthModel.findOne({
+      passwordResetToken: token,
+      passwordResetExpires: { $gt: Date.now() }
+    })) as IAuthDocument;
   }
 
   /**

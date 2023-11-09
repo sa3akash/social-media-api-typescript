@@ -7,8 +7,9 @@ import Logger from 'bunyan';
 // custom files
 import { config } from '@root/config';
 import { IAuthJob } from '@auth/interfaces/auth.interface';
+import { IEmailJob } from '@user/interfaces/user.interface';
 
-type IBaseJobData = IAuthJob;
+type IBaseJobData = IAuthJob | IEmailJob;
 
 let bullAdapter: BullAdapter[] = [];
 export let serverAdapter: ExpressAdapter;

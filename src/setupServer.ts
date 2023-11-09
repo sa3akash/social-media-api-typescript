@@ -18,7 +18,6 @@ import { config } from '@root/config';
 import applicationRoutes from '@root/routes';
 import { CustomError } from '@globals/helpers/errorHandler';
 import { IErrorResponse } from '@shared/types/errorTypes';
-import { MulterError } from 'multer';
 
 const log = config.createLogger('setup server');
 
