@@ -53,7 +53,11 @@ export class SigninController {
         id: data._id,
         email: data.email,
         username: data.username,
-        avatarColor: data.avatarColor
+        avatarColor: data.avatarColor,
+        name: data.name,
+        uId: data.uId,
+        coverPicture: data.coverPicture,
+        profilePicture: data.profilePicture
       },
       config.JWT_SEC!
     );

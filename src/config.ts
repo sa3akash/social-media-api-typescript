@@ -47,7 +47,7 @@ class Config {
 
   public validateConfig(): void {
     for (const [key, value] of Object.entries(this)) {
-      if (value === undefined || value === null || !value) {
+      if (value === undefined || value === null) {
         throw new Error(`${key} env is not defined.`);
       }
     }

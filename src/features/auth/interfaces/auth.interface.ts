@@ -13,16 +13,20 @@ declare global {
 export interface AuthPayload {
   id: string;
   email: string;
+  name: NameDoc;
   username: string;
   avatarColor: string;
+  uId: string;
+  coverPicture: string;
+  profilePicture: string;
   iat?: number;
 }
 
 export interface IAuthDocument extends Document {
   _id: string | ObjectId;
   uId: string;
-  coverPicture: ImageStoreDoc;
-  profilePicture: ImageStoreDoc;
+  coverPicture: string;
+  profilePicture: string;
   name: NameDoc;
   username: string;
   email: string;
@@ -43,15 +47,10 @@ export interface ISignUpData {
   password: string;
 }
 
-interface NameDoc {
+export interface NameDoc {
   first: string;
   last: string;
   nick: string;
-}
-
-interface ImageStoreDoc {
-  url: string;
-  hash: string;
 }
 
 export interface IAuthJob {

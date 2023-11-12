@@ -1,0 +1,47 @@
+services:
+  - type: web
+    name: frontend
+    github:
+      repo: username/frontend-repo
+      branch: main
+    buildCommand: npm run build
+    startCommand: npm start
+    env: 
+      - key: NODE_ENV
+        value: production
+    envVars:
+      - REDIS_HOST: redis
+      - REDIS_PORT: 6379
+    healthCheckPath: /health
+    healthCheckPort: 3000
+
+  - type: web
+    name: backend
+    github:
+      repo: username/backend-repo
+      branch: main
+    buildCommand: npm run build
+    startCommand: npm start
+    env: 
+      - key: NODE_ENV
+        value: production
+    envVars:
+      - REDIS_HOST: redis
+      - REDIS_PORT: 6379
+    healthCheckPath: /health
+    healthCheckPort: 5000
+
+  - type: redis
+    name: redis
+    plan: redis-small
+
+  - type: web
+    name: nginx
+    startCommand: nginx -g 'daemon off;'
+    env:
+      - key: PORT
+        value: 8080
+    ports:
+      - 80:8080
+    healthCheckPath: /health
+    healthCheckPort: 8080

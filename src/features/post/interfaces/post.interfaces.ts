@@ -1,31 +1,52 @@
-import { ObjectId } from 'mongodb';
-import mongoose, { Document } from 'mongoose';
+import { NameDoc } from '@auth/interfaces/auth.interface';
+import { Document, ObjectId } from 'mongoose';
 
+interface IReactions {
+  like: number;
+  love: number;
+  happy: number;
+  wow: number;
+  sad: number;
+  angry: number;
+}
 export interface IPostDocument extends Document {
-  _id?: string | mongoose.Types.ObjectId;
-  userId: string;
+  _id?: string | ObjectId;
+  authId?: string | ObjectId;
+  creator?: ICreator;
+  post: string;
+  bgColor?: string;
+  commentsCount: number;
+  files: IFiles[];
+  feelings?: string;
+  gifUrl?: string;
+  privacy: 'Public' | 'Private' | 'Only me';
+  reactions?: IReactions;
+  createdAt?: Date | string;
+}
+interface IFiles {
+  fieldname: string;
+  originalname: string;
+  filename: string;
+  encoding: string;
+  mimetype: string;
+  path: string;
+  size: number;
+}
+export interface ICreator {
+  authId: string | ObjectId; // authId
+  uId: string;
+  coverPicture: string;
+  profilePicture: string;
+  name: NameDoc;
   username: string;
   email: string;
   avatarColor: string;
-  profilePicture: string;
-  post: string;
-  bgColor: string;
-  commentsCount: number;
-  imgVersion?: string;
-  imgId?: string;
-  videoId?: string;
-  videoVersion?: string;
-  feelings?: string;
-  gifUrl?: string;
-  privacy?: string;
-//   reactions?: IReactions;
-  createdAt?: Date;
 }
 
 export interface IGetPostsQuery {
   _id?: ObjectId | string;
   username?: string;
-  imgId?: string;
+  file?: 'image' | 'video';
   gifUrl?: string;
   videoId?: string;
 }
@@ -43,7 +64,8 @@ export interface IPostJobData {
   keyOne?: string;
   keyTwo?: string;
   postId?: string;
-  userId?: string;
+  authId?: string | ObjectId;
+  publicId?: string;
 }
 
 export interface IQueryComplete {
