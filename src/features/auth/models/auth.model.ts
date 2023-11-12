@@ -7,9 +7,9 @@ const SALT_ROUND = 15;
 
 const authSchema: Schema = new Schema(
   {
-    username: { type: String, lowercase: true },
+    username: { type: String, lowercase: true, unique: true },
     uId: { type: String },
-    email: { type: String, lowercase: true },
+    email: { type: String, lowercase: true, unique: true },
     password: { type: String },
     name: {
       first: { type: String },
@@ -17,15 +17,9 @@ const authSchema: Schema = new Schema(
       nick: { type: String }
     },
     avatarColor: { type: String },
-    profilePicture: {
-      url: { type: String, default: '' },
-      hash: { type: String, default: '' }
-    },
+    profilePicture: { type: String },
     quote: { type: String, default: '' },
-    coverPicture: {
-      url: { type: String, default: '' },
-      hash: { type: String, default: '' }
-    },
+    coverPicture: { type: String },
     createdAt: { type: Date, default: Date.now },
     passwordResetToken: { type: String, default: '' },
     passwordResetExpires: { type: Number }

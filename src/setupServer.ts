@@ -18,6 +18,7 @@ import { config } from '@root/config';
 import applicationRoutes from '@root/routes';
 import { CustomError } from '@globals/helpers/errorHandler';
 import { IErrorResponse } from '@shared/types/errorTypes';
+import { SocketIoPostHandler } from '@sockets/post.sockets';
 
 const log = config.createLogger('setup server');
 
@@ -122,5 +123,9 @@ export class SetupServer {
     });
   }
 
-  private socketIoConnection(_io: Server): void {}
+  private socketIoConnection(io: Server): void {
+    const postSocketHandler: SocketIoPostHandler = new SocketIoPostHandler(io);
+    // listen
+    postSocketHandler.listen();
+  }
 }

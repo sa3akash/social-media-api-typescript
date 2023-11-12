@@ -77,18 +77,11 @@ export class SignupController {
       _id,
       uId: `${Utils.generateRandomIntegers(12)}`,
       name,
-      username: Utils.generateRandomString(8),
-      // username: await authService.validateUsername(name.first + name.last),
+      username: Utils.generateRandomString(10),
       email: email.toLowerCase(),
       password,
-      profilePicture: {
-        url: '',
-        hash: ''
-      },
-      coverPicture: {
-        url: '',
-        hash: ''
-      },
+      profilePicture: '',
+      coverPicture: '',
       quote: '',
       avatarColor: Utils.generateColor(),
       createdAt: new Date()
@@ -142,7 +135,11 @@ export class SignupController {
         id: data._id,
         email: data.email,
         username: data.username,
-        avatarColor: data.avatarColor
+        avatarColor: data.avatarColor,
+        name: data.name,
+        uId: data.uId,
+        coverPicture: data.coverPicture,
+        profilePicture: data.profilePicture
       },
       config.JWT_SEC!
     );
