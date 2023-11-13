@@ -12,7 +12,8 @@ export class CurrentUser {
     }
 
     const cacheUser: FullUserDoc = await userCache.getUserByIdFromCache(authId);
-    const fullUser: FullUserDoc = cacheUser ? cacheUser : await userService.getUserById(authId);
+
+    const fullUser: FullUserDoc = cacheUser?._id ? cacheUser : await userService.getUserById(authId);
 
     if (!fullUser?._id) {
       throw new BadRequestError('Invalid user ID.');

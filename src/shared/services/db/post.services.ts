@@ -2,7 +2,7 @@ import { IGetPostsQuery, IPostDocument } from '@post/interfaces/post.interfaces'
 import { PostModel } from '@post/models/post.models';
 import { IUserDocument } from '@user/interfaces/user.interface';
 import { UserModel } from '@user/models/user.model';
-import { UpdateQuery } from 'mongoose';
+import mongoose, { UpdateQuery } from 'mongoose';
 
 class PostServices {
   async addPostInDB(postData: IPostDocument): Promise<void> {
@@ -87,6 +87,17 @@ class PostServices {
 
   public async updatePostById(updatedPost: IPostDocument): Promise<void> {
     await PostModel.findByIdAndUpdate(updatedPost._id, updatedPost);
+  }
+
+  public async getSinglePostById(postId: string): Promise<IPostDocument> {
+    const postsDB: IPostDocument[] = await PostModel.aggregate([
+      { $match: { _id: new mongoose.Types.ObjectId(postId) } },
+      { $lookup: { from: 'Auth', localField: 'authId', foreignField: '_id', as: 'authData' } },
+      { $unwind: '$authData' }, // convert array to object with unwind
+      { $project: this.aggregatePostProject() }
+    ]);
+
+    return postsDB[0] as unknown as IPostDocument;
   }
 
   /*
