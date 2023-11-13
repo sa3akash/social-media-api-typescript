@@ -19,6 +19,7 @@ class PostRoutes {
     this.router.get('/posts/video', authMiddleware.verifyUser, GetPostController.prototype.getAllPostWithVideo);
     this.router.delete('/post/:postId', authMiddleware.verifyUser, DeletePostController.prototype.deletePost);
     this.router.put('/post/:postId', authMiddleware.verifyUser, upload.array('file'), UpdatePostController.prototype.postUpdate);
+    this.router.get('/post/:postId', authMiddleware.verifyUser, GetPostController.prototype.getPostById);
 
     return this.router;
   }

@@ -1,3 +1,5 @@
+import { BadRequestError } from '@globals/helpers/errorHandler';
+import { IPostDocument } from '@post/interfaces/post.interfaces';
 import { postCache } from '@services/cache/post.cache';
 import { postServices } from '@services/db/post.services';
 import { Request, Response } from 'express';
@@ -19,7 +21,12 @@ export class GetPostController {
     const allPosts = allPostsCache.length > 0 ? allPostsCache : await postServices.getPostsFromDB({}, skip, limit, { createdAt: -1 });
     const numberOfPosts = totalPostsCache ? totalPostsCache : await postServices.postCountDB({});
     // response
-    res.status(HTTP_STATUS.OK).json({ message: 'Get all posts successfully.', posts: allPosts, numberOfPosts });
+    res.status(HTTP_STATUS.OK).json({
+      message: 'Get all posts successfully.',
+      posts: allPosts,
+      currentPage: Number(page),
+      numberOfPages: Math.ceil(numberOfPosts / limit)
+    });
   }
   /*
    *
@@ -41,7 +48,12 @@ export class GetPostController {
         ? allPostsImagesCache
         : await postServices.getPostsFromDB({ file: 'image' }, skip, limit, { createdAt: -1 });
     // response
-    res.status(HTTP_STATUS.OK).json({ message: 'Get all image posts successfully.', postWithImages: allPosts, numberOfPosts });
+    res.status(HTTP_STATUS.OK).json({
+      message: 'Get all image posts successfully.',
+      postWithImages: allPosts,
+      currentPage: Number(page),
+      numberOfPages: Math.ceil(numberOfPosts / limit)
+    });
   }
   /*
    *
@@ -64,6 +76,25 @@ export class GetPostController {
         ? allPostsVideosCache
         : await postServices.getPostsFromDB({ file: 'video' }, skip, limit, { createdAt: -1 });
     // response
-    res.status(HTTP_STATUS.OK).json({ message: 'Get all image posts successfully.', postWithImages: allPosts, numberOfPosts });
+    res.status(HTTP_STATUS.OK).json({
+      message: 'Get all image posts successfully.',
+      postWithImages: allPosts,
+      currentPage: Number(page),
+      numberOfPages: Math.ceil(numberOfPosts / limit)
+    });
+  }
+
+  public async getPostById(req: Request, res: Response): Promise<void> {
+    const getSinglePostCache = await postCache.getPostByIdFromCache(`${req.params?.postId}`);
+
+    const getPostById: IPostDocument = getSinglePostCache
+      ? getSinglePostCache
+      : await postServices.getSinglePostById(`${req.params?.postId}`);
+
+    if (!getPostById) {
+      throw new BadRequestError('Post not found.');
+    }
+
+    res.status(HTTP_STATUS.OK).json({ message: 'Get single post.', post: getPostById });
   }
 }

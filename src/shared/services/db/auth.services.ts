@@ -1,5 +1,5 @@
 import { IAuthDocument } from '@auth/interfaces/auth.interface';
-import { AuthModel } from '@auth/models/auth.model';
+import { AuthModel } from '@auth/models/auth.db.model';
 
 class AuthService {
   public async getUserByEmailOrUsername(text: string): Promise<IAuthDocument> {

@@ -12,6 +12,7 @@ interface IReactions {
 export interface IPostDocument extends Document {
   _id?: string | ObjectId;
   authId?: string | ObjectId;
+  uId?: string;
   creator?: ICreator;
   post: string;
   bgColor?: string;

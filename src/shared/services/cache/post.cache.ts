@@ -1,8 +1,10 @@
-import { ServerError } from '@globals/helpers/errorHandler';
+import { BadRequestError, ServerError } from '@globals/helpers/errorHandler';
 import { Utils } from '@globals/helpers/utils';
 import { IPostDocument } from '@post/interfaces/post.interfaces';
 import { BaseCache } from '@services/cache/base.cache';
 import { RedisCommandRawReply } from '@redis/client/dist/lib/commands';
+import { userCache } from '@services/cache/user.cache';
+import { IAuthDocument } from '@auth/interfaces/auth.interface';
 
 export type PostCacheMultiType = string | number | Buffer | RedisCommandRawReply[] | IPostDocument | IPostDocument[];
 
@@ -20,13 +22,13 @@ class PostCache extends BaseCache {
   public async savePostToCache(data: IPostDocument): Promise<void> {
     const postInCache = {
       _id: `${data._id}`,
+      authId: `${data.authId}`,
       post: `${data.post}`,
       bgColor: `${data.bgColor}`,
       commentsCount: `${data.commentsCount}`,
       feelings: `${data.feelings}`,
       gifUrl: `${data.gifUrl}`,
       privacy: `${data.privacy}`,
-      creator: `${JSON.stringify(data.creator)}`,
       files: `${JSON.stringify(data.files)}`,
       reactions: `${JSON.stringify(data.reactions)}`,
       createdAt: `${data.createdAt}`
@@ -37,18 +39,18 @@ class PostCache extends BaseCache {
         await this.client.connect();
       }
       // get user and increment postsCount property
-      const postCount: string[] = await this.client.HMGET(`users:${data.creator?.authId}`, 'postsCount');
+      const postCount: string[] = await this.client.HMGET(`users:${data.authId}`, 'postsCount');
 
       // multiple exicutes
       const multi: ReturnType<typeof this.client.multi> = this.client.multi();
       // add post in cache
-      multi.ZADD('post', { score: parseInt(`${data.creator?.uId}`, 10), value: `${data._id}` });
+      multi.ZADD('post', { score: parseInt(`${data.uId}`, 10), value: `${data._id}` });
       for (const [itemKey, itemValue] of Object.entries(postInCache)) {
         multi.HSET(`posts:${data._id}`, `${itemKey}`, `${itemValue}`);
       }
       // increment post count
       const count: number = parseInt(postCount[0], 10) + 1;
-      multi.HSET(`users:${data.creator?.authId}`, 'postsCount', count);
+      multi.HSET(`users:${data.authId}`, 'postsCount', count);
 
       multi.exec();
     } catch (err) {
@@ -78,8 +80,18 @@ class PostCache extends BaseCache {
       const posts: IPostDocument[] = [];
 
       for (const post of replies as IPostDocument[]) {
-        post.creator = Utils.parseJson(`${post.creator}`);
-        post.commentsCount = Number(`${post.commentsCount}`);
+        const user: IAuthDocument = await userCache.getUserByIdFromCache(`${post.authId}`);
+        (post.creator = {
+          authId: `${post.authId}`,
+          avatarColor: user.avatarColor,
+          coverPicture: user.coverPicture,
+          email: user.email,
+          name: user.name,
+          profilePicture: user.profilePicture,
+          uId: user.uId,
+          username: user.username
+        }),
+          (post.commentsCount = Number(`${post.commentsCount}`));
         post.files = Utils.parseJson(`${post.files}`);
         post.reactions = Utils.parseJson(`${post.reactions}`);
         post.createdAt = new Date(`${post.createdAt}`);
@@ -115,21 +127,39 @@ class PostCache extends BaseCache {
         await this.client.connect();
       }
 
-      const replies: PostCacheMultiType = (await this.client.HGETALL(`posts:${postId}`)) as unknown as PostCacheMultiType;
-
-      const posts: IPostDocument[] = [];
-
-      for (const post of replies as IPostDocument[]) {
-        post.creator = Utils.parseJson(`${post.creator}`);
-        post.commentsCount = Number(`${post.commentsCount}`);
-        post.files = Utils.parseJson(`${post.files}`);
-        post.reactions = Utils.parseJson(`${post.reactions}`);
-        post.createdAt = new Date(`${post.createdAt}`);
-        posts.push(post);
+      const postReply: Record<string, string> | null = await this.client.HGETALL(`posts:${postId}`);
+      if (!postReply?._id) {
+        throw new BadRequestError('Post not found.');
       }
 
-      return posts[0];
+      const user: IAuthDocument | undefined = await userCache.getUserByIdFromCache(`${postReply.authId}`);
+
+      const postObject: IPostDocument = {
+        _id: postReply._id || '',
+        creator: {
+          authId: `${postReply.authId}`,
+          avatarColor: user.avatarColor,
+          coverPicture: user.coverPicture,
+          email: user.email,
+          name: user.name,
+          profilePicture: user.profilePicture,
+          uId: user.uId,
+          username: user.username
+        },
+        post: postReply.post,
+        bgColor: postReply.bgColor,
+        commentsCount: Number(postReply.commentsCount),
+        files: JSON.parse(postReply.files),
+        feelings: postReply.feelings,
+        gifUrl: postReply.gifUrl,
+        privacy: postReply.privacy,
+        reactions: JSON.parse(postReply.reactions),
+        createdAt: postReply.createdAt
+      } as unknown as IPostDocument;
+
+      return postObject;
     } catch (err) {
+      console.log(err);
       throw new ServerError('Internal Server Error, Try again later.');
     }
   }
@@ -159,8 +189,18 @@ class PostCache extends BaseCache {
         post.files = Utils.parseJson(`${post.files}`);
 
         if (post.files.some((f) => f?.originalname.match(/\.(jpg|jpeg|png|gif)$/)) || post.gifUrl) {
-          post.creator = Utils.parseJson(`${post.creator}`);
-          post.commentsCount = Number(`${post.commentsCount}`);
+          const user: IAuthDocument = await userCache.getUserByIdFromCache(`${post.authId}`);
+          (post.creator = {
+            authId: `${post.authId}`,
+            avatarColor: user.avatarColor,
+            coverPicture: user.coverPicture,
+            email: user.email,
+            name: user.name,
+            profilePicture: user.profilePicture,
+            uId: user.uId,
+            username: user.username
+          }),
+            (post.commentsCount = Number(`${post.commentsCount}`));
           post.reactions = Utils.parseJson(`${post.reactions}`);
           post.createdAt = new Date(`${post.createdAt}`);
           postsWithImages.push(post);
@@ -196,8 +236,18 @@ class PostCache extends BaseCache {
         post.files = Utils.parseJson(`${post.files}`);
 
         if (post.files && post.files.some((f) => f.originalname.match(/\.(mp4|mov|avi)$/))) {
-          post.creator = Utils.parseJson(`${post.creator}`);
-          post.commentsCount = Number(`${post.commentsCount}`);
+          const user: IAuthDocument = await userCache.getUserByIdFromCache(`${post.authId}`);
+          (post.creator = {
+            authId: `${post.authId}`,
+            avatarColor: user.avatarColor,
+            coverPicture: user.coverPicture,
+            email: user.email,
+            name: user.name,
+            profilePicture: user.profilePicture,
+            uId: user.uId,
+            username: user.username
+          }),
+            (post.commentsCount = Number(`${post.commentsCount}`));
           post.reactions = Utils.parseJson(`${post.reactions}`);
           post.createdAt = new Date(`${post.createdAt}`);
           postsWithVideos.push(post);
@@ -230,8 +280,18 @@ class PostCache extends BaseCache {
       const userPost: IPostDocument[] = [];
 
       for (const post of replies as IPostDocument[]) {
-        post.creator = Utils.parseJson(`${post.creator}`);
-        post.commentsCount = Number(`${post.commentsCount}`);
+        const user: IAuthDocument = await userCache.getUserByIdFromCache(`${post.authId}`);
+        (post.creator = {
+          authId: `${post.authId}`,
+          avatarColor: user.avatarColor,
+          coverPicture: user.coverPicture,
+          email: user.email,
+          name: user.name,
+          profilePicture: user.profilePicture,
+          uId: user.uId,
+          username: user.username
+        }),
+          (post.commentsCount = Number(`${post.commentsCount}`));
         post.files = Utils.parseJson(`${post.files}`);
         post.reactions = Utils.parseJson(`${post.reactions}`);
         post.createdAt = new Date(`${post.createdAt}`);
@@ -296,41 +356,30 @@ class PostCache extends BaseCache {
    *
    */
 
-  public async updatePostFromCache(updatedPost: IPostDocument): Promise<IPostDocument> {
+  public async updatePostFromCache(updatedPost: IPostDocument): Promise<void> {
     const postInCache = {
+      _id: `${updatedPost._id}`,
+      authId: `${updatedPost.creator?.authId}`,
       post: `${updatedPost.post}`,
       bgColor: `${updatedPost.bgColor}`,
+      commentsCount: `${updatedPost.commentsCount}`,
       feelings: `${updatedPost.feelings}`,
       gifUrl: `${updatedPost.gifUrl}`,
       privacy: `${updatedPost.privacy}`,
-      files: `${JSON.stringify(updatedPost.files)}`
+      files: `${JSON.stringify(updatedPost.files)}`,
+      reactions: `${JSON.stringify(updatedPost.reactions)}`,
+      createdAt: `${updatedPost.createdAt}`
     } as unknown as IPostDocument;
 
     try {
       if (!this.client.isOpen) {
         await this.client.connect();
       }
+
       // multiple exicutes
       for (const [itemKey, itemValue] of Object.entries(postInCache)) {
         await this.client.HSET(`posts:${updatedPost._id}`, `${itemKey}`, `${itemValue}`);
       }
-
-      const multi: ReturnType<typeof this.client.multi> = this.client.multi();
-      multi.HGETALL(`posts:${updatedPost._id}`);
-
-      const reply: PostCacheMultiType = (await multi.exec()) as PostCacheMultiType;
-      const posts: IPostDocument[] = [];
-
-      for (const post of reply as IPostDocument[]) {
-        post.creator = Utils.parseJson(`${post.creator}`);
-        post.commentsCount = Number(`${post.commentsCount}`);
-        post.files = Utils.parseJson(`${post.files}`);
-        post.reactions = Utils.parseJson(`${post.reactions}`);
-        post.createdAt = new Date(`${post.createdAt}`);
-        posts.push(post);
-      }
-      return posts[0];
-      // increment post count
     } catch (err) {
       throw new ServerError('Internal Server Error, Try again later.');
     }
