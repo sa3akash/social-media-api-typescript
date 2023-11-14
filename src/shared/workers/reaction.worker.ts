@@ -15,8 +15,9 @@ class ReactionWorker {
         postUpdate.reactions[reactionDocument.type as keyof IReactions] += 1;
       }
       await postServices.updatePostById(postUpdate);
-
       await reactionService.addReaction(reactionDocument);
+      // send notification
+      // work lettre
       // add method to save data in db
       job.progress(100);
       done(null, job.data);

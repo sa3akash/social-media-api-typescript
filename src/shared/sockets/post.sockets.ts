@@ -1,4 +1,7 @@
+import { config } from '@root/config';
 import { Server, Socket } from 'socket.io';
+
+const log = config.createLogger('postSocket');
 
 export let socketIoPostObject: Server;
 
@@ -11,6 +14,8 @@ export class SocketIoPostHandler {
   }
 
   public listen(): void {
-    this.io.on('connection', (socket: Socket) => {});
+    this.io.on('connection', (socket: Socket) => {
+      log.info(`Socket connection established. socketId: ${socket}`);
+    });
   }
 }

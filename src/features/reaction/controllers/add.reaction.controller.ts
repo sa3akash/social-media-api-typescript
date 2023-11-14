@@ -4,6 +4,7 @@ import { addReactionSchema } from '@reaction/schemas/reaction.schema';
 import { reactionCache } from '@services/cache/reaction.cache';
 import { reactionService } from '@services/db/reaction.services';
 import { reactionQueue } from '@services/queues/reaction.queue';
+import { socketIoPostObject } from '@sockets/post.sockets';
 import { Request, Response } from 'express';
 import HTTP_STATUS from 'http-status-codes';
 import { ObjectId } from 'mongodb';
@@ -27,6 +28,23 @@ export class AddReactionController {
         type: type,
         createdAt: new Date()
       } as IReactionDocument;
+
+      socketIoPostObject.emit('add-reaction', {
+        _id: reactionObject._id,
+        creator: {
+          authId: `${req.currentUser?.id}`,
+          avatarColor: `${req.currentUser?.avatarColor}`,
+          coverPicture: `${req.currentUser?.coverPicture}`,
+          email: `${req.currentUser?.email}`,
+          name: `${req.currentUser?.name}`,
+          profilePicture: `${req.currentUser?.profilePicture}`,
+          uId: `${req.currentUser?.uId}`,
+          username: `${req.currentUser?.username}`
+        },
+        postId: reactionObject.postId,
+        type: reactionObject.type,
+        createdAt: reactionObject.createdAt
+      });
 
       await reactionCache.addReactionInCache(reactionObject);
       reactionQueue.addReactionJob('addReactionInDBQueue', reactionObject);
