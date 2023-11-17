@@ -1,4 +1,4 @@
-import { IAuthDocument } from '@auth/interfaces/auth.interface';
+import { FullUserDoc } from '@auth/interfaces/auth.interface';
 import { ServerError } from '@globals/helpers/errorHandler';
 import { Utils } from '@globals/helpers/utils';
 import { IReactionDocument, IReactions, IReactionsGet, IReactionsSingle } from '@reaction/interfaces/reaction.interface';
@@ -135,7 +135,7 @@ class ReactionCache extends BaseCache {
 
       for (const item of allReactions) {
         const reactionObject: IReactionDocument = JSON.parse(item);
-        const user: IAuthDocument = await userCache.getUserByIdFromCache(`${reactionObject.authId}`);
+        const user: FullUserDoc = await userCache.getUserByIdFromCache(`${reactionObject.authId}`);
         (reactionObject.creator = {
           authId: `${reactionObject.authId}`,
           avatarColor: user.avatarColor,
@@ -183,7 +183,7 @@ class ReactionCache extends BaseCache {
       });
 
       if (result) {
-        const user: IAuthDocument = await userCache.getUserByIdFromCache(`${result.authId}`);
+        const user: FullUserDoc = await userCache.getUserByIdFromCache(`${result.authId}`);
         result.creator = {
           authId: `${user._id}`,
           avatarColor: user.avatarColor,
@@ -225,7 +225,7 @@ class ReactionCache extends BaseCache {
 
       for (const item of allReactions) {
         const reactionObject: IReactionDocument = JSON.parse(item);
-        const user: IAuthDocument = await userCache.getUserByIdFromCache(`${reactionObject.authId}`);
+        const user: FullUserDoc = await userCache.getUserByIdFromCache(`${reactionObject.authId}`);
         (reactionObject.creator = {
           authId: `${reactionObject.authId}`,
           avatarColor: user.avatarColor,

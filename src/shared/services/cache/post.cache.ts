@@ -4,7 +4,7 @@ import { IPostDocument } from '@post/interfaces/post.interfaces';
 import { BaseCache } from '@services/cache/base.cache';
 import { RedisCommandRawReply } from '@redis/client/dist/lib/commands';
 import { userCache } from '@services/cache/user.cache';
-import { IAuthDocument } from '@auth/interfaces/auth.interface';
+import { FullUserDoc } from '@auth/interfaces/auth.interface';
 
 export type PostCacheMultiType = string | number | Buffer | RedisCommandRawReply[] | IPostDocument | IPostDocument[];
 
@@ -80,7 +80,7 @@ class PostCache extends BaseCache {
       const posts: IPostDocument[] = [];
 
       for (const post of replies as IPostDocument[]) {
-        const user: IAuthDocument = await userCache.getUserByIdFromCache(`${post.authId}`);
+        const user: FullUserDoc = await userCache.getUserByIdFromCache(`${post.authId}`);
         (post.creator = {
           authId: `${post.authId}`,
           avatarColor: user.avatarColor,
@@ -132,7 +132,7 @@ class PostCache extends BaseCache {
         throw new BadRequestError('Post not found.');
       }
 
-      const user: IAuthDocument | undefined = await userCache.getUserByIdFromCache(`${postReply.authId}`);
+      const user: FullUserDoc | undefined = await userCache.getUserByIdFromCache(`${postReply.authId}`);
 
       const postObject: IPostDocument = {
         _id: postReply._id || '',
@@ -189,7 +189,7 @@ class PostCache extends BaseCache {
         post.files = Utils.parseJson(`${post.files}`);
 
         if (post.files.some((f) => f?.originalname.match(/\.(jpg|jpeg|png|gif)$/)) || post.gifUrl) {
-          const user: IAuthDocument = await userCache.getUserByIdFromCache(`${post.authId}`);
+          const user: FullUserDoc = await userCache.getUserByIdFromCache(`${post.authId}`);
           (post.creator = {
             authId: `${post.authId}`,
             avatarColor: user.avatarColor,
@@ -236,7 +236,7 @@ class PostCache extends BaseCache {
         post.files = Utils.parseJson(`${post.files}`);
 
         if (post.files && post.files.some((f) => f.originalname.match(/\.(mp4|mov|avi)$/))) {
-          const user: IAuthDocument = await userCache.getUserByIdFromCache(`${post.authId}`);
+          const user: FullUserDoc = await userCache.getUserByIdFromCache(`${post.authId}`);
           (post.creator = {
             authId: `${post.authId}`,
             avatarColor: user.avatarColor,
@@ -280,7 +280,7 @@ class PostCache extends BaseCache {
       const userPost: IPostDocument[] = [];
 
       for (const post of replies as IPostDocument[]) {
-        const user: IAuthDocument = await userCache.getUserByIdFromCache(`${post.authId}`);
+        const user: FullUserDoc = await userCache.getUserByIdFromCache(`${post.authId}`);
         (post.creator = {
           authId: `${post.authId}`,
           avatarColor: user.avatarColor,
