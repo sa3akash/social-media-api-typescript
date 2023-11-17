@@ -11,8 +11,18 @@ import { IEmailJob } from '@user/interfaces/user.interface';
 import { IPostDocument, IPostJobData } from '@post/interfaces/post.interfaces';
 import { IReactionDocument, IReactionJob } from '@reaction/interfaces/reaction.interface';
 import { ICommentDocument } from '@comment/interfaces/comment.interface';
+import { IBlockedUserJobData, IFollowerJobData } from '@follower/interfaces/follower.interface';
 
-type IBaseJobData = IAuthJob | IEmailJob | IPostDocument | IPostJobData | IReactionDocument | IReactionJob | ICommentDocument;
+type IBaseJobData =
+  | IAuthJob
+  | IEmailJob
+  | IPostDocument
+  | IPostJobData
+  | IReactionDocument
+  | IReactionJob
+  | ICommentDocument
+  | IFollowerJobData
+  | IBlockedUserJobData;
 
 let bullAdapter: BullAdapter[] = [];
 export let serverAdapter: ExpressAdapter;
