@@ -10,8 +10,9 @@ import { IAuthJob } from '@auth/interfaces/auth.interface';
 import { IEmailJob } from '@user/interfaces/user.interface';
 import { IPostDocument, IPostJobData } from '@post/interfaces/post.interfaces';
 import { IReactionDocument, IReactionJob } from '@reaction/interfaces/reaction.interface';
-import { ICommentDocument } from '@comment/interfaces/comment.interface';
+import { ICommentDocument, ICommentJob } from '@comment/interfaces/comment.interface';
 import { IBlockedUserJobData, IFollowerJobData } from '@follower/interfaces/follower.interface';
+import { INotificationJobData } from '@notification/interfaces/notificaton.interface';
 
 type IBaseJobData =
   | IAuthJob
@@ -22,7 +23,9 @@ type IBaseJobData =
   | IReactionJob
   | ICommentDocument
   | IFollowerJobData
-  | IBlockedUserJobData;
+  | IBlockedUserJobData
+  | ICommentJob
+  | INotificationJobData;
 
 let bullAdapter: BullAdapter[] = [];
 export let serverAdapter: ExpressAdapter;

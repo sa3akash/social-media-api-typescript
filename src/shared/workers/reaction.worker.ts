@@ -1,7 +1,14 @@
+import { FullUserDoc } from '@auth/interfaces/auth.interface';
+import { INotification } from '@notification/interfaces/notificaton.interface';
+import { NotificationModel } from '@notification/models/notification.model';
 import { IPostDocument } from '@post/interfaces/post.interfaces';
 import { IReactionDocument, IReactionJob, IReactions } from '@reaction/interfaces/reaction.interface';
+import { userCache } from '@services/cache/user.cache';
 import { postServices } from '@services/db/post.services';
 import { reactionService } from '@services/db/reaction.services';
+import { notificationTemplate } from '@services/emails/template/notifications/notification.template';
+import { emailQueue } from '@services/queues/email-queue';
+import { socketIoNotificationObject } from '@sockets/notification.socket';
 import { DoneCallback, Job } from 'bull';
 
 class ReactionWorker {
@@ -18,6 +25,49 @@ class ReactionWorker {
       await reactionService.addReaction(reactionDocument);
       // send notification
       // work lettre
+
+      const followerData: FullUserDoc = await userCache.getUserByIdFromCache(`${postUpdate.creator?.authId}`);
+      if (followerData.notifications.reactions && postUpdate.creator?.authId !== reactionDocument.authId) {
+        const authData: FullUserDoc = await userCache.getUserByIdFromCache(`${reactionDocument.authId}`);
+        // notifications
+        const notificationData: INotification = {
+          creator: {
+            authId: followerData.authId,
+            name: followerData.name,
+            avatarColor: followerData.avatarColor,
+            coverPicture: followerData.coverPicture,
+            email: followerData.email,
+            profilePicture: followerData.profilePicture,
+            uId: followerData.uId,
+            username: followerData.username
+          },
+          docCreator: `${followerData.authId}`,
+          message: `${authData.name.first} is ${reactionDocument.type} your post.`,
+          notificationType: reactionDocument.type,
+          entityId: postUpdate._id,
+          createdItemId: `${authData._id}`
+        } as unknown as INotification;
+
+        // send to socketio
+        socketIoNotificationObject.emit('reaction-notification', notificationData, { userTo: notificationData.docCreator });
+        // send to email queue
+        const template: string = notificationTemplate.notificationMessageTemplate({
+          username: followerData.name.first,
+          message: notificationData.message,
+          header: `${reactionDocument.type} your post.`
+        });
+
+        emailQueue.addEmailJob('reactionEmail', {
+          template: template,
+          receiverEmail: `${followerData.email}`,
+          subject: 'Reaction Notification'
+        });
+
+        // save in db
+        const notificationModel = new NotificationModel();
+        await notificationModel.insertNotification(notificationData);
+      }
+
       // add method to save data in db
       job.progress(100);
       done(null, job.data);

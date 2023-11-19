@@ -1,22 +1,29 @@
-import { AuthPayload } from '@auth/interfaces/auth.interface';
+import { NameDoc } from '@auth/interfaces/auth.interface';
 import { ObjectId } from 'mongodb';
 import { Document } from 'mongoose';
 
 export interface ICommentDocument extends Document {
   _id?: string | ObjectId;
   postId: string;
-  commentedUser: string | ObjectId | AuthPayload;
+  commentedUser: string | CreatorNotification;
   comment: string;
   createdAt?: Date;
-  userTo?: string | ObjectId;
+  // userTo?: string | ObjectId;
 }
 
 export interface ICommentJob {
-  postId: string;
-  userTo: string;
-  userFrom: string;
+  value: ICommentDocument;
+  creator: CreatorNotification;
+}
+interface CreatorNotification {
+  authId: string;
+  profilePicture: string;
+  coverPicture: string;
+  email: string;
   username: string;
-  comment: ICommentDocument;
+  avatarColor: string;
+  uId: string;
+  name: NameDoc;
 }
 
 export interface ICommentNameList {

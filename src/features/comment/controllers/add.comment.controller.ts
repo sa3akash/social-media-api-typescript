@@ -1,7 +1,7 @@
+import { NameDoc } from '@auth/interfaces/auth.interface';
 import { ICommentDocument } from '@comment/interfaces/comment.interface';
 import { commentCache } from '@services/cache/comment.cache';
 import { commentQueue } from '@services/queues/comment.queue';
-import { socketIoPostObject } from '@sockets/post.sockets';
 import { Request, Response } from 'express';
 import { ObjectId } from 'mongodb';
 
@@ -17,26 +17,22 @@ export class AddCommentController {
       createdAt: new Date()
     } as ICommentDocument;
     // send all user in this comment
-    socketIoPostObject.emit('add-comment', {
-      _id: commentData._id,
-      postId: commentData.postId,
-      comment: commentData.comment,
-      commentedUser: {
-        id: `${req.currentUser?.id}`,
-        avatarColor: `${req.currentUser?.avatarColor}`,
-        coverPicture: `${req.currentUser?.coverPicture}`,
-        email: `${req.currentUser?.email}`,
-        name: `${req.currentUser?.name}`,
-        profilePicture: `${req.currentUser?.profilePicture}`,
-        uId: `${req.currentUser?.uId}`,
-        username: `${req.currentUser?.username}`
-      },
-      createdAt: commentData.createdAt
-    });
     // save comment in cache
     await commentCache.addCommentCache(commentData);
     // save comment in db
-    commentQueue.addCommentJob('addCommentInDBQueue', commentData);
+    commentQueue.addCommentJob('addCommentInDBQueue', {
+      value: commentData,
+      creator: {
+        authId: `${req.currentUser?.id}`,
+        profilePicture: `${req.currentUser?.profilePicture}`,
+        coverPicture: `${req.currentUser?.coverPicture}`,
+        email: `${req.currentUser?.email}`,
+        username: `${req.currentUser?.username}`,
+        avatarColor: `${req.currentUser?.avatarColor}`,
+        uId: `${req.currentUser?.uId}`,
+        name: req.currentUser?.name as NameDoc
+      }
+    });
 
     res.status(200).json({ message: 'Comment added successfully.' });
   }
