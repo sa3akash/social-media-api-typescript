@@ -39,8 +39,9 @@ class CommentCache extends BaseCache {
         const singleComment: ICommentDocument = JSON.parse(`${commentSt}`);
 
         const user: FullUserDoc = await userCache.getUserByIdFromCache(`${singleComment.commentedUser}`);
+
         singleComment.commentedUser = {
-          id: `${user.authId}`,
+          authId: `${user.authId}`,
           email: `${user.email}`,
           name: user.name,
           username: `${user.username}`,

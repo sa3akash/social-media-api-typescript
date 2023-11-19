@@ -20,6 +20,7 @@ import { CustomError } from '@globals/helpers/errorHandler';
 import { IErrorResponse } from '@shared/types/errorTypes';
 import { SocketIoPostHandler } from '@sockets/post.sockets';
 import { SocketIoFollowHandler } from '@sockets/follower.socket';
+import { SocketIoNotificationHandler } from '@sockets/notification.socket';
 
 const log = config.createLogger('setup server');
 
@@ -127,8 +128,10 @@ export class SetupServer {
   private socketIoConnection(io: Server): void {
     const postSocketHandler: SocketIoPostHandler = new SocketIoPostHandler(io);
     const socketIoFollowHandler: SocketIoFollowHandler = new SocketIoFollowHandler(io);
+    const socketIoNotificationHandler: SocketIoNotificationHandler = new SocketIoNotificationHandler();
     // listen
     postSocketHandler.listen();
     socketIoFollowHandler.listen();
+    socketIoNotificationHandler.listen(io);
   }
 }

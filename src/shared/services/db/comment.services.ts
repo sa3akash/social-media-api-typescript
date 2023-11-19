@@ -3,8 +3,8 @@ import { CommentsModel } from '@comment/models/comment.model';
 import mongoose from 'mongoose';
 
 class CommentService {
-  public async addCommentDB(data: ICommentDocument): Promise<void> {
-    await CommentsModel.create(data);
+  public async addCommentDB(data: ICommentDocument): Promise<ICommentDocument> {
+    return await CommentsModel.create(data);
   }
 
   public async getCommentsDB(postId: string, skip: number, limit: number): Promise<ICommentDocument[]> {

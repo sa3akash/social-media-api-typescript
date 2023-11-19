@@ -1,4 +1,4 @@
-import { ICommentDocument } from '@comment/interfaces/comment.interface';
+import { ICommentJob } from '@comment/interfaces/comment.interface';
 import { BaseQueue } from '@services/queues/base.queue';
 import { commentWorker } from '@workers/comment.worker';
 
@@ -8,7 +8,7 @@ class CommentQueue extends BaseQueue {
     this.processJob('addCommentInDBQueue', 5, commentWorker.addCommentInWorker);
   }
 
-  public addCommentJob(name: string, data: ICommentDocument): void {
+  public addCommentJob(name: string, data: ICommentJob): void {
     this.addJob(name, data);
   }
 

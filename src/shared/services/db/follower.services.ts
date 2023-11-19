@@ -5,7 +5,7 @@ import mongoose from 'mongoose';
 import { PushOperator, PullOperator } from 'mongodb';
 
 class FollowerService {
-  public async addFollow(authId: string, followerId: string): Promise<void> {
+  public async addFollow(authId: string, followerId: string): Promise<IFollowerDocument> {
     const followerDoc = FollowerModel.create({ followingId: authId, followerId: followerId });
     const userUpdate = UserModel.bulkWrite([
       {
@@ -22,7 +22,8 @@ class FollowerService {
       }
     ]);
 
-    await Promise.all([followerDoc, userUpdate]);
+    const response = await Promise.all([followerDoc, userUpdate]);
+    return response[0];
   }
 
   public async removeFollow(authId: string, followerId: string): Promise<void> {
