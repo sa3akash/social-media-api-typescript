@@ -29,6 +29,9 @@ class AuthService {
   public async getAuthUserByAuthId(authId: string): Promise<IAuthDocument> {
     return (await AuthModel.findById(authId)) as IAuthDocument;
   }
+  public async getAuthUserByUsername(username: string): Promise<IAuthDocument> {
+    return (await AuthModel.findOne({ username: username })) as IAuthDocument;
+  }
 
   public async updatePasswordToken(authId: string, token: string, tokenExpiration: number): Promise<void> {
     await AuthModel.updateOne(
@@ -74,6 +77,10 @@ class AuthService {
   }
   public async updateCoverPicture(authId: string, imageURl: string): Promise<void> {
     await AuthModel.findByIdAndUpdate(authId, { $set: { coverPicture: imageURl } });
+  }
+
+  public async updateUsernamePicture(authId: string, username: string): Promise<void> {
+    await AuthModel.findByIdAndUpdate(authId, { $set: { username: username } });
   }
 }
 

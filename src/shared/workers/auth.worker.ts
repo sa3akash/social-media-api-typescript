@@ -53,6 +53,19 @@ class AuthWorker {
       done(err as Error);
     }
   }
+
+  async updateUsernameAuthWorker(job: Job, done: DoneCallback): Promise<void> {
+    try {
+      const { authId, username } = job.data;
+
+      await authService.updateUsernamePicture(authId, username);
+      // add method to save data in db
+      job.progress(100);
+      done(null, job.data);
+    } catch (err) {
+      done(err as Error);
+    }
+  }
 }
 
 export const authWorker: AuthWorker = new AuthWorker();

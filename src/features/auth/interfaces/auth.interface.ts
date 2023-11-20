@@ -58,7 +58,8 @@ export interface IAuthJob {
 }
 export interface IProfileImageChange {
   authId: string;
-  imageUrl: string;
+  imageUrl?: string;
+  username?: string;
 }
 
 export type FullUserDoc = IUserDocument & IAuthDocument;

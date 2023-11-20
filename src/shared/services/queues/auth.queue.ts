@@ -8,6 +8,7 @@ class AuthQueue extends BaseQueue {
     this.processJob('addAuthDataInDB', 5, authWorker.addAuthWorker);
     this.processJob('updateProfilePicDB', 5, authWorker.updateProfileAuthWorker);
     this.processJob('updateCoverPicInDB', 5, authWorker.updateCoverAuthWorker);
+    this.processJob('updateUsernameInDB', 5, authWorker.updateUsernameAuthWorker);
   }
 
   public addAuthUserJob(name: string, data: IAuthJob): void {
@@ -15,6 +16,9 @@ class AuthQueue extends BaseQueue {
   }
 
   public updateProfileImageJob(name: string, data: IProfileImageChange): void {
+    this.addJob(name, data);
+  }
+  public updateUsernameJob(name: string, data: IProfileImageChange): void {
     this.addJob(name, data);
   }
 }

@@ -32,6 +32,7 @@ class AuthRoutes {
       ImageAuthController.prototype.profileImage
     );
     this.router.put('/update-cover-picture', authMiddleware.verifyUser, upload.single('file'), ImageAuthController.prototype.coverImage);
+    this.router.put('/update-username', authMiddleware.verifyUser, ImageAuthController.prototype.updateUsername);
   }
 }
 
