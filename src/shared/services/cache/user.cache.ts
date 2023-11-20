@@ -89,6 +89,25 @@ class UserCache extends BaseCache {
       throw new ServerError('Internal Server Error, Try again later.');
     }
   }
+
+  /**
+   *
+   * update user for cache
+   *
+   */
+  public async updateSingleUserFromCache(authId: string, field: string, value: string): Promise<FullUserDoc> {
+    try {
+      if (!this.client.isOpen) {
+        await this.client.connect();
+      }
+
+      await this.client.HSET(`users:${authId}`, field, value);
+      const user: FullUserDoc = (await this.getUserByIdFromCache(authId)) as FullUserDoc;
+      return user;
+    } catch (err) {
+      throw new ServerError('Internal Server Error, Try again later.');
+    }
+  }
 }
 
 export const userCache: UserCache = new UserCache();

@@ -26,6 +26,10 @@ class AuthService {
     return (await AuthModel.findOne({ email: email.toLowerCase() })) as IAuthDocument;
   }
 
+  public async getAuthUserByAuthId(authId: string): Promise<IAuthDocument> {
+    return (await AuthModel.findById(authId)) as IAuthDocument;
+  }
+
   public async updatePasswordToken(authId: string, token: string, tokenExpiration: number): Promise<void> {
     await AuthModel.updateOne(
       { _id: authId },
@@ -59,6 +63,17 @@ class AuthService {
       }
     } while (a);
     return username;
+  }
+  /**
+   *
+   * update images in user
+   *
+   */
+  public async updateProfilePicture(authId: string, imageURl: string): Promise<void> {
+    await AuthModel.findByIdAndUpdate(authId, { $set: { profilePicture: imageURl } });
+  }
+  public async updateCoverPicture(authId: string, imageURl: string): Promise<void> {
+    await AuthModel.findByIdAndUpdate(authId, { $set: { coverPicture: imageURl } });
   }
 }
 

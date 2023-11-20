@@ -1,9 +1,11 @@
 import { CurrentUser } from '@auth/controllers/currentUser.controller';
+import { ImageAuthController } from '@auth/controllers/image.controller';
 import { PasswordController } from '@auth/controllers/password.controller';
 import { SigninController } from '@auth/controllers/signin.controller';
 import { SignOut } from '@auth/controllers/signout.controller';
 import { SignupController } from '@auth/controllers/signup.controller';
 import { authMiddleware } from '@globals/helpers/authMiddleware';
+import { upload } from '@globals/helpers/cloudinaryUpload';
 import express, { Router } from 'express';
 
 class AuthRoutes {
@@ -23,6 +25,13 @@ class AuthRoutes {
   private protectedRoutes() {
     this.router.get('/current-user', authMiddleware.verifyUser, CurrentUser.prototype.getFullUser);
     this.router.get('/signout', authMiddleware.verifyUser, SignOut.prototype.logout);
+    this.router.put(
+      '/update-profile-picture',
+      authMiddleware.verifyUser,
+      upload.single('file'),
+      ImageAuthController.prototype.profileImage
+    );
+    this.router.put('/update-cover-picture', authMiddleware.verifyUser, upload.single('file'), ImageAuthController.prototype.coverImage);
   }
 }
 

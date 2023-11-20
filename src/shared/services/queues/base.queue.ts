@@ -6,7 +6,7 @@ import { ExpressAdapter } from '@bull-board/express';
 import Logger from 'bunyan';
 // custom files
 import { config } from '@root/config';
-import { IAuthJob } from '@auth/interfaces/auth.interface';
+import { IAuthJob, IProfileImageChange } from '@auth/interfaces/auth.interface';
 import { IEmailJob } from '@user/interfaces/user.interface';
 import { IPostDocument, IPostJobData } from '@post/interfaces/post.interfaces';
 import { IReactionDocument, IReactionJob } from '@reaction/interfaces/reaction.interface';
@@ -25,7 +25,8 @@ type IBaseJobData =
   | IFollowerJobData
   | IBlockedUserJobData
   | ICommentJob
-  | INotificationJobData;
+  | INotificationJobData
+  | IProfileImageChange;
 
 let bullAdapter: BullAdapter[] = [];
 export let serverAdapter: ExpressAdapter;

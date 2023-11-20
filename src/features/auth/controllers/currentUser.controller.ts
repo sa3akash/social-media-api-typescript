@@ -3,7 +3,7 @@ import { BadRequestError } from '@globals/helpers/errorHandler';
 import { userCache } from '@services/cache/user.cache';
 import { userService } from '@services/db/user.services';
 import { Request, Response } from 'express';
-
+import HTTP_STATUS from 'http-status-codes';
 export class CurrentUser {
   public async getFullUser(req: Request, res: Response): Promise<void> {
     const authId = req.query.authId as string;
@@ -19,6 +19,6 @@ export class CurrentUser {
       throw new BadRequestError('Invalid user ID.');
     }
 
-    res.json(fullUser);
+    res.status(HTTP_STATUS.OK).json(fullUser);
   }
 }

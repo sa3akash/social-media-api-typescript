@@ -56,5 +56,9 @@ export interface NameDoc {
 export interface IAuthJob {
   value?: string | IAuthDocument | IUserDocument;
 }
+export interface IProfileImageChange {
+  authId: string;
+  imageUrl: string;
+}
 
 export type FullUserDoc = IUserDocument & IAuthDocument;
