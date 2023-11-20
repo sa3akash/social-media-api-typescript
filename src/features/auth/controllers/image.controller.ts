@@ -1,5 +1,6 @@
 import { userCache } from '@services/cache/user.cache';
 import { authQueue } from '@services/queues/auth.queue';
+import { socketIoPostObject } from '@sockets/post.sockets';
 import { Request, Response } from 'express';
 import HTTP_STATUS from 'http-status-codes';
 
@@ -7,6 +8,8 @@ export class ImageAuthController {
   public async profileImage(req: Request, res: Response): Promise<void> {
     const profileImageUrl = req.file;
     const user = await userCache.updateSingleUserFromCache(`${req.currentUser?.id}`, 'profilePicture', `${profileImageUrl?.path}`);
+
+    socketIoPostObject.emit('update-user', user);
 
     authQueue.updateProfileImageJob('updateProfilePicDB', {
       authId: `${req.currentUser?.id}`,
@@ -19,6 +22,8 @@ export class ImageAuthController {
   public async coverImage(req: Request, res: Response): Promise<void> {
     const coverImageUrl = req.file;
     const user = await userCache.updateSingleUserFromCache(`${req.currentUser?.id}`, 'coverPicture', `${coverImageUrl?.path}`);
+
+    socketIoPostObject.emit('update-user', user);
 
     authQueue.updateProfileImageJob('updateCoverPicInDB', {
       authId: `${req.currentUser?.id}`,
