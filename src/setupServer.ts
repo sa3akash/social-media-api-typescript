@@ -21,6 +21,7 @@ import { IErrorResponse } from '@shared/types/errorTypes';
 import { SocketIoPostHandler } from '@sockets/post.sockets';
 import { SocketIoFollowHandler } from '@sockets/follower.socket';
 import { SocketIoNotificationHandler } from '@sockets/notification.socket';
+import { SocketIoChatHandler } from '@sockets/chat.socket';
 
 const log = config.createLogger('setup server');
 
@@ -128,10 +129,12 @@ export class SetupServer {
   private socketIoConnection(io: Server): void {
     const postSocketHandler: SocketIoPostHandler = new SocketIoPostHandler(io);
     const socketIoFollowHandler: SocketIoFollowHandler = new SocketIoFollowHandler(io);
+    const socketIoChatHandler: SocketIoChatHandler = new SocketIoChatHandler(io);
     const socketIoNotificationHandler: SocketIoNotificationHandler = new SocketIoNotificationHandler();
     // listen
     postSocketHandler.listen();
     socketIoFollowHandler.listen();
     socketIoNotificationHandler.listen(io);
+    socketIoChatHandler.listen();
   }
 }
