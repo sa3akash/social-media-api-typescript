@@ -1,4 +1,5 @@
 import { authRoutes } from '@auth/routes/auth.routes';
+import { chatRoutes } from '@chat/routes/chat.routes';
 import { commentRoutes } from '@comment/routes/comment.routes';
 import { followRoutes } from '@follower/routes/follower.routes';
 import { notificationRoutes } from '@notification/routes/notification.routes';
@@ -17,6 +18,7 @@ export default (app: Application) => {
     app.use(BASE_PATH, commentRoutes.routes());
     app.use(BASE_PATH, followRoutes.routes());
     app.use(BASE_PATH, notificationRoutes.routes());
+    app.use(BASE_PATH, chatRoutes.routes());
     app.use('/queues', serverAdapter.getRouter());
   };
   routes();

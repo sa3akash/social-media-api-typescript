@@ -13,6 +13,7 @@ import { IReactionDocument, IReactionJob } from '@reaction/interfaces/reaction.i
 import { ICommentDocument, ICommentJob } from '@comment/interfaces/comment.interface';
 import { IBlockedUserJobData, IFollowerJobData } from '@follower/interfaces/follower.interface';
 import { INotificationJobData } from '@notification/interfaces/notificaton.interface';
+import { IMarkDeleteMessage, IMarkReadMessage, IMessageData, IReactionMessage } from '@chat/interfaces/chat.interfaces';
 
 type IBaseJobData =
   | IAuthJob
@@ -26,7 +27,11 @@ type IBaseJobData =
   | IBlockedUserJobData
   | ICommentJob
   | INotificationJobData
-  | IProfileImageChange;
+  | IProfileImageChange
+  | IMessageData
+  | IMarkDeleteMessage
+  | IMarkReadMessage
+  | IReactionMessage;
 
 let bullAdapter: BullAdapter[] = [];
 export let serverAdapter: ExpressAdapter;
