@@ -61,5 +61,47 @@ export interface IProfileImageChange {
   imageUrl?: string;
   username?: string;
 }
+export interface IUpdateUser {
+  key: string;
+  value: IUpdateUserInfoDoc | { notifications: INotificationType };
+}
+
+interface INotificationType {
+  messages: boolean;
+  reactions: boolean;
+  comments: boolean;
+  follows: boolean;
+}
+
+export interface IUpdateUserInfoDoc {
+  work: string;
+  school: string;
+  website: string;
+  gender: string;
+  quote: string;
+  social: {
+    facebook: string;
+    instagram: string;
+    twitter: string;
+    youtube: string;
+  };
+  relationShip: {
+    type: string;
+    partner: string;
+  };
+  address: {
+    street: string;
+    city: string;
+    zipcode: string;
+    local: string;
+    country: string;
+  };
+
+  dob: {
+    day: string;
+    month: string;
+    year: string;
+  };
+}
 
 export type FullUserDoc = IUserDocument & IAuthDocument;

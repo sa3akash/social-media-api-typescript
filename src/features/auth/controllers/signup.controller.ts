@@ -101,6 +101,10 @@ export class SignupController {
       postsCount: 0,
       website: '',
       gender: gender,
+      relationShip: {
+        type: 'Single',
+        partner: ''
+      },
       createdAt: new Date(),
       notifications: {
         messages: true,

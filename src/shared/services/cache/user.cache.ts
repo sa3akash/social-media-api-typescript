@@ -1,8 +1,10 @@
-import { FullUserDoc, IAuthDocument } from '@auth/interfaces/auth.interface';
+import { FullUserDoc, IAuthDocument, IUpdateUserInfoDoc } from '@auth/interfaces/auth.interface';
+import { IFollowerData } from '@follower/interfaces/follower.interface';
 import { ServerError } from '@globals/helpers/errorHandler';
 import { Utils } from '@globals/helpers/utils';
 import { BaseCache } from '@services/cache/base.cache';
 import { IUserDocument } from '@user/interfaces/user.interface';
+import { indexOf } from 'lodash';
 
 class UserCache extends BaseCache {
   constructor() {
@@ -29,6 +31,7 @@ class UserCache extends BaseCache {
       postsCount: `${userData.postsCount}`,
       blocked: JSON.stringify(userData.blocked),
       blockedBy: JSON.stringify(userData.blockedBy),
+      relationShip: JSON.stringify(userData.relationShip),
       followersCount: `${userData.followersCount}`,
       followingCount: `${userData.followingCount}`,
       notifications: JSON.stringify(userData.notifications),
@@ -80,6 +83,7 @@ class UserCache extends BaseCache {
       data.social = Utils.parseJson(`${data.social}`);
       data.notifications = Utils.parseJson(`${data.notifications}`);
       data.address = Utils.parseJson(`${data.address}`);
+      data.relationShip = Utils.parseJson(`${data.relationShip}`);
       data.postsCount = Number(data.postsCount);
       data.followersCount = Number(data.followersCount);
       data.followingCount = Number(data.followingCount);
@@ -95,6 +99,7 @@ class UserCache extends BaseCache {
    * update user for cache
    *
    */
+
   public async updateSingleUserFromCache(authId: string, field: string, value: string): Promise<FullUserDoc> {
     try {
       if (!this.client.isOpen) {
@@ -106,6 +111,130 @@ class UserCache extends BaseCache {
       return user;
     } catch (err) {
       throw new ServerError('Internal Server Error, Try again later.');
+    }
+  }
+  public async updateUserInfoFromCache(authId: string, value: IUpdateUserInfoDoc): Promise<void> {
+    try {
+      if (!this.client.isOpen) {
+        await this.client.connect();
+      }
+
+      const data = {
+        address: JSON.stringify(value.address),
+        dob: JSON.stringify(value.dob),
+        relationShip: JSON.stringify(value.relationShip),
+        social: JSON.stringify(value.social),
+        gender: value.gender,
+        school: value.school,
+        website: value.website,
+        quote: value.quote,
+        work: value.work
+      };
+
+      for (const [key, value] of Object.entries(data)) {
+        await this.updateSingleUserFromCache(authId, key, value);
+      }
+    } catch (err) {
+      throw new ServerError('Internal Server Error, Try again later.');
+    }
+  }
+
+  /**
+   *
+   * get multiple users
+   *
+   */
+
+  public async getMultipleUsersCache(start: number, end: number, excludedUserKey: string): Promise<IFollowerData[]> {
+    try {
+      if (!this.client.isOpen) {
+        await this.client.connect();
+      }
+      const reply: string[] = await this.client.ZRANGE('user', start, end, { REV: true });
+      //const reply: string[] = await this.client.sendCommand(['ZREVRANGE', key, start, end]);
+
+      const users: IFollowerData[] = [];
+
+      for (const value of reply) {
+        if (value !== excludedUserKey) {
+          const user: FullUserDoc = await this.getUserByIdFromCache(value);
+
+          const usersData: IFollowerData = {
+            _id: user.authId,
+            uId: user.uId,
+            username: user.username,
+            avatarColor: user.avatarColor,
+            coverPicture: user.coverPicture,
+            email: user.email,
+            name: user.name,
+            profilePicture: user.profilePicture,
+            quote: user.quote
+          };
+
+          users.push(usersData);
+        }
+      }
+
+      return users;
+    } catch (err) {
+      throw new ServerError('Internal Server Error, Try again later.');
+    }
+  }
+
+  public async getTotalNumberOfUsersFromCache(): Promise<number> {
+    try {
+      if (!this.client.isOpen) {
+        await this.client.connect();
+      }
+      const count: number = await this.client.ZCARD('user');
+      return count || 0;
+    } catch (err) {
+      throw new ServerError('Internal Server Error, Try again later.');
+    }
+  }
+
+  /**
+   *
+   * get random user from cache
+   *
+   */
+
+  public async getRandomUsersFromCache(authId: string): Promise<IFollowerData[]> {
+    try {
+      if (!this.client.isOpen) {
+        await this.client.connect();
+      }
+      // get all followers ids
+      const following: string[] = await this.client.LRANGE(`following:${authId}`, 0, -1);
+      // get all soted set of user
+      const users: string[] = await this.client.ZRANGE('user', 0, -1);
+      const randomUsers: string[] = Utils.randomGet(users).slice(0, 10);
+
+      const randomUserList: IFollowerData[] = [];
+      for (const key of randomUsers) {
+        const followerIndex = indexOf(following, key);
+        if (followerIndex < 0 && key !== authId) {
+          const user: FullUserDoc = await this.getUserByIdFromCache(key);
+          const randomUserData: IFollowerData = {
+            _id: user.authId,
+            uId: user.uId,
+            username: user.username,
+            avatarColor: user.avatarColor,
+            coverPicture: user.coverPicture,
+            email: user.email,
+            name: user.name,
+            profilePicture: user.profilePicture,
+            quote: user.quote
+          };
+          randomUserList.push(randomUserData);
+        }
+      }
+      // const excludedUserIndex: number = findIndex(randomUserList, ['_id', authId]);
+      // randomUserList.splice(excludedUserIndex, 1);
+
+      return randomUserList;
+    } catch (error) {
+      throw new ServerError('Server error. Try again.');
     }
   }
 }
