@@ -24,6 +24,10 @@ const userSchema: Schema = new Schema({
   school: { type: String, default: '' },
   website: { type: String, default: '' },
   gender: { type: String, enum: ['male', 'female', 'custom'] },
+  relationShip: {
+    type: { type: String, enum: ['Single', 'In a relationship', 'Married', 'Divorced'], default: 'Single' },
+    partner: { type: String }
+  },
   address: {
     street: { type: String, default: '' },
     city: { type: String, default: '' },

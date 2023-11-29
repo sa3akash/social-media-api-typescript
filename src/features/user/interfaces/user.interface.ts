@@ -1,5 +1,6 @@
 import mongoose, { Document } from 'mongoose';
 import { ObjectId } from 'mongodb';
+import { NameDoc } from '@auth/interfaces/auth.interface';
 
 export interface IUserDocument extends Document {
   _id: string | ObjectId;
@@ -17,7 +18,13 @@ export interface IUserDocument extends Document {
   social: ISocialLinks;
   createdAt?: Date;
   address: AddressDoc;
+  relationShip: RelationShipDoc;
   dob: DobDoc;
+}
+
+export interface RelationShipDoc {
+  type: 'Single' | 'In a relationship' | 'Married' | 'Divorced';
+  partner: string;
 }
 
 interface DobDoc {
@@ -63,10 +70,14 @@ export interface ISocialLinks {
 }
 
 export interface ISearchUser {
-  _id: string;
+  _id: string | ObjectId;
+  uId: string;
+  coverPicture: string;
   profilePicture: string;
+  name: NameDoc;
   username: string;
   email: string;
+  quote: string;
   avatarColor: string;
 }
 
@@ -76,7 +87,7 @@ export interface ISocketData {
 }
 
 export interface ILogin {
-  userId: string;
+  authId: string;
 }
 
 export interface IUserJobInfo {

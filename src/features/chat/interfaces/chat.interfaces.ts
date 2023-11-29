@@ -93,8 +93,8 @@ export interface IChatJobData {
 export interface ISenderReceiver {
   senderId: string;
   receiverId: string;
-  senderName: string;
-  receiverName: string;
+  // senderName: string;
+  // receiverName: string;
 }
 
 export interface IGetMessageFromCache {

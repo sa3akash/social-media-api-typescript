@@ -9,7 +9,7 @@ const emailSchema: ObjectSchema = Joi.object().keys({
 });
 
 const passwordSchema: ObjectSchema = Joi.object().keys({
-  password: Joi.string().required().min(4).max(8).messages({
+  password: Joi.string().required().min(6).max(30).messages({
     'string.base': 'Password should be of type string.',
     'string.min': 'Invalid password.',
     'string.max': 'Invalid password.',
