@@ -32,14 +32,14 @@ class ReactionWorker {
         // notifications
         const notificationData: INotification = {
           creator: {
-            authId: followerData.authId,
-            name: followerData.name,
-            avatarColor: followerData.avatarColor,
-            coverPicture: followerData.coverPicture,
-            email: followerData.email,
-            profilePicture: followerData.profilePicture,
-            uId: followerData.uId,
-            username: followerData.username
+            authId: authData.authId,
+            name: authData.name,
+            avatarColor: authData.avatarColor,
+            coverPicture: authData.coverPicture,
+            email: authData.email,
+            profilePicture: authData.profilePicture,
+            uId: authData.uId,
+            username: authData.username
           },
           docCreator: `${followerData.authId}`,
           message: `${authData.name.first} is ${reactionDocument.type} your post.`,
