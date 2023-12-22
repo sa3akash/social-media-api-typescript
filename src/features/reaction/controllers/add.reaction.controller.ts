@@ -36,7 +36,7 @@ export class AddReactionController {
           avatarColor: `${req.currentUser?.avatarColor}`,
           coverPicture: `${req.currentUser?.coverPicture}`,
           email: `${req.currentUser?.email}`,
-          name: `${req.currentUser?.name}`,
+          name: req.currentUser?.name,
           profilePicture: `${req.currentUser?.profilePicture}`,
           uId: `${req.currentUser?.uId}`,
           username: `${req.currentUser?.username}`
