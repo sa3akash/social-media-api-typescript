@@ -42,7 +42,7 @@ class ReactionWorker {
             username: authData.username
           },
           docCreator: `${followerData.authId}`,
-          message: `${authData.name.first} is ${reactionDocument.type} your post.`,
+          message: postUpdate.post,
           notificationType: reactionDocument.type,
           entityId: postUpdate._id,
           createdItemId: `${authData._id}`

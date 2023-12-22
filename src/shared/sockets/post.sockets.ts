@@ -15,7 +15,7 @@ export class SocketIoPostHandler {
 
   public listen(): void {
     this.io.on('connection', (socket: Socket) => {
-      log.info(`Socket connection established. socketId: ${socket}`);
+      log.info(`Socket connection established. socketId: ${socket.id}`);
     });
   }
 }

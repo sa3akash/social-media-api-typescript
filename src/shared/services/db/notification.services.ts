@@ -6,7 +6,7 @@ class NotificationService {
   public async getNotifications(docCreator: string, skip: number, limit: number): Promise<INotificationDocument[]> {
     const notifications: INotificationDocument[] = await NotificationModel.aggregate([
       { $match: { docCreator: new mongoose.Types.ObjectId(docCreator) } },
-      { $sort: { createdAt: -1 } },
+      { $sort: { createdAt: - 1 } },
       { $skip: skip },
       { $limit: limit },
       { $lookup: { from: 'Auth', localField: 'creator', foreignField: '_id', as: 'authIdFromData' } },
