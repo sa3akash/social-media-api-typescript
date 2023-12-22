@@ -45,7 +45,8 @@ class ReactionWorker {
           message: postUpdate.post,
           notificationType: reactionDocument.type,
           entityId: postUpdate._id,
-          createdItemId: `${authData._id}`
+          createdItemId: `${authData._id}`,
+          createdAt: `${new Date()}`
         } as unknown as INotification;
 
         // send to socketio
