@@ -45,6 +45,10 @@ class NotificationService {
   public async deleteNotification(notificationId: string): Promise<void> {
     await NotificationModel.findByIdAndDelete(notificationId);
   }
+
+  public async numberOfNotification(docCreator: string): Promise<number> {
+   return await NotificationModel.find({docCreator: docCreator}).countDocuments();
+  }
 }
 
 export const notificationService: NotificationService = new NotificationService();

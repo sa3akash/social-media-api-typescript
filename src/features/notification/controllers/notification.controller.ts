@@ -38,6 +38,13 @@ export class NotificationController {
     // notifications queue
     const notifications: INotificationDocument[] = await notificationService.getNotifications(`${req.currentUser?.id}`, skip, limit);
 
-    res.status(HTTP_STATUS.OK).json({ message: 'all notifications', notifications });
+    const numberOfNotification:number = await notificationService.numberOfNotification(`${req.currentUser?.id}`);
+      // response
+      res.status(HTTP_STATUS.OK).json({
+        message: 'Get all posts notifications.',
+        notifications: notifications,
+        currentPage: Number(page),
+        numberOfPages: Math.ceil(numberOfNotification / limit)
+      });
   }
 }
