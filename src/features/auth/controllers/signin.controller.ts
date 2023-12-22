@@ -24,7 +24,6 @@ export class SigninController {
     // const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
     // console.log(ip);
 
-
     const existingUser: IAuthDocument = await authService.getUserByEmailOrUsername(email);
     if (!existingUser) throw new BadRequestError('Invalid credentials.');
 
