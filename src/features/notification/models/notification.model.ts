@@ -10,7 +10,6 @@ const notificationSchema: Schema = new Schema({
   notificationType: { type: String, enum: ['like', 'love', 'happy', 'wow', 'sad', 'angry', 'comment', 'community', 'follow'] },
   entityId: mongoose.Types.ObjectId,
   createdItemId: mongoose.Types.ObjectId,
-
   createdAt: { type: Date, default: Date.now() }
 });
 
