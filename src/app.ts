@@ -1,5 +1,6 @@
 // external libraries
 import express, { Express } from 'express';
+// import cluster from 'cluster';
 
 // custom files
 import { SetupServer } from '@root/setupServer';
@@ -28,3 +29,11 @@ class MainApplication {
 
 const application: MainApplication = new MainApplication();
 application.initialize();
+
+// if (cluster.isPrimary) {
+//   for (let i = 0; i < 4; i++) {
+//     cluster.fork();
+//   }
+// } else {
+//   application.initialize();
+// }
