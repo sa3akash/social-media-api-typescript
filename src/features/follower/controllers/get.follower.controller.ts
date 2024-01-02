@@ -22,7 +22,7 @@ export class GetFollowerController {
       message: 'Followers users get successfully.',
       posts: followersCache,
       currentPage: Number(page),
-      numberOfPages: Math.ceil(followersCountCache / limit)
+      numberOfPages: Math.ceil(followersCountCache / PAGE_SIZE)
     });
   }
 
@@ -46,7 +46,7 @@ export class GetFollowerController {
       message: 'Followings users get successfully.',
       posts: followings,
       currentPage: Number(page),
-      numberOfPages: Math.ceil(followingsCount / limit)
+      numberOfPages: Math.ceil(followingsCount / PAGE_SIZE)
     });
   }
 }

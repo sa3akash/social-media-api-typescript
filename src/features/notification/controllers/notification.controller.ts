@@ -44,7 +44,7 @@ export class NotificationController {
       message: 'Get all posts notifications.',
       notifications: notifications,
       currentPage: Number(page),
-      numberOfPages: Math.ceil(numberOfNotification / limit)
+      numberOfPages: Math.ceil(numberOfNotification / PAGE_SIZE)
     });
   }
 }

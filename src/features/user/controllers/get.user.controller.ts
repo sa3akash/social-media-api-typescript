@@ -23,7 +23,7 @@ export class GetUsersController {
     res.status(HTTP_STATUS.OK).json({
       users: getAllUsers,
       currentPage: Number(page),
-      numberOfPages: Math.ceil(numberOfPageUsers / limit),
+      numberOfPages: Math.ceil(numberOfPageUsers / PAGE_SIZE),
       message: 'Get all users.'
     });
   }

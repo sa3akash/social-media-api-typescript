@@ -20,7 +20,7 @@ export class GetReactionController {
     res.json({
       reactions: getAllReaction.reactions,
       currentPage: Number(page),
-      numberOfPages: Math.ceil(getAllReaction.reactionsCount || 0 / limit),
+      numberOfPages: Math.ceil(getAllReaction.reactionsCount || 0 / PAGE_SIZE),
       message: 'Get all reactions based on postId.'
     });
   }
@@ -41,7 +41,7 @@ export class GetReactionController {
     res.json({
       reactions: getAllReactionCache.reactions,
       currentPage: Number(page),
-      numberOfPages: Math.ceil(getAllReactionCache.reactionsCount / limit),
+      numberOfPages: Math.ceil(getAllReactionCache.reactionsCount / PAGE_SIZE),
       message: `Get all ${type} reactions.`
     });
   }

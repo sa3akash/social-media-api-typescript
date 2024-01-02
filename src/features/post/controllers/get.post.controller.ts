@@ -25,7 +25,7 @@ export class GetPostController {
       message: 'Get all posts successfully.',
       posts: allPosts,
       currentPage: Number(page),
-      numberOfPages: Math.ceil(numberOfPosts / limit)
+      numberOfPages: Math.ceil(numberOfPosts / PAGE_SIZE)
     });
   }
   /*
@@ -52,7 +52,7 @@ export class GetPostController {
       message: 'Get all image posts successfully.',
       postWithImages: allPosts,
       currentPage: Number(page),
-      numberOfPages: Math.ceil(numberOfPosts / limit)
+      numberOfPages: Math.ceil(numberOfPosts / PAGE_SIZE)
     });
   }
   /*
@@ -80,7 +80,7 @@ export class GetPostController {
       message: 'Get all image posts successfully.',
       postWithImages: allPosts,
       currentPage: Number(page),
-      numberOfPages: Math.ceil(numberOfPosts / limit)
+      numberOfPages: Math.ceil(numberOfPosts / PAGE_SIZE)
     });
   }
 

@@ -27,7 +27,7 @@ export class GetCommentController {
     res.status(200).json({
       message: 'Comment added successfully.',
       comments: allComments,
-      numberOfPages: Math.ceil(numberOfCommentPages / limit)
+      numberOfPages: Math.ceil(numberOfCommentPages / PAGE_SIZE)
     });
   }
 }
