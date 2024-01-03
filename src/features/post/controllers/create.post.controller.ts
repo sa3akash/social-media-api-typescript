@@ -15,7 +15,19 @@ export class CreatePost {
 
     const createdPostObject: IPostDocument = CreatePost.prototype.createdPost(req, postObjectId);
     // emit post all user using socket io
-    socketIoPostObject.emit('add-post', createdPostObject);
+    socketIoPostObject.emit('add-post', {
+      ...createdPostObject,
+      creator: {
+        _id: `${req.currentUser?.id}`,
+        uId: `${req.currentUser?.id}`,
+        coverPicture: `${req.currentUser?.coverPicture}`,
+        profilePicture: `${req.currentUser?.profilePicture}`,
+        name: req.currentUser?.name,
+        username: `${req.currentUser?.username}`,
+        email: `${req.currentUser?.email}`,
+        avatarColor: `${req.currentUser?.avatarColor}`
+      }
+    });
     // save post in cache
     await postCache.savePostToCache(createdPostObject);
     // add post in db
