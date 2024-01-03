@@ -2,7 +2,7 @@ import { IChatList, IChatUsers, IGetMessageFromCache, IMessageData } from '@chat
 import { ServerError } from '@globals/helpers/errorHandler';
 import { BaseCache } from '@services/cache/base.cache';
 import { cloneDeep, filter, find, findIndex, remove } from 'lodash';
-import { userCache } from './user.cache';
+import { userCache } from '@services/cache/user.cache';
 import { FullUserDoc } from '@auth/interfaces/auth.interface';
 import { IReaction } from '@reaction/interfaces/reaction.interface';
 

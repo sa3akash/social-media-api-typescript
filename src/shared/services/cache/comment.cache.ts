@@ -1,7 +1,7 @@
 import { ICommentDocument } from '@comment/interfaces/comment.interface';
 import { ServerError } from '@globals/helpers/errorHandler';
 import { BaseCache } from '@services/cache/base.cache';
-import { userCache } from './user.cache';
+import { userCache } from '@services/cache/user.cache';
 import { FullUserDoc } from '@auth/interfaces/auth.interface';
 
 class CommentCache extends BaseCache {

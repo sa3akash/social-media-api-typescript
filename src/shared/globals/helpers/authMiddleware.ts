@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { config } from '@root/config';
-import { UnAuthorized } from './errorHandler';
+import { UnAuthorized } from '@shared/globals/helpers/errorHandler';
 import { AuthPayload } from '@auth/interfaces/auth.interface';
 
 class AuthMiddleware {
