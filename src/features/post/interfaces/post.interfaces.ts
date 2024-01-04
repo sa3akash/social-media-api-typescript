@@ -1,14 +1,7 @@
 import { NameDoc } from '@auth/interfaces/auth.interface';
+import { IReactions } from '@reaction/interfaces/reaction.interface';
 import { Document, ObjectId } from 'mongoose';
 
-interface IReactions {
-  like: number;
-  love: number;
-  happy: number;
-  wow: number;
-  sad: number;
-  angry: number;
-}
 export interface IPostDocument extends Document {
   _id?: string | ObjectId;
   authId?: string | ObjectId;

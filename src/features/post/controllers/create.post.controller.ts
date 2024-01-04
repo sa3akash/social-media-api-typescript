@@ -56,12 +56,13 @@ export class CreatePost {
       privacy: privacy || 'Public',
       createdAt: new Date(),
       reactions: {
-        angry: 0,
-        happy: 0,
         like: 0,
         love: 0,
+        care: 0,
+        happy: 0,
+        wow: 0,
         sad: 0,
-        wow: 0
+        angry: 0,
       }
     } as unknown as IPostDocument;
   }
