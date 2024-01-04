@@ -98,7 +98,11 @@ class PostCache extends BaseCache {
         posts.push(post);
       }
 
-      return posts;
+      return posts.sort((a, b) => {
+        const createdAtA = a.createdAt instanceof Date ? a.createdAt.getTime() : 0;
+        const createdAtB = b.createdAt instanceof Date ? b.createdAt.getTime() : 0;
+        return createdAtB - createdAtA;
+      });
     } catch (err) {
       throw new ServerError('Internal Server Error, Try again later.');
     }
@@ -207,7 +211,11 @@ class PostCache extends BaseCache {
         }
       }
 
-      return postsWithImages;
+      return postsWithImages.sort((a, b) => {
+        const createdAtA = a.createdAt instanceof Date ? a.createdAt.getTime() : 0;
+        const createdAtB = b.createdAt instanceof Date ? b.createdAt.getTime() : 0;
+        return createdAtB - createdAtA;
+      });
     } catch (err) {
       throw new ServerError('Internal Server Error, Try again later.');
     }
@@ -254,7 +262,11 @@ class PostCache extends BaseCache {
         }
       }
 
-      return postsWithVideos;
+      return postsWithVideos.sort((a, b) => {
+        const createdAtA = a.createdAt instanceof Date ? a.createdAt.getTime() : 0;
+        const createdAtB = b.createdAt instanceof Date ? b.createdAt.getTime() : 0;
+        return createdAtB - createdAtA;
+      });
     } catch (err) {
       throw new ServerError('Internal Server Error, Try again later.');
     }
@@ -298,7 +310,11 @@ class PostCache extends BaseCache {
         userPost.push(post);
       }
 
-      return userPost;
+      return userPost.sort((a, b) => {
+        const createdAtA = a.createdAt instanceof Date ? a.createdAt.getTime() : 0;
+        const createdAtB = b.createdAt instanceof Date ? b.createdAt.getTime() : 0;
+        return createdAtB - createdAtA;
+      });
     } catch (err) {
       throw new ServerError('Internal Server Error, Try again later.');
     }

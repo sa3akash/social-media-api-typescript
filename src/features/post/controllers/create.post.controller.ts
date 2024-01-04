@@ -62,7 +62,7 @@ export class CreatePost {
         happy: 0,
         wow: 0,
         sad: 0,
-        angry: 0,
+        angry: 0
       }
     } as unknown as IPostDocument;
   }

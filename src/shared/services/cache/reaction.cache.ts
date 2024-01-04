@@ -149,8 +149,14 @@ class ReactionCache extends BaseCache {
           reactionList.push(reactionObject);
       }
 
+      const reactionData = reactionList.sort((a, b) => {
+        const createdAtA = a.createdAt instanceof Date ? a.createdAt.getTime() : 0;
+        const createdAtB = b.createdAt instanceof Date ? b.createdAt.getTime() : 0;
+        return createdAtB - createdAtA;
+      });
+
       return {
-        reactions: reactionList.length ? reactionList : [],
+        reactions: reactionData.length ? reactionData : [],
         reactionsCount: reactionCount || 0
       } as unknown as IReactionsGet;
     } catch (err) {

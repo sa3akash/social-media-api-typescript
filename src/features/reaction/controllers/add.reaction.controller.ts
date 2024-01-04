@@ -28,25 +28,6 @@ export class AddReactionController {
         createdAt: new Date()
       } as IReactionDocument;
 
-      // socketIoPostObject.emit('add-reaction', {
-      //   _id: reactionObject._id,
-      //   docCreator: `${req.currentUser?.id}`,
-      //   read: false,
-      //   creator: {
-      //     authId: `${req.currentUser?.id}`,
-      //     avatarColor: `${req.currentUser?.avatarColor}`,
-      //     coverPicture: `${req.currentUser?.coverPicture}`,
-      //     email: `${req.currentUser?.email}`,
-      //     name: req.currentUser?.name,
-      //     profilePicture: `${req.currentUser?.profilePicture}`,
-      //     uId: `${req.currentUser?.uId}`,
-      //     username: `${req.currentUser?.username}`
-      //   },
-      //   postId: reactionObject.postId,
-      //   type: reactionObject.type,
-      //   createdAt: reactionObject.createdAt
-      // });
-
       await reactionCache.addReactionInCache(reactionObject);
       reactionQueue.addReactionJob('addReactionInDBQueue', reactionObject);
     } else {
@@ -61,3 +42,22 @@ export class AddReactionController {
     res.status(HTTP_STATUS.OK).json({ message: 'Reaction updated successfully.' });
   }
 }
+
+// {
+//   _id: reactionObject._id,
+//   docCreator: `${req.currentUser?.id}`,
+//   read: false,
+//   creator: {
+//     authId: `${req.currentUser?.id}`,
+//     avatarColor: `${req.currentUser?.avatarColor}`,
+//     coverPicture: `${req.currentUser?.coverPicture}`,
+//     email: `${req.currentUser?.email}`,
+//     name: req.currentUser?.name,
+//     profilePicture: `${req.currentUser?.profilePicture}`,
+//     uId: `${req.currentUser?.uId}`,
+//     username: `${req.currentUser?.username}`
+//   },
+//   postId: reactionObject.postId,
+//   type: reactionObject.type,
+//   createdAt: reactionObject.createdAt
+// }

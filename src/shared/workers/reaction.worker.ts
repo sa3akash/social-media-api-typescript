@@ -9,6 +9,7 @@ import { reactionService } from '@services/db/reaction.services';
 import { notificationTemplate } from '@services/emails/template/notifications/notification.template';
 import { emailQueue } from '@services/queues/email-queue';
 import { socketIoNotificationObject } from '@sockets/notification.socket';
+import { socketIoPostObject } from '@sockets/post.sockets';
 import { DoneCallback, Job } from 'bull';
 
 class ReactionWorker {
@@ -21,6 +22,9 @@ class ReactionWorker {
       if (postUpdate.reactions) {
         postUpdate.reactions[reactionDocument.type as keyof IReactions] += 1;
       }
+
+      socketIoPostObject.emit('update-reaction', postUpdate);
+
       await postServices.updatePostById(postUpdate);
       await reactionService.addReaction(reactionDocument);
       // send notification
@@ -76,6 +80,7 @@ class ReactionWorker {
       done(err as Error);
     }
   }
+
   async updateReactionWorker(job: Job, done: DoneCallback): Promise<void> {
     try {
       // save data in db
@@ -98,6 +103,7 @@ class ReactionWorker {
         }
       }
 
+      socketIoPostObject.emit('update-reaction', postUpdate);
       await postServices.updatePostById(postUpdate);
 
       // add method to save data in db

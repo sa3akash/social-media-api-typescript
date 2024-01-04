@@ -153,7 +153,11 @@ class MessageCache extends BaseCache {
         conversationChatList.push(data);
       }
 
-      return conversationChatList;
+      return conversationChatList.sort((a, b) => {
+        const createdAtA = a.createdAt instanceof Date ? a.createdAt.getTime() : 0;
+        const createdAtB = b.createdAt instanceof Date ? b.createdAt.getTime() : 0;
+        return createdAtB - createdAtA;
+      });
     } catch (err) {
       throw new ServerError('Internal Server Error, Try again later.');
     }
@@ -200,7 +204,11 @@ class MessageCache extends BaseCache {
         allMessages.push(data);
       }
 
-      return allMessages;
+      return allMessages.sort((a, b) => {
+        const createdAtA = a.createdAt instanceof Date ? a.createdAt.getTime() : 0;
+        const createdAtB = b.createdAt instanceof Date ? b.createdAt.getTime() : 0;
+        return createdAtB - createdAtA;
+      });
     } catch (err) {
       throw new ServerError('Internal Server Error, Try again later.');
     }
