@@ -9,6 +9,7 @@ import { postServices } from '@services/db/post.services';
 import { notificationTemplate } from '@services/emails/template/notifications/notification.template';
 import { emailQueue } from '@services/queues/email-queue';
 import { socketIoNotificationObject } from '@sockets/notification.socket';
+import { socketIoPostObject } from '@sockets/post.sockets';
 import { DoneCallback, Job } from 'bull';
 
 class CommentWorker {
@@ -19,6 +20,9 @@ class CommentWorker {
       // save db
       const singlePost: IPostDocument = await postServices.getSinglePostById(commentDocument.value.postId);
       singlePost.commentsCount += 1;
+
+      socketIoPostObject.emit('update-comment', singlePost);
+
       await postServices.updatePostById(singlePost);
       const createdComment = await commentService.addCommentDB(commentDocument.value);
       // send notification
@@ -31,7 +35,8 @@ class CommentWorker {
           message: `${commentDocument.value.comment}`,
           notificationType: 'comment',
           entityId: commentDocument.value.postId,
-          createdItemId: `${createdComment._id}`
+          createdItemId: `${createdComment._id}`,
+          createdAt: `${new Date()}`
         } as INotification;
 
         // send to socketio

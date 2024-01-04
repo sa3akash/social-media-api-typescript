@@ -23,7 +23,7 @@ export interface INotification {
   notificationType: 'like' | 'love' | 'happy' | 'wow' | 'sad' | 'angry' | 'comment' | 'community' | 'follow';
   entityId: string;
   createdItemId: string;
-  createdAt: Date;
+  createdAt: Date | string;
 }
 
 interface CreatorNotification {

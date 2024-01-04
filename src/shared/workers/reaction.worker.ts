@@ -23,7 +23,25 @@ class ReactionWorker {
         postUpdate.reactions[reactionDocument.type as keyof IReactions] += 1;
       }
 
-      socketIoPostObject.emit('update-reaction', postUpdate);
+      const authData: FullUserDoc = await userCache.getUserByIdFromCache(`${reactionDocument.authId}`);
+
+      socketIoPostObject.emit('update-reaction', {
+        type: 'add',
+        updatedPost: postUpdate,
+        reactionDoc: {
+          ...reactionDocument,
+          creator: {
+            authId: authData.authId,
+            name: authData.name,
+            avatarColor: authData.avatarColor,
+            coverPicture: authData.coverPicture,
+            email: authData.email,
+            profilePicture: authData.profilePicture,
+            uId: authData.uId,
+            username: authData.username
+          }
+        }
+      });
 
       await postServices.updatePostById(postUpdate);
       await reactionService.addReaction(reactionDocument);
@@ -32,7 +50,6 @@ class ReactionWorker {
 
       const followerData: FullUserDoc = await userCache.getUserByIdFromCache(`${postUpdate.creator?.authId}`);
       if (followerData.notifications.reactions && postUpdate.creator?.authId !== reactionDocument.authId) {
-        const authData: FullUserDoc = await userCache.getUserByIdFromCache(`${reactionDocument.authId}`);
         // notifications
         const notificationData: INotification = {
           creator: {
@@ -88,7 +105,10 @@ class ReactionWorker {
 
       const postUpdate: IPostDocument = await postServices.getSinglePostById(previousReaction.postId);
 
+      let deleteReaction;
+
       if (previousReaction.type === type) {
+        deleteReaction = true;
         // remove
         if (postUpdate.reactions) {
           postUpdate.reactions[previousReaction.type as keyof IReactions] -= 1;
@@ -96,6 +116,7 @@ class ReactionWorker {
         }
       } else {
         // update
+        deleteReaction = false;
         if (postUpdate.reactions) {
           postUpdate.reactions[previousReaction.type as keyof IReactions] -= 1;
           postUpdate.reactions[type as keyof IReactions] += 1;
@@ -103,7 +124,15 @@ class ReactionWorker {
         }
       }
 
-      socketIoPostObject.emit('update-reaction', postUpdate);
+      socketIoPostObject.emit('update-reaction', {
+        type: deleteReaction ? 'remove' : 'add',
+        updatedPost: postUpdate,
+        reactionDoc: {
+          ...previousReaction,
+          type: type
+        }
+      });
+
       await postServices.updatePostById(postUpdate);
 
       // add method to save data in db

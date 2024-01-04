@@ -4,8 +4,10 @@ import mongoose from 'mongoose';
 
 class NotificationService {
   public async getNotifications(docCreator: string, skip: number, limit: number): Promise<INotificationDocument[]> {
+    const authId = new mongoose.Types.ObjectId(docCreator);
+
     const notifications: INotificationDocument[] = await NotificationModel.aggregate([
-      { $match: { docCreator: new mongoose.Types.ObjectId(docCreator) } },
+      { $match: { docCreator: authId, creator: { $ne: authId } } },
       { $sort: { createdAt: -1 } },
       { $skip: skip },
       { $limit: limit },
