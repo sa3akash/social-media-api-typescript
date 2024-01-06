@@ -49,7 +49,7 @@ class NotificationService {
   }
 
   public async numberOfNotification(docCreator: string): Promise<number> {
-    return await NotificationModel.find({ docCreator: docCreator }).countDocuments();
+    return await NotificationModel.find({ docCreator: docCreator, creator: { $ne: docCreator } }).countDocuments();
   }
 }
 

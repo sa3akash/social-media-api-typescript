@@ -2,7 +2,7 @@ import { reactionCache } from '@services/cache/reaction.cache';
 import { reactionService } from '@services/db/reaction.services';
 import { Request, Response } from 'express';
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 500;
 
 export class GetReactionController {
   async getAll(req: Request, res: Response): Promise<void> {
@@ -30,7 +30,7 @@ export class GetReactionController {
     const limit: number = PAGE_SIZE * page;
 
     const postId = req.params.postId as string;
-    const type = req.query.type as string;
+    const type = req.params.type as string;
 
     const getTypeReactionCache = await reactionCache.getReactionsByPostIdAndTypeCache(postId, type, skip, limit);
 
