@@ -60,7 +60,7 @@ export class SetupServer {
     app.use(helmet());
     app.use(
       cors({
-        origin: config.CLIENT_URL,
+        // origin: 'http://localhost:4000',
         credentials: true,
         optionsSuccessStatus: 200,
         methods: ['GET', 'POST', 'PUT', 'DELETE']
@@ -107,8 +107,10 @@ export class SetupServer {
 
   private async createSocketIO(httpServer: http.Server): Promise<Server> {
     const io: Server = new Server(httpServer, {
+      path: '/socket.io',
+      // transports: ['websocket', 'polling'],
       cors: {
-        origin: config.CLIENT_URL,
+        // origin: '/',
         methods: ['GET', 'POST', 'PUT', 'DELETE'],
         credentials: true
       }

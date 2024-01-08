@@ -25,7 +25,7 @@ class Config {
   public SENDER_EMAIL: string | undefined;
 
   constructor() {
-    this.DATABASE_URL = process.env.DATABASE_URL || 'mo';
+    this.DATABASE_URL = process.env.DATABASE_URL || 'mongodb';
     this.JWT_SEC = process.env.JWT_SEC;
     this.NODE_ENV = process.env.NODE_ENV;
     this.SECRET_KEY_1 = process.env.SECRET_KEY_1;
@@ -35,7 +35,7 @@ class Config {
     // this.REDIS_HOST = process.env.REDIS_HOST;
     // this.REDIS_PORT = process.env.REDIS_PORT;
     // this.REDIS_PASSWORD = process.env.REDIS_PASSWORD;
-    this.REDIS_URL = process.env.REDIS_URL;
+    this.REDIS_URL = process.env.REDIS_URL || 'redis';
     this.CLOUD_NAME = process.env.CLOUD_NAME;
     this.CLOUD_API_KEY = process.env.CLOUD_API_KEY;
     this.CLOUD_API_SEC = process.env.CLOUD_API_SEC;

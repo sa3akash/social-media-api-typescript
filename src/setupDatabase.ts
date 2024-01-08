@@ -8,7 +8,7 @@ const log = config.createLogger('database connection');
 export default () => {
   const connect = () => {
     mongoose
-      .connect('mongodb://localhost:27017/social')
+      .connect(config.DATABASE_URL!)
       .then(() => {
         log.info('DB SUCCESSFULLY CONNECTED');
         redisConnection.connection();
