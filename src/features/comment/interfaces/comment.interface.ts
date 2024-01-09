@@ -8,6 +8,7 @@ export interface ICommentDocument extends Document {
   commentedUser: string | CreatorNotification;
   comment: string;
   createdAt?: Date;
+  creator?: CreatorNotification;
   // userTo?: string | ObjectId;
 }
 

@@ -30,8 +30,8 @@ class CommentService {
       postId: 1,
       comment: 1,
       createdAt: 1,
-      commentedUser: {
-        id: '$authData._id',
+      creator: {
+        authId: '$authData._id',
         avatarColor: '$authData.avatarColor',
         coverPicture: '$authData.coverPicture',
         email: '$authData.email',

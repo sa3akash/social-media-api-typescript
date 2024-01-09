@@ -1,11 +1,15 @@
 import { NameDoc } from '@auth/interfaces/auth.interface';
 import { ICommentDocument } from '@comment/interfaces/comment.interface';
+import { addCommentSchema } from '@comment/schemas/comment.schema.joi';
+import { joiValidation } from '@globals/decorators/joiValidationDecorators';
 import { commentCache } from '@services/cache/comment.cache';
 import { commentQueue } from '@services/queues/comment.queue';
 import { Request, Response } from 'express';
 import { ObjectId } from 'mongodb';
 
 export class AddCommentController {
+  @joiValidation(addCommentSchema)
+  
   public async addComment(req: Request, res: Response): Promise<void> {
     const { postId, comment } = req.body;
 

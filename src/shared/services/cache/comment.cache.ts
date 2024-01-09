@@ -40,17 +40,20 @@ class CommentCache extends BaseCache {
 
         const user: FullUserDoc = await userCache.getUserByIdFromCache(`${singleComment.commentedUser}`);
 
-        singleComment.commentedUser = {
-          authId: `${user.authId}`,
-          email: `${user.email}`,
-          name: user.name,
-          username: `${user.username}`,
-          avatarColor: `${user.avatarColor}`,
-          uId: `${user.uId}`,
-          coverPicture: `${user.coverPicture}`,
-          profilePicture: `${user.profilePicture}`
+        const data = {
+          ...singleComment,
+          creator: {
+            authId: `${user.authId}`,
+            email: `${user.email}`,
+            name: user.name,
+            username: `${user.username}`,
+            avatarColor: `${user.avatarColor}`,
+            uId: `${user.uId}`,
+            coverPicture: `${user.coverPicture}`,
+            profilePicture: `${user.profilePicture}`
+          }
         };
-        comments.push(singleComment);
+        comments.push(data as ICommentDocument);
       }
 
       return comments;
