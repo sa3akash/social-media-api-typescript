@@ -17,6 +17,7 @@ export class AddCommentController {
       createdAt: new Date()
     } as ICommentDocument;
     // send all user in this comment
+
     // save comment in cache
     await commentCache.addCommentCache(commentData);
     // save comment in db
