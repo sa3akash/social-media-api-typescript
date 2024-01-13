@@ -3,7 +3,7 @@ import { commentCache } from '@services/cache/comment.cache';
 import { commentService } from '@services/db/comment.services';
 import { Request, Response } from 'express';
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 500;
 
 export class GetCommentController {
   public async getAllComments(req: Request, res: Response): Promise<void> {
@@ -27,6 +27,7 @@ export class GetCommentController {
     res.status(200).json({
       message: 'Comment added successfully.',
       comments: allComments,
+      currentPage: Number(page),
       numberOfPages: Math.ceil(numberOfCommentPages / PAGE_SIZE)
     });
   }
