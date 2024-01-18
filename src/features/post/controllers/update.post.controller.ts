@@ -34,8 +34,6 @@ export class UpdatePostController {
       files: req.files
     } as unknown as IPostDocument;
 
-    console.log(updatePostDoc);
-
     await postCache.updatePostFromCache(updatePostDoc);
     // // emit socketIO
     socketIoPostObject.emit('update-post', updatePostDoc);
