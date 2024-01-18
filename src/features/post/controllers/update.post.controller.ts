@@ -26,13 +26,16 @@ export class UpdatePostController {
 
     const updatePostDoc: IPostDocument = {
       ...getPostById,
-      post: post || getPostById.post,
-      bgColor: bgColor || getPostById.bgColor,
-      privacy: privacy || getPostById.privacy,
-      feelings: feelings || getPostById.feelings,
-      gifUrl: gifUrl || getPostById.gifUrl,
-      files: req.files || getPostById.files
+      post: post,
+      bgColor: bgColor,
+      privacy: privacy,
+      feelings: feelings,
+      gifUrl: gifUrl,
+      files: req.files
     } as unknown as IPostDocument;
+
+    console.log(updatePostDoc);
+
     await postCache.updatePostFromCache(updatePostDoc);
     // // emit socketIO
     socketIoPostObject.emit('update-post', updatePostDoc);

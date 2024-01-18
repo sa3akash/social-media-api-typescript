@@ -18,7 +18,7 @@ export class CreatePost {
     socketIoPostObject.emit('add-post', {
       ...createdPostObject,
       creator: {
-        _id: `${req.currentUser?.id}`,
+        authId: `${req.currentUser?.id}`,
         uId: `${req.currentUser?.id}`,
         coverPicture: `${req.currentUser?.coverPicture}`,
         profilePicture: `${req.currentUser?.profilePicture}`,

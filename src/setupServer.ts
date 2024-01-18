@@ -60,7 +60,7 @@ export class SetupServer {
     app.use(helmet());
     app.use(
       cors({
-        // origin: 'http://localhost:4000',
+        origin: 'http://localhost:5173',
         credentials: true,
         optionsSuccessStatus: 200,
         methods: ['GET', 'POST', 'PUT', 'DELETE']
@@ -108,13 +108,13 @@ export class SetupServer {
   private async createSocketIO(httpServer: http.Server): Promise<Server> {
     const io: Server = new Server(httpServer, {
       path: '/socket.io',
-      // transports: ['websocket', 'polling'],
       cors: {
-        // origin: '/',
+        // origin: ['*'],
         methods: ['GET', 'POST', 'PUT', 'DELETE'],
         credentials: true
       }
     });
+    
     const pubClient = createClient({ url: config.REDIS_URL! });
     const subClient = pubClient.duplicate();
     await Promise.all([pubClient.connect(), subClient.connect()]);

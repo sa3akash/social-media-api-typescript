@@ -24,6 +24,10 @@ class CommentService {
     return await CommentsModel.find({ postId }).countDocuments();
   }
 
+  public async allDeleteCommentsByPostId(postId: string): Promise<void> {
+    await CommentsModel.deleteMany({postId});
+  }
+
   private aggregateReactionProject() {
     return {
       _id: 1,

@@ -6,3 +6,14 @@ coverage
 
 .env.example
 .eslintignore
+
+.env.example
+Dockerfile
+Dockerfile.dev
+README.md
+.env.example
+.git
+.gitignore
+.dockerignore
+.prettierrc.json
+.eslintrc.json

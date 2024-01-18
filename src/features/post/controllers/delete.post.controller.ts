@@ -23,6 +23,7 @@ export class DeletePostController {
 
     // emit socket
     socketIoPostObject.emit('delete-post', postId);
+
     await postCache.deletePostFromCache(postId, `${req.currentUser?.id}`);
     // worker
     postQueue.deletePostJob('deletePostInDBQueue', { postId: postId, authId: `${req.currentUser?.id}` });
