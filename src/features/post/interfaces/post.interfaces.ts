@@ -35,6 +35,7 @@ export interface ICreator {
   username: string;
   email: string;
   avatarColor: string;
+  createdAt: string;
 }
 
 export interface IGetPostsQuery {

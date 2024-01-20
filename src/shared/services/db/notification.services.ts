@@ -32,7 +32,8 @@ class NotificationService {
             username: '$authIdFromData.username',
             avatarColor: '$authIdFromData.avatarColor',
             uId: '$authIdFromData.uId',
-            name: '$authIdFromData.name'
+            name: '$authIdFromData.name',
+            createdAt: '$authIdFromData.createdAt'
           }
         }
       }

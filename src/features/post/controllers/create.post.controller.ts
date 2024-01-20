@@ -25,7 +25,8 @@ export class CreatePost {
         name: req.currentUser?.name,
         username: `${req.currentUser?.username}`,
         email: `${req.currentUser?.email}`,
-        avatarColor: `${req.currentUser?.avatarColor}`
+        avatarColor: `${req.currentUser?.avatarColor}`,
+        createdAt: `${req.currentUser?.createdAt}`
       }
     });
     // save post in cache

@@ -30,6 +30,7 @@ export interface IFollowerData {
   email: string;
   quote: string;
   avatarColor: string;
+  createdAt: string | Date;
 }
 
 export interface IFollowerJobData {

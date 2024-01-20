@@ -72,6 +72,13 @@ export class SetupServer {
     app.use(compression());
     app.use(json({ limit: '50mb' }));
     app.use(urlencoded({ extended: true, limit: '50mb' }));
+    // Increase the maximum response size
+    // app.use(function (req, res, next) {
+    //   res.setHeader('Content-Type', 'application/json');
+    //   res.setHeader('Charset', 'utf-8');
+    //   res.setHeader('Transfer-Encoding', 'chunked');
+    //   next();
+    // });
   }
 
   private routesMiddleware(app: Application): void {
@@ -114,7 +121,7 @@ export class SetupServer {
         credentials: true
       }
     });
-    
+
     const pubClient = createClient({ url: config.REDIS_URL! });
     const subClient = pubClient.duplicate();
     await Promise.all([pubClient.connect(), subClient.connect()]);

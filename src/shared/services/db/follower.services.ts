@@ -147,7 +147,8 @@ class FollowerService {
       username: '$authData.username',
       email: '$authData.email',
       avatarColor: '$authData.avatarColor',
-      quote: '$authData.quote'
+      quote: '$authData.quote',
+      createdAt: '$authData.createdAt'
     } as unknown as IFollowerData;
   }
 }

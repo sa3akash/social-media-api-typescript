@@ -50,7 +50,9 @@ class CommentCache extends BaseCache {
             avatarColor: `${user.avatarColor}`,
             uId: `${user.uId}`,
             coverPicture: `${user.coverPicture}`,
-            profilePicture: `${user.profilePicture}`
+            profilePicture: `${user.profilePicture}`,
+            createdAt: `${user.createdAt}`
+
           }
         };
         comments.push(data as ICommentDocument);

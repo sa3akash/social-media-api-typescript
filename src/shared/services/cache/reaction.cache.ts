@@ -144,7 +144,9 @@ class ReactionCache extends BaseCache {
           name: user.name,
           profilePicture: user.profilePicture,
           uId: user.uId,
-          username: user.username
+          username: user.username,
+          createdAt: `${user.createdAt}`
+
         }),
           reactionList.push(reactionObject);
       }
@@ -198,7 +200,9 @@ class ReactionCache extends BaseCache {
           name: user.name,
           profilePicture: user.profilePicture,
           uId: user.uId,
-          username: user.username
+          username: user.username,
+          createdAt: `${user.createdAt}`
+
         };
       }
 
@@ -240,7 +244,8 @@ class ReactionCache extends BaseCache {
           name: user.name,
           profilePicture: user.profilePicture,
           uId: user.uId,
-          username: user.username
+          username: user.username,
+          createdAt: `${user.createdAt}`
         }),
           reactionList.push(reactionObject);
       }

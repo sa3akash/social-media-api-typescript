@@ -35,7 +35,8 @@ export class AddCommentController {
         username: `${req.currentUser?.username}`,
         avatarColor: `${req.currentUser?.avatarColor}`,
         uId: `${req.currentUser?.uId}`,
-        name: req.currentUser?.name as NameDoc
+        name: req.currentUser?.name as NameDoc,
+        createdAt: `${req.currentUser?.createdAt}`
       }
     });
 

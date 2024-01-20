@@ -20,6 +20,7 @@ export interface AuthPayload {
   coverPicture: string;
   profilePicture: string;
   iat?: number;
+  createdAt:string
 }
 
 export interface IAuthDocument extends Document {

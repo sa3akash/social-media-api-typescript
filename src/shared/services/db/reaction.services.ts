@@ -106,7 +106,8 @@ class ReactionService {
         name: '$authData.name',
         profilePicture: '$authData.profilePicture',
         uId: '$authData.uId',
-        username: '$authData.username'
+        username: '$authData.username',
+        createdAt: '$authData.createdAt',
       }
     };
   }

@@ -45,7 +45,8 @@ class PostServices {
         name: '$authData.name',
         username: '$authData.username',
         email: '$authData.email',
-        avatarColor: '$authData.avatarColor'
+        avatarColor: '$authData.avatarColor',
+        createdAt: '$authData.createdAt',
       },
       post: 1,
       bgColor: 1,

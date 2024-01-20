@@ -187,7 +187,7 @@ class MessageCache extends BaseCache {
             name: receiverUser.name,
             profilePicture: receiverUser.profilePicture,
             uId: receiverUser.uId,
-            username: receiverUser.username
+            username: receiverUser.username,
           },
           senderObject: {
             authId: senderUser.authId as string,

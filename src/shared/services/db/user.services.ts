@@ -37,7 +37,8 @@ class UserServices {
           username: 1,
           email: 1,
           avatarColor: 1,
-          quote: 1
+          quote: 1,
+          createdAt: 1,
         }
       }
     ]);
@@ -58,7 +59,8 @@ class UserServices {
           username: 1,
           email: 1,
           avatarColor: 1,
-          quote: 1
+          quote: 1,
+          createdAt: 1,
         }
       }
     ]);
@@ -103,7 +105,8 @@ class UserServices {
           username: 1,
           email: 1,
           avatarColor: 1,
-          quote: 1
+          quote: 1,
+          createdAt: 1,
         }
       }
     ]);

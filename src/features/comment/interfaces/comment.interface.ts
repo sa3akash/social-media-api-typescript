@@ -25,6 +25,7 @@ interface CreatorNotification {
   avatarColor: string;
   uId: string;
   name: NameDoc;
+  createdAt: string
 }
 
 export interface ICommentNameList {

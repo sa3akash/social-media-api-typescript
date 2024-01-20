@@ -168,7 +168,8 @@ class UserCache extends BaseCache {
             email: user.email,
             name: user.name,
             profilePicture: user.profilePicture,
-            quote: user.quote
+            quote: user.quote,
+            createdAt: `${user.createdAt}`
           };
 
           users.push(usersData);
@@ -224,7 +225,8 @@ class UserCache extends BaseCache {
             email: user.email,
             name: user.name,
             profilePicture: user.profilePicture,
-            quote: user.quote
+            quote: user.quote,
+            createdAt: `${user.createdAt}`
           };
           randomUserList.push(randomUserData);
         }
