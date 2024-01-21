@@ -1,6 +1,7 @@
 import { FullUserDoc, IAuthDocument, IUpdateUserInfoDoc } from '@auth/interfaces/auth.interface';
 import { AuthModel } from '@auth/models/auth.db.model';
 import { IFollowerData } from '@follower/interfaces/follower.interface';
+import { FollowerModel } from '@follower/models/follower.model';
 import { followerCache } from '@services/cache/follower.cache';
 import { ISearchUser, IUserDocument } from '@user/interfaces/user.interface';
 import { UserModel } from '@user/models/user.model';
@@ -38,7 +39,7 @@ class UserServices {
           email: 1,
           avatarColor: 1,
           quote: 1,
-          createdAt: 1,
+          createdAt: 1
         }
       }
     ]);
@@ -60,7 +61,7 @@ class UserServices {
           email: 1,
           avatarColor: 1,
           quote: 1,
-          createdAt: 1,
+          createdAt: 1
         }
       }
     ]);
@@ -106,7 +107,7 @@ class UserServices {
           email: 1,
           avatarColor: 1,
           quote: 1,
-          createdAt: 1,
+          createdAt: 1
         }
       }
     ]);
@@ -131,6 +132,34 @@ class UserServices {
     if (data.quote) {
       await AuthModel.findByIdAndUpdate(authId, { $set: { quote: data.quote } });
     }
+  }
+  /**
+   *
+   * get login data
+   *
+   */
+  public async getLoginData(authId: string) {
+    const followingArray = await FollowerModel.aggregate([
+      { $match: { followingId: new mongoose.Types.ObjectId(authId) } },
+      { $project: { followerId: 1, _id: 0 } }
+    ]);
+
+    const followersArray = await FollowerModel.aggregate([
+      { $match: { followerId: new mongoose.Types.ObjectId(authId) } },
+      { $project: { followingId: 1, _id: 0 } }
+    ]);
+
+    const users = await this.getUserById(authId);
+
+    // Convert the MongoDB result to a standard JavaScript array and then use Array.map()
+    const following = followingArray.map((item) => item.followerId.toString());
+    const followers = followersArray.map((item) => item.followerId.toString());
+    const blocked = users.blocked.map((item) => item.toString());
+    return {
+      following,
+      followers,
+      blocked
+    };
   }
 
   private aggregateProjectUser(): FullUserDoc {

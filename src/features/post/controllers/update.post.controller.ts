@@ -31,7 +31,8 @@ export class UpdatePostController {
       privacy: privacy,
       feelings: feelings,
       gifUrl: gifUrl,
-      files: req.files
+      files: req.files,
+      authId: `${req.currentUser?.id}`
     } as unknown as IPostDocument;
 
     await postCache.updatePostFromCache(updatePostDoc);

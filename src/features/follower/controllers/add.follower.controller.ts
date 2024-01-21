@@ -1,7 +1,6 @@
 import { FullUserDoc } from '@auth/interfaces/auth.interface';
 import { IFollowerData } from '@follower/interfaces/follower.interface';
 import { followerCache } from '@services/cache/follower.cache';
-import { userCache } from '@services/cache/user.cache';
 import { Request, Response } from 'express';
 import HTTP_STATUS from 'http-status-codes';
 import { socketIoFollowObject } from '@sockets/follower.socket';
@@ -25,7 +24,7 @@ export class AddFollowerController {
     if (checkFollowing) {
       await followerCache.removeFollowerCache(`${req.currentUser?.id}`, `${followerId}`);
       // send user details to frontend for updates with socketIo
-      socketIoFollowObject.emit('remove-follow', `${followerId}`);
+      socketIoFollowObject.emit('remove-follow', {id:`${followerId}`,to: `${req.currentUser?.id}`});
       // remove follower from db with queue
       // send data in queue
       followQueue.removeFollowJob('removeFollowSaveInDB', {
@@ -36,11 +35,11 @@ export class AddFollowerController {
       //  update follower count from cache
       await followerCache.saveFollowerCache(`${req.currentUser?.id}`, `${followerId}`);
       // add follower and following to cache
-      const cachedFollowerUser: FullUserDoc = await userCache.getUserByIdFromCache(followerId);
-      // prepire userObject
-      const followerData: IFollowerData = AddFollowerController.prototype.userData(cachedFollowerUser);
+      // const cachedFollowerUser: FullUserDoc = await userCache.getUserByIdFromCache(followerId);
+      // // prepire userObject
+      // const followerData: IFollowerData = AddFollowerController.prototype.userData(cachedFollowerUser);
       // send data to socketId
-      socketIoFollowObject.emit('add-follow', followerData);
+      socketIoFollowObject.emit('add-follow', {id:`${followerId}`,to: `${req.currentUser?.id}`});
       // send data in queue
       followQueue.addFollowJob('addFollowSaveInDB', {
         keyOne: `${req.currentUser?.id}`,

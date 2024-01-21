@@ -1,5 +1,6 @@
 import { CurrentUser } from '@auth/controllers/currentUser.controller';
 import { ImageAuthController } from '@auth/controllers/image.controller';
+import { LoginUserData } from '@auth/controllers/loginUserData';
 import { PasswordController } from '@auth/controllers/password.controller';
 import { SigninController } from '@auth/controllers/signin.controller';
 import { SignOut } from '@auth/controllers/signout.controller';
@@ -33,6 +34,7 @@ class AuthRoutes {
     );
     this.router.put('/update-cover-picture', authMiddleware.verifyUser, upload.single('file'), ImageAuthController.prototype.coverImage);
     this.router.put('/update-username', authMiddleware.verifyUser, ImageAuthController.prototype.updateUsername);
+    this.router.get('/login-user-data', authMiddleware.verifyUser, LoginUserData.prototype.getData);
   }
 }
 

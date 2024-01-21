@@ -239,6 +239,40 @@ class UserCache extends BaseCache {
       throw new ServerError('Server error. Try again.');
     }
   }
+
+  /**
+   *
+   * get multiple users
+   *
+   */
+
+  public async getLoginData(authId: string): Promise<{
+    following: string[];
+    followers: string[];
+    blocked: string[];
+  }> {
+    try {
+      if (!this.client.isOpen) {
+        await this.client.connect();
+      }
+      // get all followers ids
+      const following: string[] = await this.client.LRANGE(`following:${authId}`, 0, -1);
+      const followers: string[] = await this.client.LRANGE(`followers:${authId}`, 0, -1);
+
+      // get all soted set of user
+      const blockedUsers: IUserDocument = await this.getUserByIdFromCache(authId);
+
+      const blocked: string[] = blockedUsers.blocked as unknown as string[];
+
+      return {
+        following,
+        followers,
+        blocked
+      };
+    } catch (error) {
+      throw new ServerError('Server error. Try again.');
+    }
+  }
 }
 
 export const userCache: UserCache = new UserCache();
