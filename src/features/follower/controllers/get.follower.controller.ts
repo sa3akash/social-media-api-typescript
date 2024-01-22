@@ -20,7 +20,7 @@ export class GetFollowerController {
     // response
     res.status(HTTP_STATUS.OK).json({
       message: 'Followers users get successfully.',
-      posts: followersCache,
+      users: followersCache,
       currentPage: Number(page),
       numberOfPages: Math.ceil(followersCountCache / PAGE_SIZE)
     });
@@ -44,7 +44,7 @@ export class GetFollowerController {
     // response
     res.status(HTTP_STATUS.OK).json({
       message: 'Followings users get successfully.',
-      posts: followings,
+      users: followings,
       currentPage: Number(page),
       numberOfPages: Math.ceil(followingsCount / PAGE_SIZE)
     });
