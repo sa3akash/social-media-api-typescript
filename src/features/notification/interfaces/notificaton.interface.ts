@@ -24,6 +24,7 @@ export interface INotification {
   entityId: string;
   createdItemId: string;
   createdAt: Date | string;
+  _id?: string;
 }
 
 interface CreatorNotification {

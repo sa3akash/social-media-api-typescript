@@ -11,6 +11,7 @@ import { emailQueue } from '@services/queues/email-queue';
 import { socketIoNotificationObject } from '@sockets/notification.socket';
 import { socketIoPostObject } from '@sockets/post.sockets';
 import { DoneCallback, Job } from 'bull';
+import { ObjectId } from 'mongodb';
 
 class ReactionWorker {
   async addReactionWorker(job: Job, done: DoneCallback): Promise<void> {
@@ -67,7 +68,8 @@ class ReactionWorker {
           notificationType: reactionDocument.type,
           entityId: postUpdate._id,
           createdItemId: `${authData._id}`,
-          createdAt: `${new Date()}`
+          createdAt: `${new Date()}`,
+          _id: new ObjectId()
         } as unknown as INotification;
 
         // send to socketio

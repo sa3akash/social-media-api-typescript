@@ -22,7 +22,8 @@ notificationSchema.methods.insertNotification = async function (body: INotificat
       communityName: body.communityName,
       notificationType: body.notificationType,
       entityId: body.entityId,
-      createdItemId: body.createdItemId
+      createdItemId: body.createdItemId,
+      _id: body._id
     });
 
     // const notifications: INotificationDocument[] = await notificationService.getNotifications(`${body.docCreator}`);
