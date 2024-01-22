@@ -56,7 +56,8 @@ class PostServices {
       gifUrl: 1,
       privacy: 1,
       createdAt: 1,
-      reactions: 1
+      reactions: 1,
+      authId: '$authData._id',
     } as unknown as IPostDocument;
   }
 
