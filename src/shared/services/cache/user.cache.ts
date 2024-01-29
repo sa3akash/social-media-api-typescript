@@ -1,6 +1,6 @@
 import { FullUserDoc, IAuthDocument, IUpdateUserInfoDoc } from '@auth/interfaces/auth.interface';
 import { IFollowerData } from '@follower/interfaces/follower.interface';
-import { ServerError } from '@globals/helpers/errorHandler';
+import { ServerError, UnAuthorized } from '@globals/helpers/errorHandler';
 import { Utils } from '@globals/helpers/utils';
 import { BaseCache } from '@services/cache/base.cache';
 import { IUserDocument } from '@user/interfaces/user.interface';
@@ -261,6 +261,10 @@ class UserCache extends BaseCache {
 
       // get all soted set of user
       const blockedUsers: IUserDocument = await this.getUserByIdFromCache(authId);
+
+      if (!blockedUsers._id) {
+        throw new UnAuthorized('Unathorized user.');
+      }
 
       const blocked: string[] = blockedUsers.blocked as unknown as string[];
 

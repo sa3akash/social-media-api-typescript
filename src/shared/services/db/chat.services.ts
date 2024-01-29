@@ -88,6 +88,9 @@ class ChatServices {
     ]);
     return messages;
   }
+  public async getNumberOfMessageDB(conversationId: string): Promise<number> {
+    return MessageModel.find({ conversationId: conversationId }).countDocuments();
+  }
 
   public async markDeleteMessageDB(messageId: string, type: 'deleteForMe' | 'deleteForEveryone'): Promise<void> {
     if (type === 'deleteForMe') {

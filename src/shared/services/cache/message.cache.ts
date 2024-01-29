@@ -381,6 +381,20 @@ class MessageCache extends BaseCache {
       throw new ServerError('Internal Server Error, Try again later.');
     }
   }
+
+
+  public async getNumberOfMessages(conversationId:string): Promise<number> {
+    try {
+      if (!this.client.isOpen) {
+        await this.client.connect();
+      }
+      const count: number = await this.client.ZCARD(`messages:${conversationId}`);
+      return count;
+    } catch (err) {
+      throw new ServerError('Internal Server Error, Try again later.');
+    }
+  }
+
 }
 
 export const messageCache: MessageCache = new MessageCache();

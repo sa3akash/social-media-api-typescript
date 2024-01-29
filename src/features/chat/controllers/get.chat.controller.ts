@@ -25,6 +25,14 @@ export class getConversationController {
     const messagesCache = await messageCache.getChatMessageCache(conversationId, newSkip, limit);
     const messages = messagesCache.length ? messagesCache : await chatService.getMessagesDB(conversationId, skip, limit);
 
-    res.status(HTTP_STATUS.OK).json({ message: 'Get all messages.', messages });
+    const numberOfMessageCache: number = await messageCache.getNumberOfMessages(conversationId);
+    const getNumberOfMessage = numberOfMessageCache ? numberOfMessageCache : await chatService.getNumberOfMessageDB(conversationId);
+    // response
+    res.status(HTTP_STATUS.OK).json({
+      message: 'Get all messages successfully.',
+      messages: messages,
+      currentPage: Number(page),
+      numberOfPages: Math.ceil(getNumberOfMessage / PAGE_SIZE)
+    });
   }
 }

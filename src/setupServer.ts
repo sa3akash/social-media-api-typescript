@@ -22,6 +22,7 @@ import { SocketIoPostHandler } from '@sockets/post.sockets';
 import { SocketIoFollowHandler } from '@sockets/follower.socket';
 import { SocketIoNotificationHandler } from '@sockets/notification.socket';
 import { SocketIoChatHandler } from '@sockets/chat.socket';
+import { rateLimit } from 'express-rate-limit';
 
 const log = config.createLogger('setup server');
 
@@ -64,6 +65,15 @@ export class SetupServer {
         credentials: true,
         optionsSuccessStatus: 200,
         methods: ['GET', 'POST', 'PUT', 'DELETE']
+      })
+    );
+
+    app.use(
+      rateLimit({
+        windowMs: 15 * 60 * 1000,
+        limit: 500,
+        standardHeaders: 'draft-7',
+        legacyHeaders: false
       })
     );
   }
