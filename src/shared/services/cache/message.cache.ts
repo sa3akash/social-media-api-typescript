@@ -153,11 +153,13 @@ class MessageCache extends BaseCache {
         conversationChatList.push(data);
       }
 
-      return conversationChatList.sort((a, b) => {
-        const createdAtA = a.createdAt instanceof Date ? a.createdAt.getTime() : 0;
-        const createdAtB = b.createdAt instanceof Date ? b.createdAt.getTime() : 0;
-        return createdAtB - createdAtA;
-      });
+      // return conversationChatList.sort((a, b) => {
+      //   const createdAtA = a.createdAt instanceof Date ? a.createdAt.getTime() : 0;
+      //   const createdAtB = b.createdAt instanceof Date ? b.createdAt.getTime() : 0;
+      //   return createdAtB - createdAtA;
+      // });
+
+      return conversationChatList.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     } catch (err) {
       throw new ServerError('Internal Server Error, Try again later.');
     }
@@ -187,7 +189,7 @@ class MessageCache extends BaseCache {
             name: receiverUser.name,
             profilePicture: receiverUser.profilePicture,
             uId: receiverUser.uId,
-            username: receiverUser.username,
+            username: receiverUser.username
           },
           senderObject: {
             authId: senderUser.authId as string,
@@ -204,11 +206,7 @@ class MessageCache extends BaseCache {
         allMessages.push(data);
       }
 
-      return allMessages.sort((a, b) => {
-        const createdAtA = a.createdAt instanceof Date ? a.createdAt.getTime() : 0;
-        const createdAtB = b.createdAt instanceof Date ? b.createdAt.getTime() : 0;
-        return createdAtB - createdAtA;
-      });
+      return allMessages.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
     } catch (err) {
       throw new ServerError('Internal Server Error, Try again later.');
     }
@@ -382,19 +380,17 @@ class MessageCache extends BaseCache {
     }
   }
 
-
-  public async getNumberOfMessages(conversationId:string): Promise<number> {
+  public async getNumberOfMessages(conversationId: string): Promise<number> {
     try {
       if (!this.client.isOpen) {
         await this.client.connect();
       }
-      const count: number = await this.client.ZCARD(`messages:${conversationId}`);
+      const count: number = await this.client.LLEN(`messages:${conversationId}`);
       return count;
     } catch (err) {
       throw new ServerError('Internal Server Error, Try again later.');
     }
   }
-
 }
 
 export const messageCache: MessageCache = new MessageCache();

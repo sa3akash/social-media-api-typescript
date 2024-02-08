@@ -67,7 +67,7 @@ class ChatServices {
           }
         }
       },
-      { $sort: { createdAt: 1 } }
+      { $sort: { createdAt: -1 } }
     ]);
     return messages;
   }
@@ -77,7 +77,7 @@ class ChatServices {
 
     const messages: IMessageData[] = await MessageModel.aggregate([
       { $match: { conversationId: conversationObjectId } },
-      { $sort: { createdAt: -1 } },
+      { $sort: { createdAt: 1 } },
       { $skip: skip },
       { $limit: limit },
       { $lookup: { from: 'Auth', localField: 'senderId', foreignField: '_id', as: 'senderUser' } },

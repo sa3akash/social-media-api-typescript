@@ -151,7 +151,6 @@ class PostCache extends BaseCache {
           uId: user.uId,
           username: user.username,
           createdAt: `${user.createdAt}`
-
         },
         post: postReply.post,
         bgColor: postReply.bgColor,
@@ -259,7 +258,6 @@ class PostCache extends BaseCache {
             uId: user.uId,
             username: user.username,
             createdAt: `${user.createdAt}`
-
           }),
             (post.commentsCount = Number(`${post.commentsCount}`));
           post.reactions = Utils.parseJson(`${post.reactions}`);
@@ -309,7 +307,6 @@ class PostCache extends BaseCache {
           uId: user.uId,
           username: user.username,
           createdAt: `${user.createdAt}`
-
         }),
           (post.commentsCount = Number(`${post.commentsCount}`));
         post.files = Utils.parseJson(`${post.files}`);
