@@ -23,6 +23,7 @@ import { SocketIoFollowHandler } from '@sockets/follower.socket';
 import { SocketIoNotificationHandler } from '@sockets/notification.socket';
 import { SocketIoChatHandler } from '@sockets/chat.socket';
 import { rateLimit } from 'express-rate-limit';
+import { SocketIoUserHandler } from '@sockets/user.socket';
 
 const log = config.createLogger('setup server');
 
@@ -147,6 +148,7 @@ export class SetupServer {
 
   private socketIoConnection(io: Server): void {
     const postSocketHandler: SocketIoPostHandler = new SocketIoPostHandler(io);
+    const socketIoUserHandler: SocketIoUserHandler = new SocketIoUserHandler(io);
     const socketIoFollowHandler: SocketIoFollowHandler = new SocketIoFollowHandler(io);
     const socketIoChatHandler: SocketIoChatHandler = new SocketIoChatHandler(io);
     const socketIoNotificationHandler: SocketIoNotificationHandler = new SocketIoNotificationHandler();
@@ -155,5 +157,6 @@ export class SetupServer {
     socketIoFollowHandler.listen();
     socketIoNotificationHandler.listen(io);
     socketIoChatHandler.listen();
+    socketIoUserHandler.listen();
   }
 }

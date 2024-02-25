@@ -79,7 +79,7 @@ export class AddChatController {
    *
    */
 
-  public async readyMessageData(req: Request): Promise<IMessageData> {
+  private async readyMessageData(req: Request): Promise<IMessageData> {
     const { conversationId, receiverId, body, gifUrl, isRead } = req.body;
     // create a objectId
 

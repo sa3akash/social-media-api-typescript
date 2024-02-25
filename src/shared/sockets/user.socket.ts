@@ -23,11 +23,15 @@ export class SocketIoUserHandler {
         this.io.emit('user-online', users);
       });
 
+      // const {authId} = socket.handshake.query;
+      // console.log(authId);
+
       socket.on('disconnect', () => {
         this.removeClientFromMap(socket.id);
       });
     });
   }
+
   /**
    *
    * add client to map function
