@@ -1,7 +1,7 @@
 import { IMessageData } from '@chat/interfaces/chat.interfaces';
 import { messageCache } from '@services/cache/message.cache';
 import { chatQueue } from '@services/queues/chat.queue';
-import { socketIoChatObject } from '@sockets/chat.socket';
+import { connectedUsersMap, socketIoUserObject } from '@sockets/user.socket';
 import { Request, Response } from 'express';
 import HTTP_STATUS from 'http-status-codes';
 
@@ -11,8 +11,8 @@ export class DeleteChatController {
 
     const updateMessage: IMessageData = await messageCache.deleteMessageCache(conversationId, messageId, type);
 
-    socketIoChatObject.emit('mark-delete-message', updateMessage);
-    socketIoChatObject.emit('chat-list', updateMessage);
+    // socketIoChatObject.emit('mark-delete-message', updateMessage);
+    // socketIoChatObject.emit('chat-list', updateMessage);
 
     chatQueue.markDeleteMessageJob('markDeleteInDB', {
       messageId,
@@ -27,8 +27,18 @@ export class DeleteChatController {
 
     const updateMessage: IMessageData = await messageCache.updateIsReadMessageCache(conversationId, `${req.currentUser?.id}`);
 
-    socketIoChatObject.emit('mark-read-message', updateMessage);
-    socketIoChatObject.emit('chat-list', updateMessage);
+    // socketIoChatObject.emit('mark-read-message', updateMessage);
+
+    const receiverId = updateMessage.senderId === `${req.currentUser?.id}` ? updateMessage.receiverId : updateMessage.senderId;
+    const senderId = updateMessage.senderId === `${req.currentUser?.id}` ? updateMessage.senderId : updateMessage.receiverId;
+
+    const reveiverSocket = connectedUsersMap.get(receiverId) as string[];
+    const senderSocket = connectedUsersMap.get(senderId) as string[];
+
+    socketIoUserObject.to(reveiverSocket).emit('chat-list-mark', updateMessage);
+    socketIoUserObject.to(senderSocket).emit('chat-list-mark', updateMessage);
+    socketIoUserObject.to(reveiverSocket).emit('message-mark', updateMessage);
+    socketIoUserObject.to(senderSocket).emit('message-mark', updateMessage);
 
     chatQueue.markReadMessageJob('markReadInDB', {
       conversationId,

@@ -22,8 +22,7 @@ import mongoose, { Document } from 'mongoose';
 export interface IMessageData extends Document {
   _id: string;
   conversationId: string;
-  senderObject?: AuthUserDoc;
-  receiverObject?: AuthUserDoc;
+  user?: AuthUserDoc;
   receiverId: string;
   senderId: string;
   body: string;

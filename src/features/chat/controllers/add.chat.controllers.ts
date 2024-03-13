@@ -1,4 +1,4 @@
-import { FullUserDoc, NameDoc } from '@auth/interfaces/auth.interface';
+import { FullUserDoc } from '@auth/interfaces/auth.interface';
 import { IChatUsers, IMessageData } from '@chat/interfaces/chat.interfaces';
 import { addChatSchema } from '@chat/schemas/chat.shema.joi';
 import { joiValidation } from '@globals/decorators/joiValidationDecorators';
@@ -7,7 +7,7 @@ import { messageCache } from '@services/cache/message.cache';
 import { userCache } from '@services/cache/user.cache';
 import { authService } from '@services/db/auth.services';
 import { chatQueue } from '@services/queues/chat.queue';
-import { socketIoChatObject } from '@sockets/chat.socket';
+import { connectedUsersMap, socketIoUserObject } from '@sockets/user.socket';
 import { Request, Response } from 'express';
 import HTTP_STATUS from 'http-status-codes';
 import { cloneDeep } from 'lodash';
@@ -22,17 +22,15 @@ export class AddChatController {
       throw new BadRequestError('Your can not chat yourself.');
     }
     const messageData: IMessageData = await AddChatController.prototype.readyMessageData(req);
-    AddChatController.prototype.emitSocketIOEvent(messageData);
-    // add sender to chat list
-    // add receiver to chat list
-    // add message to cache
+    AddChatController.prototype.emitSocketIOEvent(req, messageData);
+
     // save message to db
     await messageCache.addChatListToCache(messageData.senderId, messageData.receiverId, messageData.conversationId);
     await messageCache.addChatListToCache(messageData.receiverId, messageData.senderId, messageData.conversationId);
     await messageCache.addChatMessageToCache(cloneDeep(messageData));
     chatQueue.addMessageJob('addMessageDataInDB', messageData);
     // send response for client
-    res.status(HTTP_STATUS.OK).json({ message: 'Message added successfully', conversationId: messageData.conversationId });
+    res.status(HTTP_STATUS.OK).json({ conversationId: messageData.conversationId, message: messageData });
   }
 
   /**
@@ -48,7 +46,7 @@ export class AddChatController {
     };
     const chatUsers = await messageCache.addUserChatToCache(data);
     // socketIo
-    socketIoChatObject.emit('add-chat-user', chatUsers);
+    // socketIoChatObject.emit('add-chat-user', chatUsers);
     res.status(HTTP_STATUS.OK).json({ message: 'Chat users added.', chatUsers });
   }
 
@@ -59,7 +57,7 @@ export class AddChatController {
     };
     const chatUsers = await messageCache.removeUserChatToCache(data);
     // socketIo
-    socketIoChatObject.emit('remove-chat-user', chatUsers);
+    // socketIoChatObject.emit('remove-chat-user', chatUsers);
     res.status(HTTP_STATUS.OK).json({ message: 'Chat users removed.', chatUsers });
   }
 
@@ -68,9 +66,29 @@ export class AddChatController {
    * socketObject
    *
    */
-  private emitSocketIOEvent(data: IMessageData): void {
-    socketIoChatObject.emit('message-received', data);
-    socketIoChatObject.emit('chat-list', data);
+  private emitSocketIOEvent(req: Request, data: IMessageData): void {
+    const readyData = {
+      ...data,
+      user: {
+        authId: req.currentUser?.id as string,
+        avatarColor: req.currentUser?.avatarColor,
+        coverPicture: req.currentUser?.coverPicture,
+        email: req.currentUser?.email,
+        name: req.currentUser?.name,
+        profilePicture: req.currentUser?.profilePicture,
+        uId: req.currentUser?.uId,
+        username: req.currentUser?.username
+      }
+    };
+
+    const reveiverSocket = connectedUsersMap.get(data.receiverId) as string[];
+    const senderSocket = connectedUsersMap.get(data.senderId) as string[];
+    socketIoUserObject.to(reveiverSocket).emit('message-received', readyData);
+    socketIoUserObject.to(reveiverSocket).emit('chat-list', readyData);
+
+    socketIoUserObject.to(senderSocket).emit('chat-list', data);
+    socketIoUserObject.to(senderSocket).emit('message-received', data);
+
   }
 
   /**
@@ -85,7 +103,7 @@ export class AddChatController {
 
     const convId: string = conversationId
       ? conversationId
-      : await messageCache.checkConversationIdCache(`${req.currentUser?.id}`, receiverId);
+      : await messageCache.checkConversationIdCache(`${req.currentUser?.id}`, `${receiverId}`);
 
     const conversationObjectId = convId ? convId : new ObjectId();
     const messageObjectId = new ObjectId();
@@ -107,17 +125,7 @@ export class AddChatController {
       isRead: isRead === 'true' ? true : false,
       reaction: [],
       files: req.files ? req.files : [],
-      senderObject: {
-        authId: `${req.currentUser?.id}`,
-        avatarColor: `${req.currentUser?.avatarColor}`,
-        coverPicture: `${req.currentUser?.coverPicture}`,
-        email: `${req.currentUser?.email}`,
-        name: req.currentUser?.name as NameDoc,
-        profilePicture: `${req.currentUser?.profilePicture}`,
-        uId: `${req.currentUser?.uId}`,
-        username: `${req.currentUser?.username}`
-      },
-      receiverObject: {
+      user: {
         authId: receiverUserData.authId as string,
         avatarColor: receiverUserData.avatarColor,
         coverPicture: receiverUserData.coverPicture,

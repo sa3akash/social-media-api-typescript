@@ -1,11 +1,8 @@
-import { ILogin } from '@user/interfaces/user.interface';
 import { Server, Socket } from 'socket.io';
 
 export let socketIoUserObject: Server;
 
-export const connectedUsersMap: Map<string, string> = new Map();
-
-let users: string[] = [];
+export const connectedUsersMap: Map<string, string[]> = new Map();
 
 export class SocketIoUserHandler {
   private io: Server;
@@ -16,18 +13,23 @@ export class SocketIoUserHandler {
   }
 
   public listen(): void {
+    this.io.use((socket, next) => {
+      const authId = socket.handshake.query.authId as string;
+      if (authId !== 'undefined') {
+        this.addClientToMap(authId, socket.id);
+        next();
+      }
+    });
+
     this.io.on('connection', (socket: Socket) => {
-      socket.on('setup', (data: ILogin) => {
-        this.addClientToMap(data.authId, socket.id);
-        this.addUser(data.authId);
-        this.io.emit('user-online', users);
+      this.io.emit('user-online', [...connectedUsersMap.keys()]);
+
+      socket.on('mark-read',data=>{
+        console.log(data);
       });
 
-      // const {authId} = socket.handshake.query;
-      // console.log(authId);
-
       socket.on('disconnect', () => {
-        this.removeClientFromMap(socket.id);
+        this.removeClientFromMap(socket);
       });
     });
   }
@@ -39,41 +41,30 @@ export class SocketIoUserHandler {
    */
   private addClientToMap(authId: string, socketId: string): void {
     if (!connectedUsersMap.has(authId)) {
-      connectedUsersMap.set(authId, socketId);
+      connectedUsersMap.set(authId, [socketId]);
+    } else {
+      const value = connectedUsersMap.get(authId) as string[];
+      connectedUsersMap.set(authId, [...value, socketId]);
     }
   }
-  /**
-   *
-   * add client to map function
-   *
-   */
-  private addUser(authId: string): void {
-    users.push(authId);
-    users = [...new Set(users)];
-  }
 
-  /**
-   *
-   * remove user to users function
-   *
-   */
-  private removeUser(authId: string): void {
-    users = users.filter((id: string) => id !== authId);
-  }
   /**
    *
    * remove client to map function
    *
    */
-  private removeClientFromMap(socketId: string): void {
-    if (Array.from(connectedUsersMap.values()).includes(socketId)) {
-      const disconnectedUser: [string, string] = [...connectedUsersMap].find((user: [string, string]) => {
-        return user[1] === socketId;
-      }) as [string, string];
+  private removeClientFromMap(socket: Socket): void {
+    const authId = socket.handshake.query.authId as string;
+    const value = connectedUsersMap.get(authId) as string[];
 
-      connectedUsersMap.delete(disconnectedUser[0]);
-      this.removeUser(disconnectedUser[0]);
-      this.io.emit('user-online', users);
+    if (value?.length > 1) {
+      connectedUsersMap.set(
+        authId,
+        value.filter((id) => id !== socket.id)
+      );
+    } else {
+      connectedUsersMap.delete(authId);
     }
+    this.io.emit('user-online', [...connectedUsersMap.keys()]);
   }
 }

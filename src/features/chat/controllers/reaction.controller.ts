@@ -1,7 +1,7 @@
 import { IMessageData } from '@chat/interfaces/chat.interfaces';
 import { messageCache } from '@services/cache/message.cache';
 import { chatQueue } from '@services/queues/chat.queue';
-import { socketIoChatObject } from '@sockets/chat.socket';
+// import { socketIoChatObject } from '@sockets/chat.socket';
 import { Request, Response } from 'express';
 import HTTP_STATUS from 'http-status-codes';
 
@@ -16,8 +16,8 @@ export class ReactionChatController {
       type
     );
 
-    socketIoChatObject.emit('reaction-message', updateMessage);
-    socketIoChatObject.emit('chat-list', updateMessage);
+    // socketIoChatObject.emit('reaction-message', updateMessage);
+    // socketIoChatObject.emit('chat-list', updateMessage);
 
     chatQueue.updateReactionMessageJob('reactionMessageInDB', {
       messageId,

@@ -16,8 +16,7 @@ class ChatServices {
       });
     }
     // save message data in db
-    delete data['receiverObject'];
-    delete data['senderObject'];
+    delete data['user'];
     await MessageModel.create(data);
   }
 
@@ -27,8 +26,6 @@ class ChatServices {
     const messages: IMessageData[] = await MessageModel.aggregate([
       { $match: { $or: [{ senderId: userObjectId }, { receiverId: userObjectId }] } },
       { $group: { _id: '$conversationId', result: { $last: '$$ROOT' } } },
-      { $lookup: { from: 'Auth', localField: 'result.senderId', foreignField: '_id', as: 'senderUser' } },
-      { $unwind: '$senderUser' },
       { $lookup: { from: 'Auth', localField: 'result.receiverId', foreignField: '_id', as: 'receiverUser' } },
       { $unwind: '$receiverUser' },
       {
@@ -45,17 +42,7 @@ class ChatServices {
           isRead: '$result.isRead',
           reaction: '$result.reaction',
           files: '$result.files',
-          senderObject: {
-            authId: '$senderUser._id',
-            avatarColor: '$senderUser.avatarColor',
-            coverPicture: '$senderUser.coverPicture',
-            email: '$senderUser.email',
-            name: '$senderUser.name',
-            profilePicture: '$senderUser.profilePicture',
-            uId: '$senderUser.uId',
-            username: '$senderUser.username'
-          },
-          receiverObject: {
+          user: {
             authId: '$receiverUser._id',
             avatarColor: '$receiverUser.avatarColor',
             coverPicture: '$receiverUser.coverPicture',
@@ -80,8 +67,6 @@ class ChatServices {
       { $sort: { createdAt: 1 } },
       { $skip: skip },
       { $limit: limit },
-      { $lookup: { from: 'Auth', localField: 'senderId', foreignField: '_id', as: 'senderUser' } },
-      { $unwind: '$senderUser' },
       { $lookup: { from: 'Auth', localField: 'receiverId', foreignField: '_id', as: 'receiverUser' } },
       { $unwind: '$receiverUser' },
       { $project: this.aggregateConversationProject() }
@@ -139,17 +124,7 @@ class ChatServices {
       isRead: 1,
       reaction: 1,
       files: 1,
-      senderObject: {
-        authId: '$senderUser._id',
-        avatarColor: '$senderUser.avatarColor',
-        coverPicture: '$senderUser.coverPicture',
-        email: '$senderUser.email',
-        name: '$senderUser.name',
-        profilePicture: '$senderUser.profilePicture',
-        uId: '$senderUser.uId',
-        username: '$senderUser.username'
-      },
-      receiverObject: {
+      user: {
         authId: '$receiverUser._id',
         avatarColor: '$receiverUser.avatarColor',
         coverPicture: '$receiverUser.coverPicture',

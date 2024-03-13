@@ -21,7 +21,7 @@ import { IErrorResponse } from '@shared/types/errorTypes';
 import { SocketIoPostHandler } from '@sockets/post.sockets';
 import { SocketIoFollowHandler } from '@sockets/follower.socket';
 import { SocketIoNotificationHandler } from '@sockets/notification.socket';
-import { SocketIoChatHandler } from '@sockets/chat.socket';
+// import { SocketIoChatHandler } from '@sockets/chat.socket';
 import { rateLimit } from 'express-rate-limit';
 import { SocketIoUserHandler } from '@sockets/user.socket';
 
@@ -69,14 +69,14 @@ export class SetupServer {
       })
     );
 
-    app.use(
-      rateLimit({
-        windowMs: 15 * 60 * 1000,
-        limit: 500,
-        standardHeaders: 'draft-7',
-        legacyHeaders: false
-      })
-    );
+    // app.use(
+    //   rateLimit({
+    //     windowMs: 15 * 60 * 1000,
+    //     limit: 500,
+    //     standardHeaders: 'draft-7',
+    //     legacyHeaders: false
+    //   })
+    // );
   }
 
   private standardMiddleware(app: Application): void {
@@ -150,13 +150,13 @@ export class SetupServer {
     const postSocketHandler: SocketIoPostHandler = new SocketIoPostHandler(io);
     const socketIoUserHandler: SocketIoUserHandler = new SocketIoUserHandler(io);
     const socketIoFollowHandler: SocketIoFollowHandler = new SocketIoFollowHandler(io);
-    const socketIoChatHandler: SocketIoChatHandler = new SocketIoChatHandler(io);
+    // const socketIoChatHandler: SocketIoChatHandler = new SocketIoChatHandler(io);
     const socketIoNotificationHandler: SocketIoNotificationHandler = new SocketIoNotificationHandler();
     // listen
     postSocketHandler.listen();
     socketIoFollowHandler.listen();
     socketIoNotificationHandler.listen(io);
-    socketIoChatHandler.listen();
+    // socketIoChatHandler.listen();
     socketIoUserHandler.listen();
   }
 }

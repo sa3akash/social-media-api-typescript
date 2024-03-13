@@ -62,8 +62,7 @@ class MessageCache extends BaseCache {
         await this.client.connect();
       }
 
-      delete data['receiverObject'];
-      delete data['senderObject'];
+      delete data['user'];
 
       await this.client.LPUSH(`messages:${data.conversationId}`, JSON.stringify(data));
     } catch (err) {
@@ -149,7 +148,7 @@ class MessageCache extends BaseCache {
 
       for (const item of userChatList) {
         const chatItem: IChatList = JSON.parse(item) as IChatList;
-        const data = await this.getLatestMessageCache(chatItem.conversationId);
+        const data = await this.getLatestMessageCache(chatItem.conversationId,key);
         conversationChatList.push(data);
       }
 
@@ -177,11 +176,10 @@ class MessageCache extends BaseCache {
       for (const item of messagesList) {
         const singleMessage: IMessageData = JSON.parse(item) as IMessageData;
         const receiverUser: FullUserDoc = await userCache.getUserByIdFromCache(singleMessage.receiverId);
-        const senderUser: FullUserDoc = await userCache.getUserByIdFromCache(singleMessage.senderId);
 
         const data = {
           ...singleMessage,
-          receiverObject: {
+          user: {
             authId: receiverUser.authId as string,
             avatarColor: receiverUser.avatarColor,
             coverPicture: receiverUser.coverPicture,
@@ -191,16 +189,6 @@ class MessageCache extends BaseCache {
             uId: receiverUser.uId,
             username: receiverUser.username
           },
-          senderObject: {
-            authId: senderUser.authId as string,
-            avatarColor: senderUser.avatarColor,
-            coverPicture: senderUser.coverPicture,
-            email: senderUser.email,
-            name: senderUser.name,
-            profilePicture: senderUser.profilePicture,
-            uId: senderUser.uId,
-            username: senderUser.username
-          }
         } as IMessageData;
 
         allMessages.push(data);
@@ -230,8 +218,7 @@ class MessageCache extends BaseCache {
         message.deleteForEveryone = true;
       }
       const savedMessage = cloneDeep(message);
-      delete savedMessage['senderObject'];
-      delete savedMessage['receiverObject'];
+      delete savedMessage['user'];
       await this.client.LSET(`messages:${conversationId}`, index, JSON.stringify(savedMessage));
 
       return message;
@@ -256,7 +243,7 @@ class MessageCache extends BaseCache {
         singleMessage.isRead = true;
         await this.client.LSET(`messages:${conversationId}`, index, JSON.stringify(singleMessage));
       }
-      return await this.getLatestMessageCache(conversationId);
+      return await this.getLatestMessageCache(conversationId,authId);
     } catch (err) {
       throw new ServerError('Internal Server Error, Try again later.');
     }
@@ -296,19 +283,20 @@ class MessageCache extends BaseCache {
     }
   }
 
-  private async getLatestMessageCache(conversationId: string): Promise<IMessageData> {
+  private async getLatestMessageCache(conversationId: string,key?:string): Promise<IMessageData> {
     try {
       if (!this.client.isOpen) {
         await this.client.connect();
       }
       const lastMessage: string = (await this.client.LINDEX(`messages:${conversationId}`, 0)) as string;
       const lastMessageData: IMessageData = JSON.parse(lastMessage);
-      const receiverUser: FullUserDoc = await userCache.getUserByIdFromCache(lastMessageData.receiverId);
-      const senderUser: FullUserDoc = await userCache.getUserByIdFromCache(lastMessageData.senderId);
-
+      
+      const user = key === lastMessageData.senderId ? lastMessageData.receiverId : lastMessageData.senderId;
+      const receiverUser: FullUserDoc = await userCache.getUserByIdFromCache(user);
+      
       const data = {
         ...lastMessageData,
-        receiverObject: {
+        user: {
           authId: receiverUser.authId as string,
           avatarColor: receiverUser.avatarColor,
           coverPicture: receiverUser.coverPicture,
@@ -318,16 +306,7 @@ class MessageCache extends BaseCache {
           uId: receiverUser.uId,
           username: receiverUser.username
         },
-        senderObject: {
-          authId: senderUser.authId as string,
-          avatarColor: senderUser.avatarColor,
-          coverPicture: senderUser.coverPicture,
-          email: senderUser.email,
-          name: senderUser.name,
-          profilePicture: senderUser.profilePicture,
-          uId: senderUser.uId,
-          username: senderUser.username
-        }
+
       } as IMessageData;
 
       return data;
@@ -348,11 +327,10 @@ class MessageCache extends BaseCache {
       const singleIndex: number = findIndex(messagesList, (message: string) => message.includes(messageId)) as number;
       const singleMessageData: IMessageData = JSON.parse(singleMessage) as IMessageData;
       const receiverUser: FullUserDoc = await userCache.getUserByIdFromCache(singleMessageData.receiverId);
-      const senderUser: FullUserDoc = await userCache.getUserByIdFromCache(singleMessageData.senderId);
 
       const data = {
         ...singleMessageData,
-        receiverObject: {
+        user: {
           authId: receiverUser.authId as string,
           avatarColor: receiverUser.avatarColor,
           coverPicture: receiverUser.coverPicture,
@@ -362,16 +340,7 @@ class MessageCache extends BaseCache {
           uId: receiverUser.uId,
           username: receiverUser.username
         },
-        senderObject: {
-          authId: senderUser.authId as string,
-          avatarColor: senderUser.avatarColor,
-          coverPicture: senderUser.coverPicture,
-          email: senderUser.email,
-          name: senderUser.name,
-          profilePicture: senderUser.profilePicture,
-          uId: senderUser.uId,
-          username: senderUser.username
-        }
+
       } as IMessageData;
 
       return { index: singleIndex, message: data } as IGetMessageFromCache;
