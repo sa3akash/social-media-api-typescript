@@ -19,7 +19,6 @@ class ChatRoutes {
     this.router.get('/chat/conversations', authMiddleware.verifyUser, getConversationController.prototype.getConversations);
     this.router.get('/chat/messagess/:conversationId', authMiddleware.verifyUser, getConversationController.prototype.getMessagess);
     this.router.put('/chat/messages/delete', authMiddleware.verifyUser, DeleteChatController.prototype.markDelete);
-    this.router.put('/chat/messages/mark-read/:conversationId', authMiddleware.verifyUser, DeleteChatController.prototype.markRead);
     this.router.put('/chat/messages/reactions', authMiddleware.verifyUser, ReactionChatController.prototype.reactionMessage);
     return this.router;
   }

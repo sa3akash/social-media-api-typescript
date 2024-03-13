@@ -1,3 +1,5 @@
+import { messageCache } from '@services/cache/message.cache';
+import { chatQueue } from '@services/queues/chat.queue';
 import { Server, Socket } from 'socket.io';
 
 export let socketIoUserObject: Server;
@@ -24,8 +26,16 @@ export class SocketIoUserHandler {
     this.io.on('connection', (socket: Socket) => {
       this.io.emit('user-online', [...connectedUsersMap.keys()]);
 
-      socket.on('mark-read',data=>{
-        console.log(data);
+      socket.on('markAsMessage', async ({ conversationId, messageSenderId, messageSeenId }) => {
+        await messageCache.updateIsReadMessageCache(conversationId, messageSeenId);
+        chatQueue.markReadMessageJob('markReadInDB', {
+          conversationId,
+          authId: messageSeenId
+        });
+
+        const reveiverSocket = connectedUsersMap.get(messageSenderId) as string[];
+
+        socketIoUserObject.to(reveiverSocket).emit('chat-mark', { conversationId });
       });
 
       socket.on('disconnect', () => {
