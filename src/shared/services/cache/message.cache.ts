@@ -164,7 +164,7 @@ class MessageCache extends BaseCache {
     }
   }
 
-  public async getChatMessageCache(conversationId: string, start: number, end: number): Promise<IMessageData[]> {
+  public async getChatMessageCache(authId:string, conversationId: string, start: number, end: number): Promise<IMessageData[]> {
     try {
       if (!this.client.isOpen) {
         await this.client.connect();
@@ -175,7 +175,9 @@ class MessageCache extends BaseCache {
 
       for (const item of messagesList) {
         const singleMessage: IMessageData = JSON.parse(item) as IMessageData;
-        const receiverUser: FullUserDoc = await userCache.getUserByIdFromCache(singleMessage.receiverId);
+
+        const friendUserId = authId === singleMessage.senderId ? singleMessage.receiverId : singleMessage.senderId;
+        const receiverUser: FullUserDoc = await userCache.getUserByIdFromCache(friendUserId);
 
         const data = {
           ...singleMessage,
@@ -203,14 +205,15 @@ class MessageCache extends BaseCache {
   public async deleteMessageCache(
     conversationId: string,
     messageId: string,
-    type: 'deleteForMe' | 'deleteForEveryone'
+    type: 'deleteForMe' | 'deleteForEveryone',
+    authId:string
   ): Promise<IMessageData> {
     try {
       if (!this.client.isOpen) {
         await this.client.connect();
       }
 
-      const { index, message }: IGetMessageFromCache = await this.getSingleMessageCache(conversationId, messageId);
+      const { index, message }: IGetMessageFromCache = await this.getSingleMessageCache(conversationId, messageId,authId);
 
       if (type === 'deleteForMe') {
         message.deleteForMe = true;
@@ -315,7 +318,7 @@ class MessageCache extends BaseCache {
     }
   }
 
-  private async getSingleMessageCache(conversationId: string, messageId: string): Promise<IGetMessageFromCache> {
+  private async getSingleMessageCache(conversationId: string, messageId: string,authId:string): Promise<IGetMessageFromCache> {
     try {
       if (!this.client.isOpen) {
         await this.client.connect();
@@ -326,7 +329,9 @@ class MessageCache extends BaseCache {
       const singleMessage: string = find(messagesList, (message: string) => message.includes(messageId)) as string;
       const singleIndex: number = findIndex(messagesList, (message: string) => message.includes(messageId)) as number;
       const singleMessageData: IMessageData = JSON.parse(singleMessage) as IMessageData;
-      const receiverUser: FullUserDoc = await userCache.getUserByIdFromCache(singleMessageData.receiverId);
+
+      const friendUserId = authId === singleMessageData.senderId ? singleMessageData.receiverId : singleMessageData.senderId;
+      const receiverUser: FullUserDoc = await userCache.getUserByIdFromCache(friendUserId);
 
       const data = {
         ...singleMessageData,

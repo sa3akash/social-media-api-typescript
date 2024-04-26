@@ -22,7 +22,7 @@ export class getConversationController {
     const limit: number = PAGE_SIZE * page;
     const newSkip: number = skip === 0 ? skip : skip + 1;
 
-    const messagesCache = await messageCache.getChatMessageCache(conversationId, newSkip, limit);
+    const messagesCache = await messageCache.getChatMessageCache(`${req.currentUser?.id}`,conversationId, newSkip, limit);
     const messages = messagesCache.length ? messagesCache : await chatService.getMessagesDB(conversationId, skip, limit);
 
     const numberOfMessageCache: number = await messageCache.getNumberOfMessages(conversationId);

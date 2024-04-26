@@ -8,7 +8,7 @@ export class DeleteChatController {
   public async markDelete(req: Request, res: Response): Promise<void> {
     const { conversationId, messageId, type } = req.body;
 
-    const updateMessage: IMessageData = await messageCache.deleteMessageCache(conversationId, messageId, type);
+    const updateMessage: IMessageData = await messageCache.deleteMessageCache(conversationId, messageId, type, `${req.currentUser?.id}`);
 
     // socketIoChatObject.emit('mark-delete-message', updateMessage);
     // socketIoChatObject.emit('chat-list', updateMessage);
