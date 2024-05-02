@@ -20,7 +20,7 @@ export class ImageAuthController {
       imageUrl: `${profileImageUrl?.path}`
     });
 
-    res.status(HTTP_STATUS.OK).json({ message: 'Profile image uploaded successfully.', user });
+    res.status(HTTP_STATUS.OK).json({ message: 'Profile image uploaded successfully.',url: user.profilePicture });
   }
 
   public async coverImage(req: Request, res: Response): Promise<void> {
@@ -34,7 +34,7 @@ export class ImageAuthController {
       imageUrl: `${coverImageUrl?.path}`
     });
 
-    res.status(HTTP_STATUS.OK).json({ message: 'Cover image uploaded successfully.', user });
+    res.status(HTTP_STATUS.OK).json({ message: 'Cover image uploaded successfully.',url: user.coverPicture });
   }
 
   @joiValidation(usernameSchema)

@@ -106,7 +106,7 @@ export const upload = multer({
   storage,
   limits: { fileSize: 1000000 * 50 },
   fileFilter: (req, file, cb) => {
-    if (!file.originalname.match(/\.(jpg|jpeg|png|gif|mp4|mov|avi)$/)) {
+    if (!file.mimetype.includes('image/') && !file.mimetype.includes('video/')) {
       cb(new Error('Only .jpg, .png, .gif, .mp4, .mov, .avi or .jpeg format allowed!'));
     } else {
       cb(null, true);
