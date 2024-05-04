@@ -21,4 +21,24 @@ const passwordSchema: ObjectSchema = Joi.object().keys({
   })
 });
 
-export { emailSchema, passwordSchema };
+
+const updatePasswordSchema: ObjectSchema = Joi.object().keys({
+  oldPassword: Joi.string().required().min(6).max(30).messages({
+    'string.base': 'Password should be of type string.',
+    'string.min': 'Invalid password.',
+    'string.max': 'Invalid password.',
+    'string.empty': 'Password is a required field.'
+  }),
+  password: Joi.string().required().messages({
+    'any.only': 'Passwords should match.',
+    'any.required': 'Confirm password is a required field.'
+  }),
+  confirmPassword: Joi.string().required().valid(Joi.ref('password')).messages({
+    'any.only': 'Passwords should match.',
+    'any.required': 'Confirm password is a required field.'
+  }),
+  
+});
+
+
+export { emailSchema, passwordSchema,updatePasswordSchema };

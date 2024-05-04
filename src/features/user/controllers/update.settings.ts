@@ -20,6 +20,11 @@ export class UpdateNotificationSettings {
         notifications: req.body
       }
     });
-    res.status(HTTP_STATUS.OK).json({ message: 'Notification settings updated successfully', settings: req.body });
+    res.status(HTTP_STATUS.OK).json({ message: 'Notification settings updated successfully' });
+  }
+
+  public async getNotificatonData(req: Request, res: Response): Promise<void> {
+    const { notifications } = await userCache.getUserByIdFromCache(`${req.currentUser?.id}`);
+    res.status(HTTP_STATUS.OK).json({ message: 'Notification settings get successfully', notifications });
   }
 }

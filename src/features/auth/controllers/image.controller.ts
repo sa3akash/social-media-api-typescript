@@ -54,6 +54,16 @@ export class ImageAuthController {
       username: `${username}`
     });
 
-    res.status(HTTP_STATUS.OK).json({ message: 'Cover image uploaded successfully.', user });
+    res.status(HTTP_STATUS.OK).json({ message: 'Username updated successfully.' });
+  }
+
+  public async checkUsername(req: Request, res: Response): Promise<void> {
+    const { username } = req.query;
+    if(!username) throw new BadRequestError('Please provide an username.');
+
+    const validateUsername = await authService.getAuthUserByUsername(`${username}`);
+    if (validateUsername) throw new BadRequestError('Username already in use.');
+
+    res.status(HTTP_STATUS.OK).json({ message: 'You can use this username' });
   }
 }

@@ -19,6 +19,7 @@ class UsersRoutes {
     this.router.put('/users/password-update', authMiddleware.verifyUser, UpdatePasswordController.prototype.password);
     this.router.put('/users/info-update', authMiddleware.verifyUser, EditBasicInfo.prototype.editInfo);
     this.router.put('/users/settings/notificaton', authMiddleware.verifyUser, UpdateNotificationSettings.prototype.notification);
+    this.router.get('/users/settings/notificatons', authMiddleware.verifyUser, UpdateNotificationSettings.prototype.getNotificatonData);
 
     return this.router;
   }

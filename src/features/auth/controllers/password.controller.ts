@@ -4,7 +4,7 @@ import crypto from 'crypto';
 import { Request, Response } from 'express';
 import HTTP_STATUS from 'http-status-codes';
 // custom files
-import { emailSchema, passwordSchema } from '@auth/schemas/passwordSchemaJoi';
+import { emailSchema, passwordSchema, updatePasswordSchema } from '@auth/schemas/passwordSchemaJoi';
 import { joiValidation } from '@globals/decorators/joiValidationDecorators';
 import { BadRequestError } from '@globals/helpers/errorHandler';
 import { authService } from '@services/db/auth.services';
@@ -44,6 +44,41 @@ export class PasswordController {
 
     const existingUser = await authService.getAuthByPasswordToken(token);
     if (!existingUser) throw new BadRequestError('Token is expired');
+
+    existingUser.password = password;
+    existingUser.passwordResetExpires = undefined;
+    existingUser.passwordResetToken = undefined;
+    await existingUser.save();
+
+    // send email
+    const templateParams: IResetPasswordParams = {
+      date: `${new Date()}`,
+      email: existingUser.email,
+      ipaddress: '',
+      username: existingUser.username
+    };
+    const template: string = resetPassword.passwordResetTemplate(templateParams);
+    // send email
+    emailQueue.addEmailJob('changePassword', {
+      subject: 'Password changed successfully.',
+      template: template,
+      receiverEmail: existingUser.email
+    });
+
+    res.status(HTTP_STATUS.OK).json({ message: 'Password changed successfull.' });
+  }
+
+
+  @joiValidation(updatePasswordSchema)
+  public async updatePassword(req: Request, res: Response): Promise<void> {
+    const { password,oldPassword } = req.body;
+
+    const existingUser = await authService.getAuthUserByAuthId(`${req.currentUser?.id}`);
+    if (!existingUser) throw new BadRequestError('Token is expired. login again');
+
+    const verifyPass = await existingUser.comparePassword(oldPassword);
+
+    if(!verifyPass) throw new BadRequestError('Invalid credentials.'); 
 
     existingUser.password = password;
     existingUser.passwordResetExpires = undefined;
