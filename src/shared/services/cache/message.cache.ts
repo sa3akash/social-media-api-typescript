@@ -148,7 +148,7 @@ class MessageCache extends BaseCache {
 
       for (const item of userChatList) {
         const chatItem: IChatList = JSON.parse(item) as IChatList;
-        const data = await this.getLatestMessageCache(chatItem.conversationId,key);
+        const data = await this.getLatestMessageCache(chatItem.conversationId, key);
         conversationChatList.push(data);
       }
 
@@ -164,7 +164,7 @@ class MessageCache extends BaseCache {
     }
   }
 
-  public async getChatMessageCache(authId:string, conversationId: string, start: number, end: number): Promise<IMessageData[]> {
+  public async getChatMessageCache(authId: string, conversationId: string, start: number, end: number): Promise<IMessageData[]> {
     try {
       if (!this.client.isOpen) {
         await this.client.connect();
@@ -190,7 +190,7 @@ class MessageCache extends BaseCache {
             profilePicture: receiverUser.profilePicture,
             uId: receiverUser.uId,
             username: receiverUser.username
-          },
+          }
         } as IMessageData;
 
         allMessages.push(data);
@@ -206,14 +206,14 @@ class MessageCache extends BaseCache {
     conversationId: string,
     messageId: string,
     type: 'deleteForMe' | 'deleteForEveryone',
-    authId:string
+    authId: string
   ): Promise<IMessageData> {
     try {
       if (!this.client.isOpen) {
         await this.client.connect();
       }
 
-      const { index, message }: IGetMessageFromCache = await this.getSingleMessageCache(conversationId, messageId,authId);
+      const { index, message }: IGetMessageFromCache = await this.getSingleMessageCache(conversationId, messageId, authId);
 
       if (type === 'deleteForMe') {
         message.deleteForMe = true;
@@ -246,7 +246,7 @@ class MessageCache extends BaseCache {
         singleMessage.isRead = true;
         await this.client.LSET(`messages:${conversationId}`, index, JSON.stringify(singleMessage));
       }
-      return await this.getLatestMessageCache(conversationId,authId);
+      return await this.getLatestMessageCache(conversationId, authId);
     } catch (err) {
       throw new ServerError('Internal Server Error, Try again later.');
     }
@@ -286,17 +286,17 @@ class MessageCache extends BaseCache {
     }
   }
 
-  private async getLatestMessageCache(conversationId: string,key?:string): Promise<IMessageData> {
+  private async getLatestMessageCache(conversationId: string, key?: string): Promise<IMessageData> {
     try {
       if (!this.client.isOpen) {
         await this.client.connect();
       }
       const lastMessage: string = (await this.client.LINDEX(`messages:${conversationId}`, 0)) as string;
       const lastMessageData: IMessageData = JSON.parse(lastMessage);
-      
+
       const user = key === lastMessageData.senderId ? lastMessageData.receiverId : lastMessageData.senderId;
       const receiverUser: FullUserDoc = await userCache.getUserByIdFromCache(user);
-      
+
       const data = {
         ...lastMessageData,
         user: {
@@ -308,8 +308,7 @@ class MessageCache extends BaseCache {
           profilePicture: receiverUser.profilePicture,
           uId: receiverUser.uId,
           username: receiverUser.username
-        },
-
+        }
       } as IMessageData;
 
       return data;
@@ -318,7 +317,7 @@ class MessageCache extends BaseCache {
     }
   }
 
-  private async getSingleMessageCache(conversationId: string, messageId: string,authId:string): Promise<IGetMessageFromCache> {
+  private async getSingleMessageCache(conversationId: string, messageId: string, authId: string): Promise<IGetMessageFromCache> {
     try {
       if (!this.client.isOpen) {
         await this.client.connect();
@@ -344,8 +343,7 @@ class MessageCache extends BaseCache {
           profilePicture: receiverUser.profilePicture,
           uId: receiverUser.uId,
           username: receiverUser.username
-        },
-
+        }
       } as IMessageData;
 
       return { index: singleIndex, message: data } as IGetMessageFromCache;

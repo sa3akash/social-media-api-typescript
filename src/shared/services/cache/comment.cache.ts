@@ -52,7 +52,6 @@ class CommentCache extends BaseCache {
             coverPicture: `${user.coverPicture}`,
             profilePicture: `${user.profilePicture}`,
             createdAt: `${user.createdAt}`
-
           }
         };
         comments.push(data as ICommentDocument);

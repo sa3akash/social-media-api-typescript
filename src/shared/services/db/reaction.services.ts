@@ -17,9 +17,9 @@ class ReactionService {
   public async deleteReactionById(reactionId: string): Promise<void> {
     await ReactionModel.findByIdAndDelete(reactionId);
   }
-  
+
   public async allDeleteReactionById(postId: string): Promise<void> {
-    await ReactionModel.deleteMany({postId: postId});
+    await ReactionModel.deleteMany({ postId: postId });
   }
 
   public async updateReactionById(reactionId: string, type: string): Promise<void> {
@@ -107,7 +107,7 @@ class ReactionService {
         profilePicture: '$authData.profilePicture',
         uId: '$authData.uId',
         username: '$authData.username',
-        createdAt: '$authData.createdAt',
+        createdAt: '$authData.createdAt'
       }
     };
   }

@@ -9,7 +9,6 @@ import { ObjectId } from 'mongodb';
 
 export class AddCommentController {
   @joiValidation(addCommentSchema)
-  
   public async addComment(req: Request, res: Response): Promise<void> {
     const { postId, comment } = req.body;
 

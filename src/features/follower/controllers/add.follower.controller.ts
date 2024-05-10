@@ -24,7 +24,7 @@ export class AddFollowerController {
     if (checkFollowing) {
       await followerCache.removeFollowerCache(`${req.currentUser?.id}`, `${followerId}`);
       // send user details to frontend for updates with socketIo
-      socketIoFollowObject.emit('remove-follow', {id:`${followerId}`,to: `${req.currentUser?.id}`});
+      socketIoFollowObject.emit('remove-follow', { id: `${followerId}`, to: `${req.currentUser?.id}` });
       // remove follower from db with queue
       // send data in queue
       followQueue.removeFollowJob('removeFollowSaveInDB', {
@@ -39,7 +39,7 @@ export class AddFollowerController {
       // // prepire userObject
       // const followerData: IFollowerData = AddFollowerController.prototype.userData(cachedFollowerUser);
       // send data to socketId
-      socketIoFollowObject.emit('add-follow', {id:`${followerId}`,to: `${req.currentUser?.id}`});
+      socketIoFollowObject.emit('add-follow', { id: `${followerId}`, to: `${req.currentUser?.id}` });
       // send data in queue
       followQueue.addFollowJob('addFollowSaveInDB', {
         keyOne: `${req.currentUser?.id}`,

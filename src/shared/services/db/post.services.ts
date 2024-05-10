@@ -46,7 +46,7 @@ class PostServices {
         username: '$authData.username',
         email: '$authData.email',
         avatarColor: '$authData.avatarColor',
-        createdAt: '$authData.createdAt',
+        createdAt: '$authData.createdAt'
       },
       post: 1,
       bgColor: 1,
@@ -57,7 +57,7 @@ class PostServices {
       privacy: 1,
       createdAt: 1,
       reactions: 1,
-      authId: '$authData._id',
+      authId: '$authData._id'
     } as unknown as IPostDocument;
   }
 

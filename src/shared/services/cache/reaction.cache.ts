@@ -146,7 +146,6 @@ class ReactionCache extends BaseCache {
           uId: user.uId,
           username: user.username,
           createdAt: `${user.createdAt}`
-
         }),
           reactionList.push(reactionObject);
       }
@@ -202,7 +201,6 @@ class ReactionCache extends BaseCache {
           uId: user.uId,
           username: user.username,
           createdAt: `${user.createdAt}`
-
         };
       }
 

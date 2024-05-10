@@ -25,7 +25,7 @@ class CommentService {
   }
 
   public async allDeleteCommentsByPostId(postId: string): Promise<void> {
-    await CommentsModel.deleteMany({postId});
+    await CommentsModel.deleteMany({ postId });
   }
 
   private aggregateReactionProject() {

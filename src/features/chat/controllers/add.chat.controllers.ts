@@ -88,7 +88,6 @@ export class AddChatController {
 
     socketIoUserObject.to(senderSocket).emit('chat-list', data);
     socketIoUserObject.to(senderSocket).emit('message-received', data);
-
   }
 
   /**

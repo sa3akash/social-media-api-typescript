@@ -68,17 +68,16 @@ export class PasswordController {
     res.status(HTTP_STATUS.OK).json({ message: 'Password changed successfull.' });
   }
 
-
   @joiValidation(updatePasswordSchema)
   public async updatePassword(req: Request, res: Response): Promise<void> {
-    const { password,oldPassword } = req.body;
+    const { password, oldPassword } = req.body;
 
     const existingUser = await authService.getAuthUserByAuthId(`${req.currentUser?.id}`);
     if (!existingUser) throw new BadRequestError('Token is expired. login again');
 
     const verifyPass = await existingUser.comparePassword(oldPassword);
 
-    if(!verifyPass) throw new BadRequestError('Invalid credentials.'); 
+    if (!verifyPass) throw new BadRequestError('Invalid credentials.');
 
     existingUser.password = password;
     existingUser.passwordResetExpires = undefined;

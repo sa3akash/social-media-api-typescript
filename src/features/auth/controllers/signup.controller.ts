@@ -144,7 +144,7 @@ export class SignupController {
         uId: data.uId,
         coverPicture: data.coverPicture,
         profilePicture: data.profilePicture,
-        createdAt: data.createdAt,
+        createdAt: data.createdAt
       },
       config.JWT_SEC!
     );
