@@ -24,7 +24,7 @@ export class SignupController {
    *
    */
   public async signup(req: Request, res: Response): Promise<void> {
-    const { firstname, lastname, password, email, gender } = req.body;
+    const { firstname, lastname, password, email } = req.body;
     const checkUser: IAuthDocument = await authService.getUserByEmailOrUsername(email);
     if (checkUser) {
       throw new BadRequestError('This user already exists.');
@@ -44,7 +44,7 @@ export class SignupController {
       password
     });
     // prepire user data for db
-    const userData = SignupController.prototype.userData(authObjectId, userObjectId, gender);
+    const userData = SignupController.prototype.userData(authObjectId, userObjectId);
     // save full user data in redis cache
     await userCache.saveUserToCache(authData, userData);
     // save to database
@@ -60,7 +60,7 @@ export class SignupController {
         name: authData.name,
         profilePicture: authData.profilePicture,
         coverPicture: authData.coverPicture,
-        _id: authData._id,
+        authId: authData._id,
         username: authData.username,
         uId: authData.uId,
         email: authData.email,
@@ -88,7 +88,7 @@ export class SignupController {
     } as unknown as IAuthDocument;
   }
 
-  private userData(authObjectId: ObjectId, userObjectId: ObjectId, gender: string): IUserDocument {
+  private userData(authObjectId: ObjectId, userObjectId: ObjectId): IUserDocument {
     return {
       _id: userObjectId,
       authId: authObjectId,
@@ -100,7 +100,7 @@ export class SignupController {
       followingCount: 0,
       postsCount: 0,
       website: '',
-      gender: gender,
+      gender: '',
       relationShip: {
         type: 'Single',
         partner: ''

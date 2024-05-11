@@ -35,14 +35,28 @@ export class SigninController {
     const template: string = forgotPasswordTemplate.forgotEmailTemplate(existingUser.username, 'link');
 
     const emailData = {
-      receiverEmail: 'lisa30@ethereal.email',
+      receiverEmail: existingUser.email,
       template: template,
       subject: 'test development'
     };
     emailQueue.addEmailJob('addEmailNotification', emailData);
     // response user
     req.session = { token };
-    res.status(HTTP_STATUS.OK).json({ message: 'User login successfully', user: existingUser });
+    res.status(HTTP_STATUS.OK).json({
+      message: 'User login successfully',
+      user: {
+        name: existingUser.name,
+        profilePicture: existingUser.profilePicture,
+        coverPicture: existingUser.coverPicture,
+        authId: existingUser._id,
+        username: existingUser.username,
+        uId: existingUser.uId,
+        email: existingUser.email,
+        avatarColor: existingUser.avatarColor,
+        quote: existingUser.quote,
+        createdAt: existingUser.createdAt
+      }
+    });
   }
   /**
    *

@@ -13,10 +13,6 @@ const signupSchema: ObjectSchema = Joi.object().keys({
     'string.max': 'Invalid name.',
     'string.empty': 'Last name is a required field.'
   }),
-  gender: Joi.string().required().valid('male', 'female', 'custom').messages({
-    'string.any': 'Status must be one of "male", "female", or "custom"',
-    'string.empty': 'Gender is a required field.'
-  }),
   password: Joi.string().required().min(6).max(30).messages({
     'string.base': 'Password must be of type string.',
     'string.min': 'Invalid password.',
