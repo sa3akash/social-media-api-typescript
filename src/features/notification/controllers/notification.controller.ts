@@ -5,7 +5,7 @@ import { socketIoNotificationObject } from '@sockets/notification.socket';
 import { Request, Response } from 'express';
 import HTTP_STATUS from 'http-status-codes';
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 20;
 
 export class NotificationController {
   public updateNotification(req: Request, res: Response) {
