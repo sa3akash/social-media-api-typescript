@@ -54,7 +54,7 @@ export class ImageAuthController {
       username: `${username}`
     });
 
-    res.status(HTTP_STATUS.OK).json({ message: 'Username updated successfully.' });
+    res.status(HTTP_STATUS.OK).json({ message: 'Username updated successfully.',username });
   }
 
   public async checkUsername(req: Request, res: Response): Promise<void> {
