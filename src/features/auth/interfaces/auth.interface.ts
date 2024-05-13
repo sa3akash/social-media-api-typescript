@@ -103,6 +103,7 @@ export interface IUpdateUserInfoDoc {
     month: string;
     year: string;
   };
+  name: NameDoc;
 }
 
 export type FullUserDoc = IUserDocument & IAuthDocument;

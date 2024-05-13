@@ -30,6 +30,11 @@ export class EditBasicInfo {
       work: req.body.work || '',
       school: req.body.school || '',
       website: req.body.website || '',
+      name: {
+        first: req.body.firstName || '',
+        last: req.body.lastName || '',
+        nick: req.body.nickName || ''
+      },
       gender: req.body.gender || '',
       quote: req.body.quote || '',
       social: {

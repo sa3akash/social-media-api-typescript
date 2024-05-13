@@ -128,7 +128,8 @@ class UserCache extends BaseCache {
         school: value.school,
         website: value.website,
         quote: value.quote,
-        work: value.work
+        work: value.work,
+        name: JSON.stringify(value.name)
       };
 
       for (const [key, value] of Object.entries(data)) {

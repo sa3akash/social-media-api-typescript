@@ -4,7 +4,7 @@ import { chatService } from '@services/db/chat.services';
 import { Request, Response } from 'express';
 import HTTP_STATUS from 'http-status-codes';
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 50;
 
 export class getConversationController {
   public async getConversations(req: Request, res: Response): Promise<void> {

@@ -3,7 +3,7 @@ import { commentCache } from '@services/cache/comment.cache';
 import { commentService } from '@services/db/comment.services';
 import { Request, Response } from 'express';
 
-const PAGE_SIZE = 30;
+const PAGE_SIZE = 10;
 
 export class GetCommentController {
   public async getAllComments(req: Request, res: Response): Promise<void> {

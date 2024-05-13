@@ -130,7 +130,7 @@ class UserServices {
   public async updateUserInfo(authId: string, data: IUpdateUserInfoDoc): Promise<void> {
     await UserModel.updateOne({ authId: authId }, { $set: data });
     if (data.quote) {
-      await AuthModel.findByIdAndUpdate(authId, { $set: { quote: data.quote } });
+      await AuthModel.findByIdAndUpdate(authId, { $set: { quote: data.quote, name: data.name } });
     }
   }
   /**
