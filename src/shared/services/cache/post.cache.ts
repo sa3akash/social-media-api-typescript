@@ -110,6 +110,57 @@ class PostCache extends BaseCache {
   }
   /*
    *
+   * get post cache with pagination
+   *
+   */
+
+  public async getPostFromCacheBasedOnUserId(key: string, start: number, end: number, authId: string): Promise<IPostDocument[]> {
+    try {
+      if (!this.client.isOpen) {
+        await this.client.connect();
+      }
+      const reply: string[] = await this.client.ZRANGE(key, start, end, { REV: true });
+      //const reply: string[] = await this.client.sendCommand(['ZREVRANGE', key, start, end]);
+      const multi: ReturnType<typeof this.client.multi> = this.client.multi();
+      for (const value of reply) {
+        multi.HGETALL(`posts:${value}`);
+      }
+
+      const replies: PostCacheMultiType = (await multi.exec()) as PostCacheMultiType;
+      const posts: IPostDocument[] = [];
+
+      for (const post of replies as IPostDocument[]) {
+        if (post.authId === authId) {
+          const user: FullUserDoc = await userCache.getUserByIdFromCache(`${post.authId}`);
+          (post.creator = {
+            authId: `${post.authId}`,
+            avatarColor: user.avatarColor,
+            coverPicture: user.coverPicture,
+            email: user.email,
+            name: user.name,
+            profilePicture: user.profilePicture,
+            uId: user.uId,
+            username: user.username,
+            createdAt: `${user.createdAt}`
+          }),
+            (post.commentsCount = Number(`${post.commentsCount}`));
+          post.files = Utils.parseJson(`${post.files}`);
+          post.reactions = Utils.parseJson(`${post.reactions}`);
+          post.createdAt = new Date(`${post.createdAt}`);
+          posts.push(post);
+        }
+      }
+      return posts.sort((a, b) => {
+        const createdAtA = a.createdAt instanceof Date ? a.createdAt.getTime() : 0;
+        const createdAtB = b.createdAt instanceof Date ? b.createdAt.getTime() : 0;
+        return createdAtB - createdAtA;
+      });
+    } catch (err) {
+      throw new ServerError('Internal Server Error, Try again later.');
+    }
+  }
+  /*
+   *
    * get number of total post cache
    *
    */

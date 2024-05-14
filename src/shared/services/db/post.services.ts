@@ -33,6 +33,25 @@ class PostServices {
 
     return postsDB;
   }
+  public async getPostsFromDBByAuthId(
+    query: IGetPostsQuery,
+    skip = 0,
+    limit = 0,
+    sort: Record<string, 1 | -1>,
+    authId: string
+  ): Promise<IPostDocument[]> {
+    const postsDB: IPostDocument[] = await PostModel.aggregate([
+      { $match: { authId: new mongoose.Types.ObjectId(authId) } },
+      { $sort: sort },
+      { $skip: skip },
+      { $limit: limit },
+      { $lookup: { from: 'Auth', localField: 'authId', foreignField: '_id', as: 'authData' } },
+      { $unwind: '$authData' }, // convert array to object with unwind
+      { $project: this.aggregatePostProject() }
+    ]);
+
+    return postsDB;
+  }
 
   private aggregatePostProject(): IPostDocument {
     return {

@@ -15,6 +15,7 @@ class PostRoutes {
   public routes(): Router {
     this.router.post('/post', authMiddleware.verifyUser, upload.array('file'), CreatePost.prototype.post);
     this.router.get('/posts', authMiddleware.verifyUser, GetPostController.prototype.getAll);
+    this.router.get('/posts/user/:authId', authMiddleware.verifyUser, GetPostController.prototype.getAllByAuthId);
     this.router.get('/posts/image', authMiddleware.verifyUser, GetPostController.prototype.getAllPostWithImage);
     this.router.get('/posts/video', authMiddleware.verifyUser, GetPostController.prototype.getAllPostWithVideo);
     this.router.delete('/post/:postId', authMiddleware.verifyUser, DeletePostController.prototype.deletePost);

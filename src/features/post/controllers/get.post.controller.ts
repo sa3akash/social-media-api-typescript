@@ -28,6 +28,29 @@ export class GetPostController {
       numberOfPages: Math.ceil(numberOfPosts / PAGE_SIZE)
     });
   }
+  public async getAllByAuthId(req: Request, res: Response): Promise<void> {
+    const page = Number(req.query.page) || 1;
+    const skip: number = (page - 1) * PAGE_SIZE;
+    const limit: number = PAGE_SIZE * page;
+
+    const authId = req.params.authId as string;
+
+    const newSkip: number = skip === 0 ? skip : skip + 1;
+    // get all
+    const allPostsCache = await postCache.getPostFromCacheBasedOnUserId('post', newSkip, limit, authId);
+    const totalPostsCache = await postCache.getTotalNumberOfPostFromCache();
+
+    const allPosts =
+      allPostsCache.length > 0 ? allPostsCache : await postServices.getPostsFromDBByAuthId({}, skip, limit, { createdAt: -1 }, authId);
+    const numberOfPosts = totalPostsCache ? totalPostsCache : await postServices.postCountDB({});
+    // response
+    res.status(HTTP_STATUS.OK).json({
+      message: 'Get all posts successfully.',
+      posts: allPosts,
+      currentPage: Number(page),
+      numberOfPages: Math.ceil(numberOfPosts / PAGE_SIZE)
+    });
+  }
   /*
    *
    * get post with images
