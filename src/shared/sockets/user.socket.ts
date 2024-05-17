@@ -19,6 +19,7 @@ export class SocketIoUserHandler {
       const authId = socket.handshake.query.authId as string;
       if (authId !== 'undefined') {
         this.addClientToMap(authId, socket.id);
+        this.chatWebrtc(socket);
         next();
       }
     });
@@ -76,5 +77,34 @@ export class SocketIoUserHandler {
       connectedUsersMap.delete(authId);
     }
     this.io.emit('user-online', [...connectedUsersMap.keys()]);
+  }
+  private chatWebrtc(socket: Socket): void {
+
+    socket.on('offer', ({ type, user, from, to, offer,conversationId }) => {
+      const receiverId = connectedUsersMap.get(to) as string[];
+
+      if (!receiverId.length) {
+        socket.emit('offline');
+      }
+
+      socket.to(receiverId).emit('offer', {
+        offer: offer,
+        to: from,
+        user: user,
+        type:type,
+        conversationId
+      });
+    });
+
+
+    socket.on('cancelCall',({to})=>{
+      const cencelUserId = connectedUsersMap.get(to) as string[];
+      socket.to(cencelUserId).emit('cancelCall');
+    });
+
+    socket.on('answer',({to,answer,conversationId})=>{
+      const caller = connectedUsersMap.get(to) as string[];
+      socket.to(caller).emit('answer', {answer,conversationId});
+    });
   }
 }
