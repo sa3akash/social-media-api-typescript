@@ -100,7 +100,7 @@ export class SignupController {
       followingCount: 0,
       postsCount: 0,
       website: '',
-      gender: '',
+      gender: 'male',
       relationShip: {
         type: 'Single',
         partner: ''
