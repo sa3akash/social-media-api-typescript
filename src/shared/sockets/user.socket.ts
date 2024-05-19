@@ -79,11 +79,10 @@ export class SocketIoUserHandler {
     this.io.emit('user-online', [...connectedUsersMap.keys()]);
   }
   private chatWebrtc(socket: Socket): void {
-
-    socket.on('offer', ({ type, user, from, to, offer,conversationId }) => {
+    socket.on('offer', ({ type, user, from, to, offer, conversationId }) => {
       const receiverId = connectedUsersMap.get(to) as string[];
 
-      if (!receiverId.length) {
+      if (!receiverId?.length) {
         socket.emit('offline');
       }
 
@@ -91,20 +90,19 @@ export class SocketIoUserHandler {
         offer: offer,
         to: from,
         user: user,
-        type:type,
+        type: type,
         conversationId
       });
     });
 
-
-    socket.on('cancelCall',({to})=>{
+    socket.on('cancelCall', ({ to }) => {
       const cencelUserId = connectedUsersMap.get(to) as string[];
       socket.to(cencelUserId).emit('cancelCall');
     });
 
-    socket.on('answer',({to,answer,conversationId})=>{
+    socket.on('answer', ({ to, answer, conversationId }) => {
       const caller = connectedUsersMap.get(to) as string[];
-      socket.to(caller).emit('answer', {answer,conversationId});
+      socket.to(caller).emit('answer', { answer, conversationId });
     });
   }
 }

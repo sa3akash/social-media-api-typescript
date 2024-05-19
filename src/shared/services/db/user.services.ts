@@ -84,7 +84,7 @@ class UserServices {
     return await UserModel.find({}).countDocuments();
   }
 
-  async searchUsers(regex: RegExp, skip: number, limit: number, authId: string): Promise<ISearchUser[]> {
+  public async searchUsers(regex: RegExp, skip: number, limit: number, authId: string): Promise<ISearchUser[]> {
     const users: ISearchUser[] = await AuthModel.aggregate([
       {
         $match: {
@@ -112,6 +112,28 @@ class UserServices {
       }
     ]);
     return users;
+  }
+  public async searchUsersCount(regex: RegExp, authId: string): Promise<number> {
+    const searchUsersCount = await AuthModel.aggregate([
+      {
+        $match: {
+          $and: [
+            { $or: [{ username: regex }, { 'name.first': regex }, { 'name.last': regex }] },
+            { _id: { $ne: new mongoose.Types.ObjectId(authId) } }
+          ]
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          count: { $sum: 1 }
+        }
+      }
+    ]);
+
+    const count: number = searchUsersCount.length > 0 ? searchUsersCount[0].count : 0;
+
+    return count;
   }
 
   /**

@@ -14,6 +14,13 @@ export class SearchUser {
 
     const regex = new RegExp(Utils.escapeRegex(req.params.search), 'i');
     const users: ISearchUser[] = await userService.searchUsers(regex, skip, limit, `${req.currentUser?.id}`);
-    res.status(HTTP_STATUS.OK).json({ message: 'Search results', search: users });
+    const numberOfPosts: number = await userService.searchUsersCount(regex, `${req.currentUser?.id}`);
+
+    res.status(HTTP_STATUS.OK).json({
+      message: 'Get all search users successfully.',
+      users: users,
+      currentPage: Number(page),
+      numberOfPages: Math.ceil(numberOfPosts / PAGE_SIZE)
+    });
   }
 }

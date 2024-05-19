@@ -22,7 +22,7 @@ const basicInfoSchema: ObjectSchema = Joi.object().keys({
   dobYear: Joi.string().optional().allow(null, ''),
   firstName: Joi.string().optional().allow(null, ''),
   lastName: Joi.string().optional().allow(null, ''),
-  nickName: Joi.string().optional().allow(null, ''),
+  nickName: Joi.string().optional().allow(null, '')
 });
 
 const queueSchema: ObjectSchema = Joi.object().keys({
