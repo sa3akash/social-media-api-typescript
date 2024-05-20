@@ -5,7 +5,7 @@ import { postServices } from '@services/db/post.services';
 import { Request, Response } from 'express';
 import HTTP_STATUS from 'http-status-codes';
 
-const PAGE_SIZE = 5;
+const PAGE_SIZE = 10;
 
 export class GetPostController {
   public async getAll(req: Request, res: Response): Promise<void> {
