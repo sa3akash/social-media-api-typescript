@@ -101,7 +101,7 @@ export class GetPostController {
     // response
     res.status(HTTP_STATUS.OK).json({
       message: 'Get all image posts successfully.',
-      postWithImages: allPosts,
+      postWithVideos: allPosts,
       currentPage: Number(page),
       numberOfPages: Math.ceil(numberOfPosts / PAGE_SIZE)
     });

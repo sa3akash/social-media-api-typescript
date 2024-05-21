@@ -151,8 +151,8 @@ class PostServices {
           {
             files: {
               $elemMatch: {
-                originalname: {
-                  $regex: /\.(mp4|mov|avi)$/
+                mimetype: {
+                  $in: ['video/mp4', 'video/quicktime', 'video/avi']
                 }
               }
             }

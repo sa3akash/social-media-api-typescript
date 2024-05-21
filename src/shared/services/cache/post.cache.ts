@@ -245,7 +245,7 @@ class PostCache extends BaseCache {
       for (const post of replies as IPostDocument[]) {
         post.files = Utils.parseJson(`${post.files}`);
 
-        if (post.files.some((f) => f?.originalname.match(/\.(jpg|jpeg|png|gif)$/)) || post.gifUrl) {
+        if (post.files.some((f) => f?.mimetype.includes('image')) || post.gifUrl) {
           const user: FullUserDoc = await userCache.getUserByIdFromCache(`${post.authId}`);
           (post.creator = {
             authId: `${post.authId}`,
@@ -297,7 +297,7 @@ class PostCache extends BaseCache {
       for (const post of replies as IPostDocument[]) {
         post.files = Utils.parseJson(`${post.files}`);
 
-        if (post.files && post.files.some((f) => f.originalname.match(/\.(mp4|mov|avi)$/))) {
+        if (post.files.some((file) => file.mimetype.includes('video'))) {
           const user: FullUserDoc = await userCache.getUserByIdFromCache(`${post.authId}`);
           (post.creator = {
             authId: `${post.authId}`,
