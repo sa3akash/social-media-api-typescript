@@ -36,10 +36,10 @@ export class UpdatePostController {
     } as unknown as IPostDocument;
 
     await postCache.updatePostFromCache(updatePostDoc);
-    // // emit socketIO
+    // emit socketIO
     socketIoPostObject.emit('update-post', updatePostDoc);
-    // // update db
+    // update db
     postQueue.updatePostJob('updatePostInDBQueue', updatePostDoc);
-    res.status(HTTP_STATUS.OK).json({ message: 'post updated successfully.' });
+    res.status(HTTP_STATUS.OK).json({ message: 'post updated successfully.',post:updatePostDoc });
   }
 }

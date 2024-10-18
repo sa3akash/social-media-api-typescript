@@ -1,7 +1,9 @@
 import { BadRequestError } from '@globals/helpers/errorHandler';
 import { IPostDocument } from '@post/interfaces/post.interfaces';
 import { postCache } from '@services/cache/post.cache';
+import { reactionCache } from '@services/cache/reaction.cache';
 import { postServices } from '@services/db/post.services';
+import { reactionService } from '@services/db/reaction.services';
 import { Request, Response } from 'express';
 import HTTP_STATUS from 'http-status-codes';
 
@@ -20,10 +22,23 @@ export class GetPostController {
 
     const allPosts = allPostsCache.length > 0 ? allPostsCache : await postServices.getPostsFromDB({}, skip, limit, { createdAt: -1 });
     const numberOfPosts = totalPostsCache ? totalPostsCache : await postServices.postCountDB({});
+
+    const reactions = await Promise.all(
+      allPosts.map(async (post) => {
+        const previousReactionCache = await reactionCache.getPreviousReactions(`${post._id}`, `${req.currentUser?.id}`);
+
+        return previousReactionCache
+          ? previousReactionCache
+          : await reactionService.getReactionByPostIdAndAuthId(`${post._id}`, `${req.currentUser?.id}`);
+      })
+    );
+    const filteredReactions = reactions.filter((reaction) => reaction !== null);
+
     // response
     res.status(HTTP_STATUS.OK).json({
       message: 'Get all posts successfully.',
       posts: allPosts,
+      reactions: filteredReactions,
       currentPage: Number(page),
       numberOfPages: Math.ceil(numberOfPosts / PAGE_SIZE)
     });
@@ -43,10 +58,23 @@ export class GetPostController {
     const allPosts =
       allPostsCache.length > 0 ? allPostsCache : await postServices.getPostsFromDBByAuthId({}, skip, limit, { createdAt: -1 }, authId);
     const numberOfPosts = totalPostsCache ? totalPostsCache : await postServices.postCountDB({});
+
+    const reactions = await Promise.all(
+      allPosts.map(async (post) => {
+        const previousReactionCache = await reactionCache.getPreviousReactions(`${post._id}`, `${req.currentUser?.id}`);
+
+        return previousReactionCache
+          ? previousReactionCache
+          : await reactionService.getReactionByPostIdAndAuthId(`${post._id}`, `${req.currentUser?.id}`);
+      })
+    );
+    const filteredReactions = reactions.filter((reaction) => reaction !== null);
+
     // response
     res.status(HTTP_STATUS.OK).json({
       message: 'Get all posts successfully.',
       posts: allPosts,
+      reactions: filteredReactions,
       currentPage: Number(page),
       numberOfPages: Math.ceil(numberOfPosts / PAGE_SIZE)
     });
@@ -70,10 +98,23 @@ export class GetPostController {
       allPostsImagesCache.length > 4
         ? allPostsImagesCache
         : await postServices.getPostsFromDB({ file: 'image' }, skip, limit, { createdAt: -1 });
+
+    const reactions = await Promise.all(
+      allPosts.map(async (post) => {
+        const previousReactionCache = await reactionCache.getPreviousReactions(`${post._id}`, `${req.currentUser?.id}`);
+
+        return previousReactionCache
+          ? previousReactionCache
+          : await reactionService.getReactionByPostIdAndAuthId(`${post._id}`, `${req.currentUser?.id}`);
+      })
+    );
+    const filteredReactions = reactions.filter((reaction) => reaction !== null);
+
     // response
     res.status(HTTP_STATUS.OK).json({
       message: 'Get all image posts successfully.',
       postWithImages: allPosts,
+      reactions: filteredReactions,
       currentPage: Number(page),
       numberOfPages: Math.ceil(numberOfPosts / PAGE_SIZE)
     });
@@ -98,10 +139,24 @@ export class GetPostController {
       allPostsVideosCache.length > 4
         ? allPostsVideosCache
         : await postServices.getPostsFromDB({ file: 'video' }, skip, limit, { createdAt: -1 });
+
+    const reactions = await Promise.all(
+      allPosts.map(async (post) => {
+        const previousReactionCache = await reactionCache.getPreviousReactions(`${post._id}`, `${req.currentUser?.id}`);
+
+        return previousReactionCache
+          ? previousReactionCache
+          : await reactionService.getReactionByPostIdAndAuthId(`${post._id}`, `${req.currentUser?.id}`);
+      })
+    );
+    const filteredReactions = reactions.filter((reaction) => reaction !== null);
+
     // response
     res.status(HTTP_STATUS.OK).json({
       message: 'Get all image posts successfully.',
       postWithVideos: allPosts,
+      reactions: filteredReactions,
+
       currentPage: Number(page),
       numberOfPages: Math.ceil(numberOfPosts / PAGE_SIZE)
     });
@@ -118,6 +173,12 @@ export class GetPostController {
       throw new BadRequestError('Post not found.');
     }
 
-    res.status(HTTP_STATUS.OK).json({ message: 'Get single post.', post: getPostById });
+    const previousReactionCache = await reactionCache.getPreviousReactions(`${getPostById._id}`, `${req.currentUser?.id}`);
+
+    const reaction = previousReactionCache
+      ? previousReactionCache
+      : await reactionService.getReactionByPostIdAndAuthId(`${getPostById._id}`, `${req.currentUser?.id}`);
+
+    res.status(HTTP_STATUS.OK).json({ message: 'Get single post.', reactions: reaction, post: getPostById });
   }
 }

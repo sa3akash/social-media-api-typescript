@@ -39,7 +39,8 @@ export class AddReactionController {
       });
     }
 
-    res.status(HTTP_STATUS.OK).json({ message: 'Reaction updated successfully.' });
+    const updatedReaction = await reactionCache.getPreviousReactions(postId, `${req.currentUser?.id}`);
+    res.status(HTTP_STATUS.OK).json({ message: 'Reaction updated successfully.', reaction:updatedReaction });
   }
 }
 

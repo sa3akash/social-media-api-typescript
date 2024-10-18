@@ -11,6 +11,7 @@ class PostWorker {
       // save data in db
       await postServices.addPostInDB(job.data);
       // add method to save data in db
+
       job.progress(100);
       done(null, job.data);
     } catch (err) {

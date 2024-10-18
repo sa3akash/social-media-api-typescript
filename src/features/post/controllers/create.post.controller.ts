@@ -29,13 +29,30 @@ export class CreatePost {
         createdAt: `${req.currentUser?.createdAt}`
       }
     });
+
     // save post in cache
     await postCache.savePostToCache(createdPostObject);
     // add post in db
     // const createdPostDBObject: IPostDocument = CreatePost.prototype.createPostInDB(req, postObjectId);
     postQueue.addPostJob('addPostInDBQueue', createdPostObject);
 
-    res.status(HTTP_STATUS.CREATED).json({ message: 'Post created successfully.' });
+    res.status(HTTP_STATUS.CREATED).json({
+      message: 'Post created successfully.',
+      post: {
+        ...createdPostObject,
+        creator: {
+          authId: `${req.currentUser?.id}`,
+          uId: `${req.currentUser?.id}`,
+          coverPicture: `${req.currentUser?.coverPicture}`,
+          profilePicture: `${req.currentUser?.profilePicture}`,
+          name: req.currentUser?.name,
+          username: `${req.currentUser?.username}`,
+          email: `${req.currentUser?.email}`,
+          avatarColor: `${req.currentUser?.avatarColor}`,
+          createdAt: `${req.currentUser?.createdAt}`
+        }
+      }
+    });
   }
 
   //
