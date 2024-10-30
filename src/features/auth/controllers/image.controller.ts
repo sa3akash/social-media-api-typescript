@@ -20,7 +20,7 @@ export class ImageAuthController {
       imageUrl: `${profileImageUrl?.path}`
     });
 
-    res.status(HTTP_STATUS.OK).json({ message: 'Profile image uploaded successfully.', url: user.profilePicture });
+    res.status(HTTP_STATUS.OK).json({ message: 'Profile image uploaded successfully.', url: user.profilePicture, authId: `${req.currentUser?.id}` });
   }
 
   public async coverImage(req: Request, res: Response): Promise<void> {
@@ -34,7 +34,8 @@ export class ImageAuthController {
       imageUrl: `${coverImageUrl?.path}`
     });
 
-    res.status(HTTP_STATUS.OK).json({ message: 'Cover image uploaded successfully.', url: user.coverPicture });
+    res.status(HTTP_STATUS.OK).json({ message: 'Cover image uploaded successfully.', url: user.coverPicture,
+      authId: `${req.currentUser?.id}` });
   }
 
   @joiValidation(usernameSchema)
@@ -54,7 +55,8 @@ export class ImageAuthController {
       username: `${username}`
     });
 
-    res.status(HTTP_STATUS.OK).json({ message: 'Username updated successfully.', username });
+    res.status(HTTP_STATUS.OK).json({ message: 'Username updated successfully.', username,
+      authId: `${req.currentUser?.id}` });
   }
 
   public async checkUsername(req: Request, res: Response): Promise<void> {

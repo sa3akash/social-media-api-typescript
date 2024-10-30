@@ -28,6 +28,6 @@ export class DeletePostController {
     // worker
     postQueue.deletePostJob('deletePostInDBQueue', { postId: postId, authId: `${req.currentUser?.id}` });
 
-    res.status(HTTP_STATUS.OK).json({ message: 'Post deleted successfully.' });
+    res.status(HTTP_STATUS.OK).json({ message: 'Post deleted successfully.',authId: `${req.currentUser?.id}` });
   }
 }

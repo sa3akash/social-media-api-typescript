@@ -34,11 +34,7 @@ export class AddFollowerController {
     } else {
       //  update follower count from cache
       await followerCache.saveFollowerCache(`${req.currentUser?.id}`, `${followerId}`);
-      // add follower and following to cache
-      // const cachedFollowerUser: FullUserDoc = await userCache.getUserByIdFromCache(followerId);
-      // // prepire userObject
-      // const followerData: IFollowerData = AddFollowerController.prototype.userData(cachedFollowerUser);
-      // send data to socketId
+
       socketIoFollowObject.emit('add-follow', { id: `${followerId}`, to: `${req.currentUser?.id}` });
       // send data in queue
       followQueue.addFollowJob('addFollowSaveInDB', {
@@ -46,7 +42,10 @@ export class AddFollowerController {
         keyTwo: `${followerId}`
       });
     }
-    res.status(HTTP_STATUS.OK).json({ message: 'Following user updates.' });
+    res.status(HTTP_STATUS.OK).json({ message: 'Following user updates.', data: {
+      authId: `${req.currentUser?.id}`,
+      followe: followerId
+    } });
   }
 
   private userData(user: FullUserDoc): IFollowerData {

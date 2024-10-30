@@ -13,7 +13,7 @@ import 'express-async-errors';
 import { Server } from 'socket.io';
 import { createClient } from 'redis';
 import { createAdapter } from '@socket.io/redis-adapter';
-// // custom file
+//  custom file
 import { config } from '@root/config';
 import applicationRoutes from '@root/routes';
 import { CustomError } from '@globals/helpers/errorHandler';
@@ -62,7 +62,7 @@ export class SetupServer {
     app.use(helmet());
     app.use(
       cors({
-        origin: 'http://localhost:5173',
+        origin: ['http://localhost:5173','http://localhost:4173'],
         credentials: true,
         optionsSuccessStatus: 200,
         methods: ['GET', 'POST', 'PUT', 'DELETE']

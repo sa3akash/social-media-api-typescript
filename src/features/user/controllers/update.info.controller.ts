@@ -22,7 +22,7 @@ export class EditBasicInfo {
       key: `${req.currentUser!.id}`,
       value: data
     });
-    res.status(HTTP_STATUS.OK).json({ message: 'Updated successfully' });
+    res.status(HTTP_STATUS.OK).json({ message: 'Updated successfully',authId: `${req.currentUser?.id}` });
   }
 
   private prepireData(req: Request): IUpdateUserInfoDoc {
