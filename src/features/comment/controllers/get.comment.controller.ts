@@ -1,4 +1,5 @@
 import { ICommentDocument } from '@comment/interfaces/comment.interface';
+import { BadRequestError } from '@globals/helpers/errorHandler';
 import { commentCache } from '@services/cache/comment.cache';
 import { commentService } from '@services/db/comment.services';
 import { Request, Response } from 'express';
@@ -13,6 +14,8 @@ export class GetCommentController {
     const limit: number = PAGE_SIZE * page;
 
     const newSkip: number = skip === 0 ? skip : skip + 1;
+    if (!postId) throw new BadRequestError('Invalid conversationId.');
+
     // comment in cache
     const commentsFromCache: ICommentDocument[] = await commentCache.getAllCommentsCache(`${postId}`, newSkip, limit);
     // get comment count in cahce

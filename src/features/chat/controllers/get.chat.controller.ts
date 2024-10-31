@@ -1,4 +1,5 @@
 import { IMessageData } from '@chat/interfaces/chat.interfaces';
+import { BadRequestError } from '@globals/helpers/errorHandler';
 import { messageCache } from '@services/cache/message.cache';
 import { chatService } from '@services/db/chat.services';
 import { Request, Response } from 'express';
@@ -21,6 +22,10 @@ export class getConversationController {
     const skip: number = (page - 1) * PAGE_SIZE;
     const limit: number = PAGE_SIZE * page;
     const newSkip: number = skip === 0 ? skip : skip + 1;
+
+    if (!conversationId) throw new BadRequestError('Invalid conversationId.');
+    if (conversationId === 'null') throw new BadRequestError('Invalid conversationId.');
+
 
     const messagesCache = await messageCache.getChatMessageCache(`${req.currentUser?.id}`, conversationId, newSkip, limit);
     const messages = messagesCache.length ? messagesCache : await chatService.getMessagesDB(conversationId, skip, limit);

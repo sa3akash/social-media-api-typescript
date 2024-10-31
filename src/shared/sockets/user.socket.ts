@@ -1,4 +1,5 @@
 import { messageCache } from '@services/cache/message.cache';
+import { authService } from '@services/db/auth.services';
 import { chatQueue } from '@services/queues/chat.queue';
 import { Server, Socket } from 'socket.io';
 
@@ -78,21 +79,32 @@ export class SocketIoUserHandler {
     }
     this.io.emit('user-online', [...connectedUsersMap.keys()]);
   }
-  private chatWebrtc(socket: Socket): void {
-    socket.on('offer', ({ type, user, from, to, offer, conversationId }) => {
+  private chatWebrtc(socket: Socket) {
+    socket.on('callUser', async ({ offer, to,conversationId,isVideo }) => {
+
       const receiverId = connectedUsersMap.get(to) as string[];
+      const authId = socket.handshake.query.authId as string;
+      const authUser = await authService.getAuthUserByAuthId(authId);
 
       if (!receiverId?.length) {
         socket.emit('offline');
       }
 
+
       socket.to(receiverId).emit('offer', {
         offer: offer,
-        to: from,
-        user: user,
-        type: type,
-        conversationId
+        to: {...authUser.toJSON(),authId: authId},
+        isVideo,
+        conversationId,
+        callerId: authId,
       });
+    });
+
+ 
+
+    socket.on('answerCall', ({ to, answer, conversationId }) => {
+      const caller = connectedUsersMap.get(to) as string[];
+      socket.to(caller).emit('answer', { answer, conversationId });
     });
 
     socket.on('cancelCall', ({ to }) => {
@@ -100,9 +112,5 @@ export class SocketIoUserHandler {
       socket.to(cencelUserId).emit('cancelCall');
     });
 
-    socket.on('answer', ({ to, answer, conversationId }) => {
-      const caller = connectedUsersMap.get(to) as string[];
-      socket.to(caller).emit('answer', { answer, conversationId });
-    });
   }
 }

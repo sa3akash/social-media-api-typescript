@@ -1,3 +1,4 @@
+import { BadRequestError } from '@globals/helpers/errorHandler';
 import { INotificationDocument } from '@notification/interfaces/notificaton.interface';
 import { notificationService } from '@services/db/notification.services';
 import { notificationQueue } from '@services/queues/notification.queue';
@@ -21,6 +22,9 @@ export class NotificationController {
 
   public deleteNotification(req: Request, res: Response) {
     const { notificationId } = req.params;
+
+    if (!notificationId) throw new BadRequestError('Invalid notificationId.');
+
 
     socketIoNotificationObject.emit('delete-notification', notificationId);
 

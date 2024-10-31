@@ -82,12 +82,9 @@ export class AddChatController {
     };
 
     const reveiverSocket = connectedUsersMap.get(data.receiverId) as string[];
-    const senderSocket = connectedUsersMap.get(data.senderId) as string[];
     socketIoUserObject.to(reveiverSocket).emit('message-received', readyData);
-    socketIoUserObject.to(reveiverSocket).emit('chat-list', readyData);
+    // socketIoUserObject.to(reveiverSocket).emit('chat-list', readyData);
 
-    socketIoUserObject.to(senderSocket).emit('chat-list', data);
-    socketIoUserObject.to(senderSocket).emit('message-received', data);
   }
 
   /**

@@ -1,5 +1,5 @@
 import { IChatList, IChatUsers, IGetMessageFromCache, IMessageData } from '@chat/interfaces/chat.interfaces';
-import { ServerError } from '@globals/helpers/errorHandler';
+import { BadRequestError, ServerError } from '@globals/helpers/errorHandler';
 import { BaseCache } from '@services/cache/base.cache';
 import { cloneDeep, filter, find, findIndex, remove } from 'lodash';
 import { userCache } from '@services/cache/user.cache';
@@ -248,7 +248,7 @@ class MessageCache extends BaseCache {
       }
       return await this.getLatestMessageCache(conversationId, authId);
     } catch (err) {
-      throw new ServerError('Internal Server Error, Try again later.');
+      throw new BadRequestError('Internal Server Error, Try again later.');
     }
   }
 
