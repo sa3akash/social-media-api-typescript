@@ -8,6 +8,7 @@ import { reactionRoutes } from '@reaction/routes/routes';
 import { serverAdapter } from '@services/queues/base.queue';
 import { usersRoutes } from '@user/routes/user.routes';
 import { Application } from 'express';
+import { linkRoutes } from '@root/features/link/routes';
 
 const BASE_PATH = '/api/v1';
 
@@ -21,6 +22,7 @@ export default (app: Application) => {
     app.use(BASE_PATH, notificationRoutes.routes());
     app.use(BASE_PATH, chatRoutes.routes());
     app.use(BASE_PATH, usersRoutes.routes());
+    app.use(BASE_PATH, linkRoutes.routes());
     app.use('/queues', serverAdapter.getRouter());
   };
   routes();
