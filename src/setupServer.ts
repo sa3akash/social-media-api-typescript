@@ -2,7 +2,7 @@
 // internal module
 import http from 'http';
 // external libraries
-import { Application, json, urlencoded, Response, Request, NextFunction } from 'express';
+import express, { Application, json, urlencoded, Response, Request, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import hpp from 'hpp';
@@ -62,7 +62,7 @@ export class SetupServer {
     app.use(helmet());
     app.use(
       cors({
-        origin: ['http://localhost:5173','http://localhost:4173'],
+        origin: ['http://localhost:5173'],
         credentials: true,
         optionsSuccessStatus: 200,
         methods: ['GET', 'POST', 'PUT', 'DELETE']
@@ -83,6 +83,13 @@ export class SetupServer {
     app.use(compression());
     app.use(json({ limit: '50mb' }));
     app.use(urlencoded({ extended: true, limit: '50mb' }));
+    app.use(express.raw({ limit: '50mb', type: 'application/octet-stream' }));
+    app.use('/uploads',(req,res,next)=>{
+      res.setHeader('Access-Control-Allow-Origin', 'http://localhost:5173'); // Replace with your frontend domain
+      res.setHeader('Access-Control-Allow-Methods', 'GET');
+      next();
+    }, express.static('src/uploads'));
+
     // Increase the maximum response size
     // app.use(function (req, res, next) {
     //   res.setHeader('Content-Type', 'application/json');

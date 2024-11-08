@@ -25,7 +25,6 @@ export class NotificationController {
 
     if (!notificationId) throw new BadRequestError('Invalid notificationId.');
 
-
     socketIoNotificationObject.emit('delete-notification', notificationId);
 
     // notifications queue

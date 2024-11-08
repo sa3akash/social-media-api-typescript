@@ -28,7 +28,7 @@ export interface IMessageData extends Document {
   body: string;
   isRead: boolean;
   gifUrl: string;
-  files?: IFiles[] | [];
+  files?: IMessageFile[] | [];
   reaction: IReaction[];
   createdAt: Date | string;
   deleteForMe: boolean;
@@ -115,4 +115,14 @@ export interface IReactionMessage {
   messageId: string;
   senderName: string;
   type: string;
+}
+
+export interface IMessageFile {
+  type: string,
+  size?: string,
+  url:string,
+  name?: string,
+  _id?: string
+  duration?: string
+  resulation?: string
 }

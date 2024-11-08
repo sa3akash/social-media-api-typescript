@@ -5,7 +5,8 @@ const addChatSchema: ObjectSchema = Joi.object().keys({
   receiverId: Joi.string().required(),
   body: Joi.string().optional().allow(null, ''),
   gifUrl: Joi.string().optional().allow(null, ''),
-  isRead: Joi.boolean().optional()
+  isRead: Joi.boolean().optional(),
+  files: Joi.array().optional(),
 });
 
 const markChatSchema: ObjectSchema = Joi.object().keys({

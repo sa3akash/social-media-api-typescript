@@ -21,7 +21,7 @@ class CommentWorker {
       const singlePost: IPostDocument = await postServices.getSinglePostById(commentDocument.value.postId);
       singlePost.commentsCount += 1;
 
-      socketIoPostObject.emit('update-comment', singlePost,commentDocument.creator.authId);
+      socketIoPostObject.emit('update-comment', singlePost, commentDocument.creator.authId);
 
       await postServices.updatePostById(singlePost);
       const createdComment = await commentService.addCommentDB(commentDocument.value);

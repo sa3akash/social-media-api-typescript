@@ -81,6 +81,7 @@ import cloudinary from 'cloudinary';
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
 import { BadRequestError } from '@globals/helpers/errorHandler';
 import multer from 'multer';
+import {Readable} from 'stream';
 
 cloudinary.v2.config({
   cloud_name: config.CLOUD_NAME,
@@ -113,6 +114,35 @@ export const upload = multer({
     }
   }
 });
+
+export const cloudinaryUpload = async (path:string):Promise<cloudinary.UploadApiResponse | undefined> => {
+  return await new Promise((resolve, reject) =>{
+    cloudinary.v2.uploader.upload_large(path,{
+      resource_type: 'auto',
+      quality: 'auto:good',
+    },(err,response)=>{
+      if(err) return reject(err);
+      resolve(response);
+    });
+  });
+};
+
+
+
+export async function uploadStream(buffer: Buffer): Promise<cloudinary.UploadApiResponse | undefined> {
+  return new Promise((resolve, reject) => {
+    const uploadStream = cloudinary.v2.uploader.upload_stream(
+      { resource_type: 'auto', quality: 'auto:good', folder: 'temp' },
+      (error, result) => {
+        if (error) return reject(error);
+        resolve(result);
+      }
+    );
+
+    Readable.from(buffer).pipe(uploadStream);
+  });
+}
+
 
 export const deleteFile = async (publicId: string) => {
   try {

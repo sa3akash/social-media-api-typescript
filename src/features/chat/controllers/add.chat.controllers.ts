@@ -21,6 +21,7 @@ export class AddChatController {
     if (req.body?.receiverId === req.currentUser?.id) {
       throw new BadRequestError('Your can not chat yourself.');
     }
+
     const messageData: IMessageData = await AddChatController.prototype.readyMessageData(req);
     AddChatController.prototype.emitSocketIOEvent(req, messageData);
 
@@ -84,7 +85,6 @@ export class AddChatController {
     const reveiverSocket = connectedUsersMap.get(data.receiverId) as string[];
     socketIoUserObject.to(reveiverSocket).emit('message-received', readyData);
     // socketIoUserObject.to(reveiverSocket).emit('chat-list', readyData);
-
   }
 
   /**
@@ -94,7 +94,7 @@ export class AddChatController {
    */
 
   private async readyMessageData(req: Request): Promise<IMessageData> {
-    const { conversationId, receiverId, body, gifUrl, isRead } = req.body;
+    const { conversationId, receiverId, body, gifUrl, isRead,files } = req.body;
     // create a objectId
 
     const convId: string = conversationId
@@ -120,7 +120,7 @@ export class AddChatController {
       gifUrl: gifUrl || '',
       isRead: isRead === 'true' ? true : false,
       reaction: [],
-      files: req.files ? req.files : [],
+      files: files ? files : [],
       user: {
         authId: receiverUserData.authId as string,
         avatarColor: receiverUserData.avatarColor,

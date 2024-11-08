@@ -26,7 +26,6 @@ export class getConversationController {
     if (!conversationId) throw new BadRequestError('Invalid conversationId.');
     if (conversationId === 'null') throw new BadRequestError('Invalid conversationId.');
 
-
     const messagesCache = await messageCache.getChatMessageCache(`${req.currentUser?.id}`, conversationId, newSkip, limit);
     const messages = messagesCache.length ? messagesCache : await chatService.getMessagesDB(conversationId, skip, limit);
 

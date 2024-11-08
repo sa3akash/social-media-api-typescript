@@ -1,6 +1,7 @@
 // external libraries
 import express, { Express } from 'express';
 // import cluster from 'cluster';
+import path from 'node:path';
 
 // custom files
 import { SetupServer } from '@root/setupServer';
@@ -13,11 +14,19 @@ import { config } from '@root/config';
  *
  */
 
+declare global {
+  // eslint-disable-next-line no-var
+  var root: string;
+}
+
 class MainApplication {
   public initialize(): void {
     this.loadConfig();
     dbConnection();
     const app: Express = express();
+
+    global.root = path.resolve(__dirname);
+
     const server = new SetupServer(app);
     server.start();
   }

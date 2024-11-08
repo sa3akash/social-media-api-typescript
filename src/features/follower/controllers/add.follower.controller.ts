@@ -42,10 +42,13 @@ export class AddFollowerController {
         keyTwo: `${followerId}`
       });
     }
-    res.status(HTTP_STATUS.OK).json({ message: 'Following user updates.', data: {
-      authId: `${req.currentUser?.id}`,
-      followe: followerId
-    } });
+    res.status(HTTP_STATUS.OK).json({
+      message: 'Following user updates.',
+      data: {
+        authId: `${req.currentUser?.id}`,
+        followe: followerId
+      }
+    });
   }
 
   private userData(user: FullUserDoc): IFollowerData {

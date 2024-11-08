@@ -1,13 +1,32 @@
 import { DoneCallback, Job } from 'bull';
 import { chatService } from '@services/db/chat.services';
 import { IMarkDeleteMessage, IMarkReadMessage, IMessageData, IReactionMessage } from '@chat/interfaces/chat.interfaces';
+// import { FFMPEG_Utils } from '@services/ffmpeg';
 
 class ChatWorker {
   async addMessage(job: Job, done: DoneCallback): Promise<void> {
     try {
       const data: IMessageData = job.data;
 
+     
+
+      // if(data.files!.length > 0) {
+      //   data.files!.map(async(file,index) => {
+      //     if(file.type.includes('video')){
+      //       const ffmpegUtils = new FFMPEG_Utils(`${root}/${file.url}`);
+      //       const videoMetadata = await ffmpegUtils.getMetadata();
+
+      //       console.log(`${root}/${file.url}`);
+      //       console.log(videoMetadata.streams[0].duration);
+
+      //       data.files![index].duration = videoMetadata.streams[0].duration;
+
+      //     }
+      //   });
+      // }
+
       await chatService.addMessageDB(data);
+
 
       // if (data.isRead.includes('false')) {
       //   const receiverUser = await userCache.getUserByIdFromCache(data.receiverId);

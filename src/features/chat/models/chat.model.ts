@@ -12,13 +12,12 @@ const messageSchema: Schema = new Schema({
   deleteForEveryone: { type: Boolean, default: false },
   files: [
     {
-      fieldname: { type: String },
-      originalname: { type: String },
-      filename: { type: String },
-      encoding: { type: String },
-      mimetype: { type: String },
-      path: { type: String },
-      size: { type: Number }
+      name: { type: String },
+      type: { type: String },
+      url: { type: String },
+      size: { type: Number },
+      resulation: { type: Number },
+      duration: { type: Number },
     }
   ],
   reaction: Array,

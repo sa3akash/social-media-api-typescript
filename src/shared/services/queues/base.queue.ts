@@ -54,19 +54,22 @@ export abstract class BaseQueue {
     });
 
     this.log = config.createLogger(`${queueName} - queue`);
+
     this.queue.on('completed', (job: Job) => {
       job.remove();
     });
+
     this.queue.on('global:completed', (jobId: string) => {
       this.log.info(`Job ${jobId} completed.`);
     });
+
     this.queue.on('global:stalled', (jobId: string) => {
       this.log.info(`Job ${jobId} stalled.`);
     });
   }
 
   protected addJob(name: string, data: IBaseJobData): void {
-    this.queue.add(name, data, { attempts: 3, backoff: { type: 'fixed', delay: 5000 }, removeOnComplete: true, removeOnFail: true });
+    this.queue.add(name, data, { attempts: 3, backoff: { type: 'fixed', delay: 5000 }, removeOnComplete: true, removeOnFail: false });
   }
 
   protected processJob(name: string, concurrency: number, callback: Queue.ProcessCallbackFunction<void>): void {

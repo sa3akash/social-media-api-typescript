@@ -79,7 +79,7 @@ export class LinkPreviewController {
     const formattedLogo = logo ? (logo.startsWith('http') ? logo : `${url}${logo}`) : null;
 
     // Create final metadata object
-    
+
     return {
       title: title || 'No title available',
       description: description || linkedInDescription || 'No description available',
@@ -88,7 +88,7 @@ export class LinkPreviewController {
       publisher: publisher || 'Unknown',
       url,
       logo: formattedLogo ? { url: formattedLogo, type: formattedLogo.split('.').pop() || '' } : null,
-      image: image ? { url: image|| linkedInImage!, type: image?.split('.')?.pop() || '' } : null,
+      image: image ? { url: image || linkedInImage!, type: image?.split('.')?.pop() || '' } : null,
       domain: new URL(url).hostname
     };
   }

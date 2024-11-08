@@ -9,6 +9,7 @@ import { serverAdapter } from '@services/queues/base.queue';
 import { usersRoutes } from '@user/routes/user.routes';
 import { Application } from 'express';
 import { linkRoutes } from '@root/features/link/routes';
+import { uploadFile } from '@root/features/upload/routes';
 
 const BASE_PATH = '/api/v1';
 
@@ -23,6 +24,7 @@ export default (app: Application) => {
     app.use(BASE_PATH, chatRoutes.routes());
     app.use(BASE_PATH, usersRoutes.routes());
     app.use(BASE_PATH, linkRoutes.routes());
+    app.use(BASE_PATH, uploadFile.routes());
     app.use('/queues', serverAdapter.getRouter());
   };
   routes();

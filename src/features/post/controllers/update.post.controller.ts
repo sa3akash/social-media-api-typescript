@@ -40,6 +40,6 @@ export class UpdatePostController {
     socketIoPostObject.emit('update-post', updatePostDoc);
     // update db
     postQueue.updatePostJob('updatePostInDBQueue', updatePostDoc);
-    res.status(HTTP_STATUS.OK).json({ message: 'post updated successfully.',post:updatePostDoc });
+    res.status(HTTP_STATUS.OK).json({ message: 'post updated successfully.', post: updatePostDoc });
   }
 }
