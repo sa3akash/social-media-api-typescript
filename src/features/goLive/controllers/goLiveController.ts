@@ -48,7 +48,9 @@ export class GoLiveController {
   public async streamRecordEnd(req: Request, res: Response) {
     const { name, path } = req.body;
 
-    console.log(name, path);
+    const originalPath = `/uploads/recorded/${path.split('/').pop()}`;
+
+    liveQueue.recordEnd('recordEnd', JSON.stringify({name,originalPath}));
 
     res.status(HTTP_STATUS.OK).json('OK');
   }

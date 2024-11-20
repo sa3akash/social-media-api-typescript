@@ -1,4 +1,4 @@
-import { deleteFile } from '@globals/helpers/cloudinaryUpload';
+// import { deleteFile } from '@globals/helpers/cloudinaryUpload';
 import { IPostDocument } from '@post/interfaces/post.interfaces';
 import { commentService } from '@services/db/comment.services';
 import { postServices } from '@services/db/post.services';
@@ -28,7 +28,7 @@ class PostWorker {
 
       if (post.files.length > 0) {
         post.files.forEach(async (file) => {
-          await deleteFile(file.filename);
+          // await deleteFile(file.url!);
         });
       }
 
@@ -50,7 +50,7 @@ class PostWorker {
       if (getPostById.files.length > 0) {
         getPostById.files.forEach(async (file) => {
           console.log(file);
-          await deleteFile(file.filename);
+          // await deleteFile(file.url!);
         });
       }
 

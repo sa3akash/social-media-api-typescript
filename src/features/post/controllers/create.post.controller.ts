@@ -59,7 +59,7 @@ export class CreatePost {
       commentsCount: 0,
       files: req.files ? req.files : [],
       feelings: feelings || '',
-      description: '',
+      description: '' ,
       gifUrl: gifUrl || '',
       privacy: privacy || 'Public',
       live: false,

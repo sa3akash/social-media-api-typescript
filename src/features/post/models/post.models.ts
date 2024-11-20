@@ -14,12 +14,13 @@ const postSchema: Schema = new Schema({
   description: { type: String, default: '' },
   files: [
     {
-      fieldname: { type: String },
-      originalname: { type: String },
-      filename: { type: String },
+      resulation: { type: String },
+      duration: { type: Number },
+      name: { type: String },
       encoding: { type: String },
       mimetype: { type: String },
-      path: { type: String },
+      url: { type: String },
+      display_aspect_ratio: { type: String },
       size: { type: Number }
     }
   ],

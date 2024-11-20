@@ -20,14 +20,14 @@ export interface IPostDocument extends Document {
   reactions?: IReactions;
   createdAt?: Date | string;
 }
-interface IFiles {
-  fieldname: string;
-  originalname: string;
-  filename: string;
-  encoding: string;
-  mimetype: string;
-  path: string;
-  size: number;
+export interface IFiles {
+  mimetype?: string,
+  size?: number,
+  url?:string,
+  name?: string,
+  duration?: number
+  resulation?: string
+  display_aspect_ratio?: string
 }
 export interface ICreator {
   authId: string | ObjectId; // authId

@@ -35,15 +35,6 @@ export interface IMessageData extends Document {
   deleteForEveryone: boolean;
 }
 
-export interface IFiles {
-  fieldname: string;
-  originalname: string;
-  filename: string;
-  encoding: string;
-  mimetype: string;
-  path: string;
-  size: number;
-}
 
 interface AuthUserDoc {
   authId: string;

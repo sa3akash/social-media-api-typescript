@@ -251,7 +251,7 @@ class PostCache extends BaseCache {
       for (const post of replies as IPostDocument[]) {
         post.files = Utils.parseJson(`${post.files}`);
 
-        if (post.files.some((f) => f?.mimetype.includes('image')) || post.gifUrl) {
+        if (post.files.some((f) => f?.mimetype?.includes('image')) || post.gifUrl) {
           const user: FullUserDoc = await userCache.getUserByIdFromCache(`${post.authId}`);
           (post.creator = {
             authId: `${post.authId}`,
@@ -264,7 +264,8 @@ class PostCache extends BaseCache {
             username: user.username,
             createdAt: `${user.createdAt}`
           }),
-            (post.commentsCount = Number(`${post.commentsCount}`));
+          (post.commentsCount = Number(`${post.commentsCount}`));
+          post.files = Utils.parseJson(`${post.files}`);
           post.reactions = Utils.parseJson(`${post.reactions}`);
           post.createdAt = new Date(`${post.createdAt}`);
           postsWithImages.push(post);
@@ -303,7 +304,7 @@ class PostCache extends BaseCache {
       for (const post of replies as IPostDocument[]) {
         post.files = Utils.parseJson(`${post.files}`);
 
-        if (post.files.some((file) => file.mimetype.includes('video'))) {
+        if (post.files.some((file) => file.mimetype?.includes('video'))) {
           const user: FullUserDoc = await userCache.getUserByIdFromCache(`${post.authId}`);
           (post.creator = {
             authId: `${post.authId}`,
@@ -316,7 +317,8 @@ class PostCache extends BaseCache {
             username: user.username,
             createdAt: `${user.createdAt}`
           }),
-            (post.commentsCount = Number(`${post.commentsCount}`));
+          (post.commentsCount = Number(`${post.commentsCount}`));
+          post.files = Utils.parseJson(`${post.files}`);
           post.reactions = Utils.parseJson(`${post.reactions}`);
           post.createdAt = new Date(`${post.createdAt}`);
           postsWithVideos.push(post);
@@ -437,12 +439,15 @@ class PostCache extends BaseCache {
   public async updatePostFromCache(updatedPost: IPostDocument): Promise<void> {
     const postInCache = {
       _id: `${updatedPost._id}`,
-      authId: `${updatedPost.creator?.authId}`,
+      authId: `${updatedPost?.authId}`,
       post: `${updatedPost.post}`,
+      description: `${updatedPost.description}`,
       bgColor: `${updatedPost.bgColor}`,
       commentsCount: `${updatedPost.commentsCount}`,
       feelings: `${updatedPost.feelings}`,
       gifUrl: `${updatedPost.gifUrl}`,
+      live: `${updatedPost.live}`,
+      liveUrl: `${updatedPost.liveUrl}`,
       privacy: `${updatedPost.privacy}`,
       files: `${JSON.stringify(updatedPost.files)}`,
       reactions: `${JSON.stringify(updatedPost.reactions)}`,
