@@ -9,6 +9,9 @@ const postSchema: Schema = new Schema({
   gifUrl: { type: String, default: '' },
   privacy: { type: String, enum: ['Public', 'Private', 'Only me'], default: 'Public' },
   commentsCount: { type: Number, default: 0 },
+  live: { type: Boolean, default: false },
+  liveUrl: { type: String, default: '' },
+  description: { type: String, default: '' },
   files: [
     {
       fieldname: { type: String },

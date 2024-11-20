@@ -1,0 +1,80 @@
+import { Request, Response } from 'express';
+import HTTP_STATUS from 'http-status-codes';
+import { GoLive } from '../models/GoLive';
+import { Utils } from '@globals/helpers/utils';
+import { liveQueue } from '@services/queues/live.queue';
+import axios from 'axios';
+
+export class GoLiveController {
+  public async authenticateStream(req: Request, res: Response) {
+    const { name } = req.body;
+
+    if (!name) {
+      return res.status(HTTP_STATUS.FORBIDDEN).json({ message: 'Key is required.' });
+    }
+
+    const doc = await GoLive.findOne({ streamKey: name });
+
+    if (!doc) {
+      return res.status(HTTP_STATUS.FORBIDDEN).json({ message: 'Go Live stream not found.' });
+    }
+
+    res.status(HTTP_STATUS.OK).json('OK');
+  }
+  public async start(req: Request, res: Response) {
+    const { title, description, privacy } = req.body;
+    if (!title || !description || !privacy) {
+      return res.status(HTTP_STATUS.BAD_REQUEST).json({ message: 'All are required.' });
+    }
+
+    const doc = await GoLive.findOne({ authId: req.currentUser!.id });
+
+    if (doc?.isLive) {
+      return res.status(HTTP_STATUS.FORBIDDEN).json({ message: 'You are already live streaming.' });
+    }
+
+    const data = {
+      title,
+      description,
+      privacy,
+      authId: req.currentUser!.id
+    };
+
+    liveQueue.addPostJob('goLive', JSON.stringify(data));
+
+    res.status(HTTP_STATUS.OK).json({ message: 'live start' });
+  }
+
+  public async streamRecordEnd(req: Request, res: Response) {
+    const { name, path } = req.body;
+
+    console.log(name, path);
+
+    res.status(HTTP_STATUS.OK).json('OK');
+  }
+  public async streamStop(req: Request, res: Response) {
+    const data = await GoLive.findOne({ authId: req.currentUser?.id });
+    await axios.post(`http://localhost:8888/control/drop/publisher?app=live&name=${data?.streamKey}`);
+
+    liveQueue.stopStream('stopStream', `${req.currentUser!.id}`);
+    res.status(HTTP_STATUS.OK).send('OK');
+  }
+  public async getStreamKey(req: Request, res: Response) {
+    const data = await GoLive.findOne({ authId: req.currentUser?.id });
+
+    res.status(HTTP_STATUS.OK).json(data);
+  }
+  public async reSet(req: Request, res: Response) {
+    const data = await GoLive.findOneAndUpdate(
+      { authId: req.currentUser?.id },
+      {
+        $set: {
+          streamKey: Utils.generateStreamKey()
+        }
+      },
+      { new: true }
+    );
+
+    res.status(HTTP_STATUS.OK).json(data);
+  }
+}

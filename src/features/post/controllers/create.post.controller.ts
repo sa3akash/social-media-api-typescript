@@ -14,8 +14,13 @@ export class CreatePost {
     const postObjectId: ObjectId = new ObjectId();
 
     const createdPostObject: IPostDocument = CreatePost.prototype.createdPost(req, postObjectId);
-    // emit post all user using socket io
-    socketIoPostObject.emit('add-post', {
+    // save post in cache
+    await postCache.savePostToCache(createdPostObject);
+    // add post in db
+    // const createdPostDBObject: IPostDocument = CreatePost.prototype.createPostInDB(req, postObjectId);
+    postQueue.addPostJob('addPostInDBQueue', createdPostObject);
+
+    const postDAta = {
       ...createdPostObject,
       creator: {
         authId: `${req.currentUser?.id}`,
@@ -28,30 +33,14 @@ export class CreatePost {
         avatarColor: `${req.currentUser?.avatarColor}`,
         createdAt: `${req.currentUser?.createdAt}`
       }
-    });
+    };
 
-    // save post in cache
-    await postCache.savePostToCache(createdPostObject);
-    // add post in db
-    // const createdPostDBObject: IPostDocument = CreatePost.prototype.createPostInDB(req, postObjectId);
-    postQueue.addPostJob('addPostInDBQueue', createdPostObject);
+    // emit post all user using socket io
+    socketIoPostObject.emit('add-post', postDAta);
 
     res.status(HTTP_STATUS.CREATED).json({
       message: 'Post created successfully.',
-      post: {
-        ...createdPostObject,
-        creator: {
-          authId: `${req.currentUser?.id}`,
-          uId: `${req.currentUser?.id}`,
-          coverPicture: `${req.currentUser?.coverPicture}`,
-          profilePicture: `${req.currentUser?.profilePicture}`,
-          name: req.currentUser?.name,
-          username: `${req.currentUser?.username}`,
-          email: `${req.currentUser?.email}`,
-          avatarColor: `${req.currentUser?.avatarColor}`,
-          createdAt: `${req.currentUser?.createdAt}`
-        }
-      }
+      post: postDAta
     });
   }
 
@@ -70,8 +59,11 @@ export class CreatePost {
       commentsCount: 0,
       files: req.files ? req.files : [],
       feelings: feelings || '',
+      description: '',
       gifUrl: gifUrl || '',
       privacy: privacy || 'Public',
+      live: false,
+      liveUrl: '',
       createdAt: new Date(),
       reactions: {
         like: 0,

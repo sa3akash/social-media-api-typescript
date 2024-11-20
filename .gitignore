@@ -111,6 +111,8 @@ uploads
 
 # vuepress v2.x temp and cache directory
 .temp
+bin
+recorded
 
 # Docusaurus cache and generated files
 .docusaurus

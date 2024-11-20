@@ -2,6 +2,7 @@ import { messageCache } from '@services/cache/message.cache';
 import { authService } from '@services/db/auth.services';
 import { chatQueue } from '@services/queues/chat.queue';
 import { Server, Socket } from 'socket.io';
+import { ffmpegSocket } from './ffmpegSocket';
 
 export let socketIoUserObject: Server;
 
@@ -27,6 +28,7 @@ export class SocketIoUserHandler {
 
     this.io.on('connection', (socket: Socket) => {
       this.io.emit('user-online', [...connectedUsersMap.keys()]);
+      ffmpegSocket(socket);
 
       socket.on('markAsMessage', async ({ conversationId, messageSenderId, messageSeenId }) => {
         await messageCache.updateIsReadMessageCache(conversationId, messageSeenId);

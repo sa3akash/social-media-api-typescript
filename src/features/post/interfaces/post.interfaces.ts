@@ -9,11 +9,14 @@ export interface IPostDocument extends Document {
   creator?: ICreator;
   post: string;
   bgColor?: string;
+  description?: string;
   commentsCount: number;
   files: IFiles[];
   feelings?: string;
   gifUrl?: string;
   privacy: 'Public' | 'Private' | 'Only me';
+  live?: boolean;
+  liveUrl?: string;
   reactions?: IReactions;
   createdAt?: Date | string;
 }

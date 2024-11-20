@@ -2,6 +2,7 @@ import { DoneCallback, Job } from 'bull';
 import { authService } from '@services/db/auth.services';
 import { IAuthDocument } from '@auth/interfaces/auth.interface';
 import { deleteFile, getPublicId } from '@globals/helpers/cloudinaryUpload';
+import { GoLive } from '@root/features/goLive/models/GoLive';
 
 class AuthWorker {
   async addAuthWorker(job: Job, done: DoneCallback): Promise<void> {
@@ -10,6 +11,10 @@ class AuthWorker {
       // save data in db
       await authService.createAuthUser(value);
       // add method to save data in db
+      await GoLive.create({
+        authId: value._id,
+        privacy: 'Public'
+      });
       job.progress(100);
       done(null, job.data);
     } catch (err) {
