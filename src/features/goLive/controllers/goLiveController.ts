@@ -29,6 +29,14 @@ export class GoLiveController {
 
     const doc = await GoLive.findOne({ authId: req.currentUser!.id });
 
+    const response = await axios.get('http://localhost:8888/stats');
+    const streamData = response.data;
+    const isStreamActive = streamData?.includes(doc?.streamKey);
+
+    if(!isStreamActive){
+      return res.status(HTTP_STATUS.FORBIDDEN).json({ message: 'stream are not ready.' });
+    }
+
     if (doc?.isLive) {
       return res.status(HTTP_STATUS.FORBIDDEN).json({ message: 'You are already live streaming.' });
     }
@@ -44,11 +52,31 @@ export class GoLiveController {
 
     res.status(HTTP_STATUS.OK).json({ message: 'live start' });
   }
+  public async clean(req: Request, res: Response) {
+
+    console.log(req.body);
+
+    res.status(HTTP_STATUS.OK).json({ message: 'live start' });
+  }
 
   public async streamRecordEnd(req: Request, res: Response) {
     const { name, path } = req.body;
 
     const originalPath = `/uploads/recorded/${path.split('/').pop()}`;
+
+     // save data in db
+     await GoLive.updateOne(
+      { streamKey: name },
+      {
+        $set: {
+          isLive: false,
+          title: '',
+          description: '',
+          streamKey: Utils.generateStreamKey()
+        }
+      },
+      { new: true }
+    );
 
     liveQueue.recordEnd('recordEnd', JSON.stringify({name,originalPath}));
 
@@ -57,8 +85,6 @@ export class GoLiveController {
   public async streamStop(req: Request, res: Response) {
     const data = await GoLive.findOne({ authId: req.currentUser?.id });
     await axios.post(`http://localhost:8888/control/drop/publisher?app=live&name=${data?.streamKey}`);
-
-    liveQueue.stopStream('stopStream', `${req.currentUser!.id}`);
     res.status(HTTP_STATUS.OK).send('OK');
   }
   public async getStreamKey(req: Request, res: Response) {
@@ -68,10 +94,11 @@ export class GoLiveController {
   }
   public async reSet(req: Request, res: Response) {
     const data = await GoLive.findOneAndUpdate(
-      { authId: req.currentUser?.id },
+      { authId: req.currentUser?.id, isLive:false },
       {
         $set: {
-          streamKey: Utils.generateStreamKey()
+          streamKey: Utils.generateStreamKey(),
+          isLive: false,
         }
       },
       { new: true }

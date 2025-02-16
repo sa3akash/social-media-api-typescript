@@ -1,4 +1,5 @@
 // import { deleteFile } from '@globals/helpers/cloudinaryUpload';
+import { fileUtils } from '@globals/helpers/fileUtils';
 import { IPostDocument } from '@post/interfaces/post.interfaces';
 import { commentService } from '@services/db/comment.services';
 import { postServices } from '@services/db/post.services';
@@ -26,11 +27,14 @@ class PostWorker {
 
       const post: IPostDocument = await postServices.getPostById(postId);
 
-      if (post.files.length > 0) {
-        post.files.forEach(async (file) => {
-          // await deleteFile(file.url!);
-        });
-      }
+      // if (post.files.length > 0) {
+      //   post.files.forEach(async (file) => {
+      //     // await deleteFile(file.url!);
+      //     fileUtils.deleteFile(file.url!);
+      //   });
+      // }
+
+      await fileUtils.deleteDirectory(`${global.root}/uploads/posts/${post.authId}/${post._id}`);
 
       await postServices.deletePost(postId, authId);
       await reactionService.allDeleteReactionById(postId);

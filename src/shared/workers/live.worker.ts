@@ -1,4 +1,3 @@
-import { Utils } from '@globals/helpers/utils';
 import { IPostDocument } from '@post/interfaces/post.interfaces';
 import { PostModel } from '@post/models/post.models';
 import { GoLive } from '@root/features/goLive/models/GoLive';
@@ -89,27 +88,6 @@ class LiveWorker {
     }
   }
 
-  async stopSteam(job: Job, done: DoneCallback): Promise<void> {
-    try {
-      // save data in db
-      await GoLive.updateOne(
-        { authId: job.data },
-        {
-          $set: {
-            isLive: false,
-            title: '',
-            description: '',
-            streamKey: Utils.generateStreamKey()
-          }
-        },
-        { new: true }
-      );
-      job.progress(100);
-      done(null, job.data);
-    } catch (err) {
-      done(err as Error);
-    }
-  }
   async recordEnd(job: Job, done: DoneCallback): Promise<void> {
     try {
       const { name, originalPath } = JSON.parse(job.data);
@@ -117,10 +95,15 @@ class LiveWorker {
       const post = await PostModel.findOne({ live: true, liveUrl: name });
 
       if (post) {
-        const destPath = `/uploads/live/${post._id}-${post.authId}-${Date.now()}.${originalPath.split('.').pop()}`;
+        const destPath = `/uploads/posts/${post.authId}/${post._id}/${post._id}-${post.authId}-${Date.now()}.${originalPath
+          .split('.')
+          .pop()}`;
         const videoMetadata = await fileUtils.getVideoMetadata(originalPath);
 
         fileUtils.moveFile(originalPath, destPath);
+        // await fileUtils.makeFlvToMp4(originalPath, destPath);
+        // fileUtils.deleteFile(originalPath);
+
         const getFile = fileUtils.getIFileMetaData(videoMetadata, destPath);
 
         post.files.push(getFile);
@@ -130,6 +113,9 @@ class LiveWorker {
         const newValue = await post.save();
         await postCache.updatePostFromCache(newValue);
 
+        const getSinglePostCache = await postCache.getPostByIdFromCache(`${post._id}`);
+
+        socketIoPostObject.emit('update-post', getSinglePostCache);
       } else {
         fileUtils.deleteFile(originalPath);
       }
@@ -137,6 +123,7 @@ class LiveWorker {
       job.progress(100);
       done(null, job.data);
     } catch (err) {
+      console.log(err);
       done(err as Error);
     }
   }

@@ -6,6 +6,8 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import { UploadModel } from '@root/features/upload/UploadModel';
 import { fileSystem } from '@services/ffmpeg/fileSystem';
+import { IFiles } from '@post/interfaces/post.interfaces';
+import { fileUtils } from '@globals/helpers/fileUtils';
 
 
 export class UploadFileController {
@@ -18,11 +20,11 @@ export class UploadFileController {
       type: string;
     };
 
-    if (!name || !currentChunkIndex || !totalChunks || !req.body) {
+    if (!name || !currentChunkIndex || !totalChunks || !req.body || !type || !size) {
       throw new BadRequestError('Missing required query parameters');
     }
 
-    const UPLOAD_DIR = `${root}/uploads`;
+    const UPLOAD_DIR = `${root}/uploads/temp`;
 
     if (!fs.existsSync(UPLOAD_DIR)) {
       fs.mkdirSync(UPLOAD_DIR, { recursive: true });
@@ -33,7 +35,7 @@ export class UploadFileController {
     const ext = name.split('.').pop();
 
     const tmpFilename =
-      'tmp_' +
+      'file_' +
       crypto
         .createHash('md5')
         .update(name + req.ip)
@@ -53,29 +55,37 @@ export class UploadFileController {
 
     writeStream.on('finish', async () => {
       if (lastChunk) {
-        const generateFileName =
-          'final_' +
-          crypto
-            .createHash('md5')
-            .update(name + req.ip)
-            .digest('hex') +
-          '.' +
-          ext;
+        // const generateFileName =
+        //   'final_' +
+        //   crypto
+        //     .createHash('md5')
+        //     .update(name + req.ip)
+        //     .digest('hex') +
+        //   '.' +
+        //   ext;
 
-        const finalFilePath = path.join(UPLOAD_DIR, generateFileName);
+        // const finalFilePath = path.join(UPLOAD_DIR, generateFileName);
 
-        fileSystem.moveFile(filePath, finalFilePath); // move file
+        // fileSystem.moveFile(filePath, finalFilePath); // move file
 
-        const saveFile = await UploadModel.create({
-          size: size,
-          type: type,
-          url: `/uploads/${generateFileName}`,
-          name: name
-        });
+        // const saveFile = await UploadModel.create({
+        //   size: size,
+        //   type: type,
+        //   url: `/uploads/${generateFileName}`,
+        //   name: name
+        // });    
 
+
+        const readyObject:IFiles = {
+          size: Number(size),
+          mimetype:type,
+          url: `/uploads/temp/${tmpFilename}`,
+          name,
+          
+        };
       
 
-        res.status(HTTP_STATUS.OK).json(saveFile);
+        res.status(HTTP_STATUS.OK).json(readyObject);
       } else {
         res.status(HTTP_STATUS.OK).json('ok');
       }

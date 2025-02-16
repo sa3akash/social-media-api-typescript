@@ -10,12 +10,33 @@ const log = config.createLogger('ffmpeg socket for go live using camera');
 export const ffmpegSocket = (socket: Socket) => {
   ffmpeg.setFfmpegPath(`${global.root}/uploads/bin/ffmpeg.exe`); // Replace with actual path
 
+  const authId = socket.handshake.query.authId as string;
+
+  socket.on('start-live', async ({ title, description, privacy }) => {
+    const data = {
+      title,
+      description,
+      privacy,
+      authId
+    };
+
+    const doc = await GoLive.findOne({ authId });
+    if (!doc) {
+      socket.emit('live-error', 'Could not find the stream key');
+      return;
+    }
+    if (doc.isLive) {
+      socket.emit('live-error', 'your already in live');
+      return;
+    }
+
+    liveQueue.addPostJob('goLive', JSON.stringify(data));
+  });
+
   let command: ffmpeg.FfmpegCommand | null = null;
   const inputStream = new PassThrough();
 
   socket.on('go-stream', async (stream: Uint8Array) => {
-    const authId = socket.handshake.query.authId as string;
-
     const doc = await GoLive.findOne({ authId });
 
     if (!doc) {
@@ -65,15 +86,11 @@ export const ffmpegSocket = (socket: Socket) => {
   });
 
   socket.on('stop-stream', () => {
-    const authId = socket.handshake.query.authId as string;
-
     if (command) {
       command.on('end', () => {
         log.info('FFmpeg process ended gracefully after stop-stream');
         command = null; // Reset command reference
       });
-      liveQueue.stopStream('stopStream', `${authId}`);
-
       command.kill('SIGINT'); // Gracefully stop the FFmpeg process
       log.info('Stream stopped');
     }
@@ -87,8 +104,6 @@ export const ffmpegSocket = (socket: Socket) => {
     }
   });
 };
-
-
 
 // ===============================
 

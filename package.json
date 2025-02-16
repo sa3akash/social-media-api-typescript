@@ -4,7 +4,8 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "dev": "nodemon -L -r tsconfig-paths/register src/app.ts | bunyan",
+    "dev": "nodemon -L --watch src --ext ts,js --ignore src/uploads/** -r tsconfig-paths/register src/app.ts | bunyan", 
+    "dev2": "nodemon -L -r tsconfig-paths/register src/app.ts | bunyan",
     "start": "node dist/app.js | bunyan",
     "build:dist": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
     "build": "rimraf ./dist && yarn build:dist",

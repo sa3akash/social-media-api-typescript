@@ -9,6 +9,7 @@ class LiveRoutes {
   }
 
   public routes(): Router {
+    this.router.post('/stream/cleanup',  GoLiveController.prototype.clean);
     this.router.post('/stream/authenticate', GoLiveController.prototype.authenticateStream);
     this.router.post('/stream/recorded', GoLiveController.prototype.streamRecordEnd);
     this.router.post('/stream/start', authMiddleware.verifyUser, GoLiveController.prototype.start);
