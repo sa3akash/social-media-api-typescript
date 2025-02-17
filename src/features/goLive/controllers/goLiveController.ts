@@ -33,7 +33,7 @@ export class GoLiveController {
     const streamData = response.data;
     const isStreamActive = streamData?.includes(doc?.streamKey);
 
-    if(!isStreamActive){
+    if (!isStreamActive) {
       return res.status(HTTP_STATUS.FORBIDDEN).json({ message: 'stream are not ready.' });
     }
 
@@ -53,7 +53,6 @@ export class GoLiveController {
     res.status(HTTP_STATUS.OK).json({ message: 'live start' });
   }
   public async clean(req: Request, res: Response) {
-
     console.log(req.body);
 
     res.status(HTTP_STATUS.OK).json({ message: 'live start' });
@@ -64,8 +63,17 @@ export class GoLiveController {
 
     const originalPath = `/uploads/recorded/${path.split('/').pop()}`;
 
-     // save data in db
-     await GoLive.updateOne(
+    // save data in db
+    // const stremData = await GoLive.findOne({ streamKey: name });
+
+    // if (!stremData?.isLive) {
+    //   fileUtils.deleteFile(originalPath);
+    //   res.status(200).send('ok');
+    //   return;
+    // }
+
+    // save data in db
+    await GoLive.updateOne(
       { streamKey: name },
       {
         $set: {
@@ -74,11 +82,10 @@ export class GoLiveController {
           description: '',
           streamKey: Utils.generateStreamKey()
         }
-      },
-      { new: true }
+      }
     );
 
-    liveQueue.recordEnd('recordEnd', JSON.stringify({name,originalPath}));
+    liveQueue.recordEnd('recordEnd', JSON.stringify({ name, originalPath }));
 
     res.status(HTTP_STATUS.OK).json('OK');
   }
@@ -94,11 +101,11 @@ export class GoLiveController {
   }
   public async reSet(req: Request, res: Response) {
     const data = await GoLive.findOneAndUpdate(
-      { authId: req.currentUser?.id, isLive:false },
+      { authId: req.currentUser?.id, isLive: false },
       {
         $set: {
           streamKey: Utils.generateStreamKey(),
-          isLive: false,
+          isLive: false
         }
       },
       { new: true }

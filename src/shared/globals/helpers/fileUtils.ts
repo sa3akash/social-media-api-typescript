@@ -40,8 +40,10 @@ class FileUtils {
   }
 
   private ready() {
-    ffmpeg.setFfmpegPath(`${global.root}/uploads/bin/ffmpeg.exe`);
-    ffmpeg.setFfprobePath(`${global.root}/uploads/bin/ffprobe.exe`);
+    if (config.NODE_ENV === 'development') {
+      ffmpeg.setFfmpegPath(`${global.root}/uploads/bin/ffmpeg.exe`);
+      ffmpeg.setFfprobePath(`${global.root}/uploads/bin/ffprobe.exe`);
+    }
   }
 
   public async getVideoMetadata(pathURl: string): Promise<ffmpeg.FfprobeData> {

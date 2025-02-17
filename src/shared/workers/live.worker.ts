@@ -95,9 +95,7 @@ class LiveWorker {
       const post = await PostModel.findOne({ live: true, liveUrl: name });
 
       if (post) {
-        const destPath = `/uploads/posts/${post.authId}/${post._id}/${post._id}-${post.authId}-${Date.now()}.${originalPath
-          .split('.')
-          .pop()}`;
+        const destPath = `/uploads/posts/${post._id}/${post._id}-${post.authId}-${Date.now()}.${originalPath.split('.').pop()}`;
         const videoMetadata = await fileUtils.getVideoMetadata(originalPath);
 
         fileUtils.moveFile(originalPath, destPath);
