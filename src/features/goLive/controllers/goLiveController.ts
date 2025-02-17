@@ -29,7 +29,7 @@ export class GoLiveController {
 
     const doc = await GoLive.findOne({ authId: req.currentUser!.id });
 
-    const response = await axios.get('http://localhost:8888/stats');
+    const response = await axios.get('http://localhost:8080/stats');
     const streamData = response.data;
     const isStreamActive = streamData?.includes(doc?.streamKey);
 
@@ -84,7 +84,7 @@ export class GoLiveController {
   }
   public async streamStop(req: Request, res: Response) {
     const data = await GoLive.findOne({ authId: req.currentUser?.id });
-    await axios.post(`http://localhost:8888/control/drop/publisher?app=live&name=${data?.streamKey}`);
+    await axios.post(`http://localhost:8080/control/drop/publisher?app=live&name=${data?.streamKey}`);
     res.status(HTTP_STATUS.OK).send('OK');
   }
   public async getStreamKey(req: Request, res: Response) {
