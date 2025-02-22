@@ -4,11 +4,7 @@ import HTTP_STATUS from 'http-status-codes';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
-import { UploadModel } from '@root/features/upload/UploadModel';
-import { fileSystem } from '@services/ffmpeg/fileSystem';
 import { IFiles } from '@post/interfaces/post.interfaces';
-import { fileUtils } from '@globals/helpers/fileUtils';
-
 
 export class UploadFileController {
   public async upload(req: Request, res: Response) {
@@ -24,7 +20,7 @@ export class UploadFileController {
       throw new BadRequestError('Missing required query parameters');
     }
 
-    const UPLOAD_DIR = `${root}/uploads/temp`;
+    const UPLOAD_DIR = `${root}/uploads/stream`;
 
     if (!fs.existsSync(UPLOAD_DIR)) {
       fs.mkdirSync(UPLOAD_DIR, { recursive: true });
@@ -73,17 +69,14 @@ export class UploadFileController {
         //   type: type,
         //   url: `/uploads/${generateFileName}`,
         //   name: name
-        // });    
+        // });
 
-
-        const readyObject:IFiles = {
+        const readyObject: IFiles = {
           size: Number(size),
-          mimetype:type,
-          url: `/uploads/temp/${tmpFilename}`,
-          name,
-          
+          mimetype: type,
+          url: `/stream/${tmpFilename}`,
+          name
         };
-      
 
         res.status(HTTP_STATUS.OK).json(readyObject);
       } else {
@@ -94,5 +87,39 @@ export class UploadFileController {
     writeStream.on('error', () => {
       throw new ServerError('Internal Server Error');
     });
+  }
+
+  public async streams(req: Request, res: Response) {
+    const filePath = path.join(`${global.root}`, '/uploads/stream', req.params.url);
+    const stat = fs.statSync(filePath);
+    const fileSize = stat.size;
+    const range = req.headers.range;
+
+    // Determine the Content-Type based on the file extension
+    const ext = path.extname(filePath).toLowerCase();
+    const contentType = ext === '.flv' ? 'video/x-flv' : 'video/mp4';
+
+    if (range) {
+      const parts = range.replace(/bytes=/, '').split('-');
+      const start = parseInt(parts[0], 10);
+      const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+      const chunkSize = end - start + 1;
+      const file = fs.createReadStream(filePath, { start, end });
+
+      res.writeHead(206, {
+        'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+        'Accept-Ranges': 'bytes',
+        'Content-Length': chunkSize,
+        'Content-Type': contentType // Set dynamically
+      });
+
+      file.pipe(res);
+    } else {
+      res.writeHead(200, {
+        'Content-Length': fileSize,
+        'Content-Type': contentType // Set dynamically
+      });
+      fs.createReadStream(filePath).pipe(res);
+    }
   }
 }

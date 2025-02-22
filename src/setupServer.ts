@@ -84,11 +84,11 @@ export class SetupServer {
     app.use(json({ limit: '50mb' }));
     app.use(urlencoded({ extended: true, limit: '50mb' }));
     app.use(express.raw({ limit: '50mb', type: 'application/octet-stream' }));
-    app.use('/uploads',(req,res,next)=>{
-      res.setHeader('Access-Control-Allow-Origin', 'http://localhost:5173'); // Replace with your frontend domain
-      res.setHeader('Access-Control-Allow-Methods', 'GET');
-      next();
-    }, express.static('src/uploads'));
+    // app.use('/uploads',(req,res,next)=>{
+    //   res.setHeader('Access-Control-Allow-Origin', 'http://localhost:5173'); // Replace with your frontend domain
+    //   res.setHeader('Access-Control-Allow-Methods', 'GET');
+    //   next();
+    // }, express.static('src/uploads'));
 
     // Increase the maximum response size
     // app.use(function (req, res, next) {

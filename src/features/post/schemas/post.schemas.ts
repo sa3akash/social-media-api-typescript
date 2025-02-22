@@ -6,7 +6,8 @@ const postSchema: ObjectSchema = Joi.object().keys({
   privacy: Joi.string().required().valid('Public', 'Private', 'Only me'),
   feelings: Joi.string().optional().allow(null, ''),
   gifUrl: Joi.string().optional().allow(null, ''),
-  files: Joi.array().optional()
+  files: Joi.array().optional(),
+  description: Joi.string().optional().allow(null, ''),
 });
 
 export { postSchema };

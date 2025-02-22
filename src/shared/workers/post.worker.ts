@@ -1,6 +1,6 @@
 // import { deleteFile } from '@globals/helpers/cloudinaryUpload';
 import { fileUtils } from '@globals/helpers/fileUtils';
-import { IPostDocument } from '@post/interfaces/post.interfaces';
+import { IFiles, IPostDocument } from '@post/interfaces/post.interfaces';
 import { commentService } from '@services/db/comment.services';
 import { postServices } from '@services/db/post.services';
 import { reactionService } from '@services/db/reaction.services';
@@ -28,8 +28,14 @@ class PostWorker {
       const post: IPostDocument = await postServices.getPostById(postId);
 
       if (post.files.length > 0) {
-        await fileUtils.deleteDirectory(`${global.root}/uploads/posts/${postId}`);
+        post.files.forEach(async (file) => {
+           fileUtils.deleteFile(file.url!);
+        });
       }
+
+      // if (post.files.length > 0) {
+      //   await fileUtils.deleteDirectory(`${global.root}/uploads/posts/${postId}`);
+      // }
 
       await postServices.deletePost(postId, authId);
       await reactionService.allDeleteReactionById(postId);
@@ -46,12 +52,26 @@ class PostWorker {
     try {
       const getPostById: IPostDocument = await postServices.getSinglePostById(`${job.data._id}`);
 
-      if (getPostById.files.length > 0) {
+      const files = job.data?.files as IFiles[];
+
+      if(getPostById.files?.length > 0){
         getPostById.files.forEach(async (file) => {
-          console.log(file);
-          // await deleteFile(file.url!);
+          if(files.length > 0){
+            const found = files.find((f) => f.url === file.url);
+            if(!found){
+              fileUtils.deleteFile(file.url!);
+            }
+          } else {
+            fileUtils.deleteFile(file.url!);
+          }
         });
       }
+
+      // if (getPostById.files.length > 0) {
+      //   getPostById.files.forEach(async (file) => {
+      //      fileUtils.deleteFile(file.url!);
+      //   });
+      // }
 
       await postServices.updatePostById(job.data);
 

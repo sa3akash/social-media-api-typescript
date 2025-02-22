@@ -7,8 +7,10 @@ const log = config.createLogger('fileUtils');
 
 class FileUtils {
   public deleteFile(pathDest: string) {
-    const url = path.join(global.root, pathDest);
-    fs.unlinkSync(url);
+    const url = path.join(global.root, `uploads/${pathDest}`);
+    if (fs.existsSync(url)) {
+      fs.unlinkSync(url);
+    }
   }
 
   public async deleteDirectory(dirPath: string): Promise<void> {
@@ -65,7 +67,7 @@ class FileUtils {
     const format = videoMetadata.format;
     const streams = videoMetadata.streams;
     const filesData: IFiles = {
-      mimetype: format.format_name || '',
+      mimetype: format.format_name || 'video/x-flv',
       size: format.size || 0,
       url: originalPath,
       name: originalPath.split('/').pop() || '',
@@ -77,7 +79,7 @@ class FileUtils {
   }
   public moveFile(srcPath: string, destPath: string) {
     const srcUrl = path.join(global.root, srcPath);
-    const destUrl = path.join(global.root, destPath);
+    const destUrl = path.join(global.root, `uploads/${destPath}`);
 
     // Ensure the destination directory exists
     if (!fs.existsSync(destUrl)) {

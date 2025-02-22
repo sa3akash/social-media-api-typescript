@@ -14,7 +14,7 @@ class LiveRoutes {
     this.router.post('/stream/recorded', GoLiveController.prototype.streamRecordEnd);
     this.router.post('/stream/start', authMiddleware.verifyUser, GoLiveController.prototype.start);
     this.router.post('/stream/end', authMiddleware.verifyUser, GoLiveController.prototype.streamStop);
-    this.router.get('/stream/key', authMiddleware.verifyUser, GoLiveController.prototype.getStreamKey);
+    this.router.get('/streams/key', authMiddleware.verifyUser, GoLiveController.prototype.getStreamKey);
     this.router.put('/stream/reset', authMiddleware.verifyUser, GoLiveController.prototype.reSet);
 
     return this.router;

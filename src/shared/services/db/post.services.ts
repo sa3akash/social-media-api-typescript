@@ -139,7 +139,7 @@ class PostServices {
           {
             files: {
               $elemMatch: {
-                originalname: {
+                name: {
                   $regex: /\.(jpg|jpeg|png|gif)$/
                 }
               }
@@ -152,10 +152,18 @@ class PostServices {
       postQuery = {
         $or: [
           {
+            // files: {
+            //   $elemMatch: {
+            //     mimetype: {
+            //       $in: ['video/mp4', 'video/quicktime', 'video/avi']
+            //     }
+            //   }
+            // }
+
             files: {
               $elemMatch: {
-                mimetype: {
-                  $in: ['video/mp4', 'video/quicktime', 'video/avi']
+                name: {
+                  $regex: /\.(mp4|mkv|flv|hls)$/
                 }
               }
             }
