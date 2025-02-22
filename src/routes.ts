@@ -11,6 +11,7 @@ import { Application } from 'express';
 import { linkRoutes } from '@root/features/link/routes';
 import { uploadFile } from '@root/features/upload/routes';
 import { liveRoutes } from '@root/features/goLive/routes/LiveRoutes';
+import { commenDRoutes } from './features/commend/commentRoutes';
 
 const BASE_PATH = '/api/v1';
 
@@ -27,6 +28,7 @@ export default (app: Application) => {
     app.use(BASE_PATH, linkRoutes.routes());
     app.use(BASE_PATH, uploadFile.routes());
     app.use(BASE_PATH, liveRoutes.routes());
+    app.use(BASE_PATH, commenDRoutes.routes());
     app.use('/queues', serverAdapter.getRouter());
   };
   routes();

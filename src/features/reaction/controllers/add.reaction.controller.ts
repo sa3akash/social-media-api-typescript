@@ -11,19 +11,19 @@ import { ObjectId } from 'mongodb';
 export class AddReactionController {
   @joiValidation(addReactionSchema)
   public async add(req: Request, res: Response): Promise<void> {
-    const { type, postId } = req.body;
+    const { type, targetId } = req.body;
 
-    const previousReactionCache = await reactionCache.getPreviousReactions(postId, `${req.currentUser?.id}`);
+    const previousReactionCache = await reactionCache.getPreviousReactions(targetId, `${req.currentUser?.id}`);
 
     const previousReaction = previousReactionCache
       ? previousReactionCache
-      : await reactionService.getReactionByPostIdAndAuthId(postId, `${req.currentUser?.id}`);
+      : await reactionService.getReactionByPostIdAndAuthId(targetId, `${req.currentUser?.id}`);
 
     if (!previousReaction) {
       const reactionObject: IReactionDocument = {
         _id: new ObjectId(),
         authId: `${req.currentUser?.id}`,
-        postId: postId,
+        targetId: targetId,
         type: type,
         createdAt: new Date()
       } as IReactionDocument;
@@ -39,7 +39,7 @@ export class AddReactionController {
       });
     }
 
-    const updatedReaction = await reactionCache.getPreviousReactions(postId, `${req.currentUser?.id}`);
+    const updatedReaction = await reactionCache.getPreviousReactions(targetId, `${req.currentUser?.id}`);
     res.status(HTTP_STATUS.OK).json({ message: 'Reaction updated successfully.', reaction: updatedReaction });
   }
 }

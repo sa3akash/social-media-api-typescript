@@ -1,4 +1,4 @@
-import { BadRequestError, ServerError } from '@globals/helpers/errorHandler';
+import { ServerError } from '@globals/helpers/errorHandler';
 import { Utils } from '@globals/helpers/utils';
 import { IPostDocument } from '@post/interfaces/post.interfaces';
 import { BaseCache } from '@services/cache/base.cache';
@@ -180,15 +180,17 @@ class PostCache extends BaseCache {
     }
   }
 
-  public async getPostByIdFromCache(postId: string): Promise<IPostDocument> {
+  public async getPostByIdFromCache(postId: string): Promise<IPostDocument | null> {
     try {
       if (!this.client.isOpen) {
         await this.client.connect();
       }
 
       const postReply: Record<string, string> | null = await this.client.HGETALL(`posts:${postId}`);
+   
       if (!postReply?._id) {
-        throw new BadRequestError('Post not found.');
+        // throw new BadRequestError('Post not found.');
+        return null;
       }
 
       const user: FullUserDoc | undefined = await userCache.getUserByIdFromCache(`${postReply.authId}`);

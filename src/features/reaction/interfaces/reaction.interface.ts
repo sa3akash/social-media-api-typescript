@@ -7,7 +7,7 @@ export interface IReactionDocument extends Document {
   authId?: string;
   creator?: ICreator;
   type: string;
-  postId: string;
+  targetId: string;
   createdAt?: Date;
 }
 

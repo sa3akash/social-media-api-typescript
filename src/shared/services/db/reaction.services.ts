@@ -9,7 +9,7 @@ class ReactionService {
 
   public async getReactionByPostIdAndAuthId(postId: string, authId: string): Promise<IReactionDocument> {
     return (await ReactionModel.findOne({
-      postId: postId,
+      targetId: postId,
       authId: authId
     })) as unknown as IReactionDocument;
   }
@@ -30,7 +30,7 @@ class ReactionService {
 
   public async getReactionsByPostId(postId: string, start: number, end: number): Promise<IReactionsGet> {
     const reactions: IReactionDocument[] = await ReactionModel.aggregate([
-      { $match: { postId: new mongoose.Types.ObjectId(postId) } },
+      { $match: { targetId: new mongoose.Types.ObjectId(postId) } },
       { $sort: { createdAt: -1 } },
       { $skip: start },
       { $limit: end },
@@ -49,7 +49,7 @@ class ReactionService {
 
   public async getReactionsByPostIdWithType(postId: string, type: string, start: number, end: number): Promise<IReactionsGet> {
     const reactions: IReactionDocument[] = await ReactionModel.aggregate([
-      { $match: { postId: new mongoose.Types.ObjectId(postId), type: type } },
+      { $match: { targetId: new mongoose.Types.ObjectId(postId), type: type } },
       { $sort: { createdAt: -1 } },
       { $skip: start },
       { $limit: end },
@@ -68,7 +68,7 @@ class ReactionService {
 
   public async getSingleReactionsByAuthId(postId: string, authId: string): Promise<IReactionsGet> {
     const reactions: IReactionDocument[] = await ReactionModel.aggregate([
-      { $match: { postId: new mongoose.Types.ObjectId(postId), authId: new mongoose.Types.ObjectId(authId) } },
+      { $match: { targetId: new mongoose.Types.ObjectId(postId), authId: new mongoose.Types.ObjectId(authId) } },
       { $lookup: { from: 'Auth', localField: 'authId', foreignField: '_id', as: 'authData' } },
       { $unwind: '$authData' }, // convert array to object with unwind
       { $project: this.aggregateReactionProject() }
@@ -94,7 +94,7 @@ class ReactionService {
   private aggregateReactionProject() {
     return {
       _id: 1,
-      postId: 1,
+      targetId: 1,
       authId: 1,
       type: 1,
       createdAt: 1,

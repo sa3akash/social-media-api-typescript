@@ -17,16 +17,16 @@ class ReactionCache extends BaseCache {
         await this.client.connect();
       }
 
-      const reactionCount: IReactions = await this.getPostReactionCacheCount(reactionDocument.postId);
+      const reactionCount: IReactions = await this.getPostReactionCacheCount(reactionDocument.targetId);
       // if not react then add new reaction
 
       const multi: ReturnType<typeof this.client.multi> = this.client.multi();
 
       if (reactionDocument.type) {
         reactionCount[reactionDocument.type as keyof IReactions] += 1;
-        multi.LPUSH(`reactions:${reactionDocument.postId}`, JSON.stringify(reactionDocument));
+        multi.LPUSH(`reactions:${reactionDocument.targetId}`, JSON.stringify(reactionDocument));
         // update post
-        multi.HSET(`posts:${reactionDocument.postId}`, 'reactions', JSON.stringify(reactionCount));
+        multi.HSET(`posts:${reactionDocument.targetId}`, 'reactions', JSON.stringify(reactionCount));
       }
      await multi.exec();
     } catch (err) {
@@ -50,12 +50,12 @@ class ReactionCache extends BaseCache {
 
       if (previosReactionDoc.type === type) {
         // remove
-        const reactionCount: IReactions = await this.getPostReactionCacheCount(previosReactionDoc.postId);
+        const reactionCount: IReactions = await this.getPostReactionCacheCount(previosReactionDoc.targetId);
         reactionCount[previosReactionDoc.type as keyof IReactions] -= 1;
-        multi.HSET(`posts:${previosReactionDoc.postId}`, 'reactions', JSON.stringify(reactionCount));
-        multi.LREM(`reactions:${previosReactionDoc.postId}`, 1, JSON.stringify(previosReactionDoc));
+        multi.HSET(`posts:${previosReactionDoc.targetId}`, 'reactions', JSON.stringify(reactionCount));
+        multi.LREM(`reactions:${previosReactionDoc.targetId}`, 1, JSON.stringify(previosReactionDoc));
       } else {
-        const reactionCount: IReactions = await this.getPostReactionCacheCount(previosReactionDoc.postId);
+        const reactionCount: IReactions = await this.getPostReactionCacheCount(previosReactionDoc.targetId);
         reactionCount[previosReactionDoc.type as keyof IReactions] -= 1;
         // update
         const updateData: IReactionDocument = {
@@ -63,10 +63,10 @@ class ReactionCache extends BaseCache {
           type: type
         } as IReactionDocument;
         reactionCount[updateData.type as keyof IReactions] += 1;
-        multi.HSET(`posts:${updateData.postId}`, 'reactions', JSON.stringify(reactionCount));
+        multi.HSET(`posts:${updateData.targetId}`, 'reactions', JSON.stringify(reactionCount));
 
-        multi.LREM(`reactions:${previosReactionDoc.postId}`, 1, JSON.stringify(previosReactionDoc));
-        multi.LPUSH(`reactions:${updateData.postId}`, JSON.stringify(updateData));
+        multi.LREM(`reactions:${previosReactionDoc.targetId}`, 1, JSON.stringify(previosReactionDoc));
+        multi.LPUSH(`reactions:${updateData.targetId}`, JSON.stringify(updateData));
       }
       multi.exec();
     } catch (err) {
@@ -186,7 +186,7 @@ class ReactionCache extends BaseCache {
       }
 
       const result: IReactionDocument | undefined = find(reactionList, (reaction: IReactionDocument) => {
-        return reaction.postId === postId && reaction.authId === authId;
+        return reaction.targetId === postId && reaction.authId === authId;
       });
 
       if (result) {

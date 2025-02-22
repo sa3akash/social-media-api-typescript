@@ -120,7 +120,7 @@ export class AddChatController {
       gifUrl: gifUrl || '',
       isRead: isRead === 'true' ? true : false,
       reaction: [],
-      files: files ? files : [],
+      files: files[0]?.url ? files : [],
       user: {
         authId: receiverUserData.authId as string,
         avatarColor: receiverUserData.avatarColor,

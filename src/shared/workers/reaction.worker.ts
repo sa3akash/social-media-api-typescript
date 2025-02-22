@@ -19,7 +19,7 @@ class ReactionWorker {
       // save data in db
       const reactionDocument: IReactionDocument = job.data;
 
-      const postUpdate: IPostDocument = await postServices.getSinglePostById(reactionDocument.postId);
+      const postUpdate: IPostDocument = await postServices.getSinglePostById(reactionDocument.targetId);
       if (postUpdate.reactions) {
         postUpdate.reactions[reactionDocument.type as keyof IReactions] += 1;
       }
@@ -89,7 +89,7 @@ class ReactionWorker {
       // save data in db
       const { previousReaction, type }: IReactionJob = job.data;
 
-      const postUpdate: IPostDocument = await postServices.getSinglePostById(previousReaction.postId);
+      const postUpdate: IPostDocument = await postServices.getSinglePostById(previousReaction.targetId);
 
       if (previousReaction.type === type) {
         // remove

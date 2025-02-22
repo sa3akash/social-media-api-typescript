@@ -1,6 +1,5 @@
-import { AddCommentController } from '@comment/controllers/add.comment.controller';
-import { GetCommentController } from '@comment/controllers/get.comment.controller';
 import { authMiddleware } from '@globals/helpers/authMiddleware';
+import { createComment, getComments, getReplies } from '@root/features/commend/controller';
 import express, { Router } from 'express';
 
 class CommentRoutes {
@@ -10,8 +9,9 @@ class CommentRoutes {
   }
 
   public routes(): Router {
-    this.router.post('/add-comment', authMiddleware.verifyUser, AddCommentController.prototype.addComment);
-    this.router.get('/comments/:postId', authMiddleware.verifyUser, GetCommentController.prototype.getAllComments);
+    this.router.post('/add/comments', authMiddleware.verifyUser, createComment);
+    this.router.get('/add/comments/:postId', authMiddleware.verifyUser, getComments);
+    this.router.get('/add/comments/reply/:commentId', authMiddleware.verifyUser, getReplies);
     return this.router;
   }
 }
