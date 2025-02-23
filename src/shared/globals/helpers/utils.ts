@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { floor, random } from 'lodash';
-import {v4 as uuid} from 'uuid';
+import { v4 as uuid } from 'uuid';
 
 export class Utils {
   static generateRandomCode(length: number): number {

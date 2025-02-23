@@ -35,7 +35,6 @@ export interface IMessageData extends Document {
   deleteForEveryone: boolean;
 }
 
-
 interface AuthUserDoc {
   authId: string;
   profilePicture: string;
@@ -109,11 +108,11 @@ export interface IReactionMessage {
 }
 
 export interface IMessageFile {
-  type: string,
-  size?: string,
-  url:string,
-  name?: string,
-  _id?: string
-  duration?: string
-  resulation?: string
+  type: string;
+  size?: string;
+  url: string;
+  name?: string;
+  _id?: string;
+  duration?: string;
+  resulation?: string;
 }

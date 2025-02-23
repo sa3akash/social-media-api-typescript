@@ -1,44 +1,89 @@
-import { NameDoc } from '@auth/interfaces/auth.interface';
-import { ICommentDocument } from '@comment/interfaces/comment.interface';
+import { AuthModel } from '@auth/models/auth.db.model';
+import { CommentModel } from '@comment/models/comment.model';
 import { addCommentSchema } from '@comment/schemas/comment.schema.joi';
 import { joiValidation } from '@globals/decorators/joiValidationDecorators';
-import { commentCache } from '@services/cache/comment.cache';
-import { commentQueue } from '@services/queues/comment.queue';
+import { BadRequestError } from '@globals/helpers/errorHandler';
+import { PostModel } from '@post/models/post.models';
+import { postCache } from '@services/cache/post.cache';
 import { Request, Response } from 'express';
-import { ObjectId } from 'mongodb';
+import { ObjectId } from 'mongoose';
 
 export class AddCommentController {
   @joiValidation(addCommentSchema)
   public async addComment(req: Request, res: Response): Promise<void> {
-    const { postId, comment } = req.body;
+    const { content, postId, replyToUser } = req.body;
+    let parentId = req.body.parentId;
+    const author = req.currentUser?.id; // Assuming auth middleware
 
-    const commentData: ICommentDocument = {
-      _id: new ObjectId(),
-      postId: `${postId}`,
-      comment: `${comment}`,
-      commentedUser: `${req.currentUser?.id}`,
-      createdAt: new Date()
-    } as ICommentDocument;
-    // send all user in this comment
+    const post = await PostModel.findById(postId);
+    if (!post) throw new BadRequestError('Post not found');
 
-    // save comment in cache
-    await commentCache.addCommentCache(commentData);
-    // save comment in db
-    commentQueue.addCommentJob('addCommentInDBQueue', {
-      value: commentData,
-      creator: {
-        authId: `${req.currentUser?.id}`,
-        profilePicture: `${req.currentUser?.profilePicture}`,
-        coverPicture: `${req.currentUser?.coverPicture}`,
-        email: `${req.currentUser?.email}`,
-        username: `${req.currentUser?.username}`,
-        avatarColor: `${req.currentUser?.avatarColor}`,
-        uId: `${req.currentUser?.uId}`,
-        name: req.currentUser?.name as NameDoc,
-        createdAt: `${req.currentUser?.createdAt}`
+    let path: ObjectId[] = [];
+    let depth = 0;
+
+    if (parentId) {
+      const parentComment = await CommentModel.findById(parentId);
+      if (!parentComment) throw new BadRequestError('Parent comment not found');
+
+      if (parentComment.depth >= 3) {
+        parentId = parentComment.parentId;
+        depth = parentComment.depth;
+        path = [...parentComment.path];
+      } else {
+        path = [...parentComment.path, parentComment._id];
+        depth = parentComment.depth + 1;
       }
+    }
+
+    let replyUser;
+
+    if (replyToUser) {
+      replyUser = await AuthModel.findById(replyToUser);
+      if (!replyUser) throw new BadRequestError('User does not exist');
+
+      const getCheckComment = await CommentModel.findOne({ postId, author: replyToUser });
+      if (!getCheckComment) throw new BadRequestError('Comment does not exist');
+    }
+
+    const newComment = new CommentModel({ content, author, postId, parentId, replyToUser, path, depth });
+    await newComment.save();
+
+    await post.updateOne({ $inc: { commentsCount: 1 } },{new:true});
+
+    await postCache.updatePostFromCache({
+      ...post.toJSON(),
+      commentsCount: post.commentsCount + 1
     });
 
-    res.status(200).json({ message: 'Comment added successfully.' });
+    res.status(201).json({
+      ...newComment.toJSON(),
+      author: req.currentUser,
+      replyToUser: replyUser
+    });
+  }
+
+  public async deleteComment(req: Request, res: Response) {
+    const { commentId } = req.params;
+    if (!commentId) throw new BadRequestError('Comment ID is required');
+
+    const comment = await CommentModel.findById(commentId);
+
+    if (!comment) throw new BadRequestError('Comment not found.');
+
+    await PostModel.findOneAndUpdate({ _id: comment?.postId }, { $inc: { commentsCount: -1 } });
+    // await CommentModel.findByIdAndDelete(commentId);
+    await comment?.deleteOne();
+
+    res.status(200).json({ message: 'Comment deleted successfully.' });
+  }
+
+  public async updateComment(req: Request, res: Response) {
+    const { commentId } = req.params;
+    const { content } = req.body;
+    if (!commentId || !content) throw new BadRequestError('All are is required');
+
+    const comment = await CommentModel.findByIdAndUpdate(commentId, { $set: { content } }, { new: true });
+
+    res.status(200).json(comment);
   }
 }

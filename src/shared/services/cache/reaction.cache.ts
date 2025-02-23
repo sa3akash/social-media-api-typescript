@@ -28,7 +28,7 @@ class ReactionCache extends BaseCache {
         // update post
         multi.HSET(`posts:${reactionDocument.targetId}`, 'reactions', JSON.stringify(reactionCount));
       }
-     await multi.exec();
+      await multi.exec();
     } catch (err) {
       throw new ServerError('Internal Server Error, Try again later.');
     }

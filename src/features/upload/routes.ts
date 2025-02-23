@@ -11,7 +11,6 @@ class UploadFile {
   public routes(): Router {
     this.router.post('/upload', authMiddleware.verifyUser, UploadFileController.prototype.upload);
     this.router.get('/stream/:url', authMiddleware.verifyUser, UploadFileController.prototype.streams);
- 
 
     return this.router;
   }

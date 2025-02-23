@@ -8,8 +8,6 @@ class ChatWorker {
     try {
       const data: IMessageData = job.data;
 
-     
-
       // if(data.files!.length > 0) {
       //   data.files!.map(async(file,index) => {
       //     if(file.type.includes('video')){
@@ -26,7 +24,6 @@ class ChatWorker {
       // }
 
       await chatService.addMessageDB(data);
-
 
       // if (data.isRead.includes('false')) {
       //   const receiverUser = await userCache.getUserByIdFromCache(data.receiverId);

@@ -48,7 +48,7 @@ export class CreatePost {
   // created new post for return and cache
   //
   private createdPost(req: Request, postId: ObjectId): IPostDocument {
-    const { post, bgColor, privacy, feelings, gifUrl,files,description } = req.body;
+    const { post, bgColor, privacy, feelings, gifUrl, files, description } = req.body;
 
     return {
       _id: postId,
@@ -59,7 +59,7 @@ export class CreatePost {
       commentsCount: 0,
       files: files ? files : [],
       feelings: feelings || '',
-      description: description || '' ,
+      description: description || '',
       gifUrl: gifUrl || '',
       privacy: privacy || 'Public',
       live: false,

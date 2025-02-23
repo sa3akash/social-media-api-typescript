@@ -74,7 +74,7 @@ export class GoLiveController {
 
     // save data in db
     await GoLive.updateOne(
-      { streamKey: name, isLive:true },
+      { streamKey: name, isLive: true },
       {
         $set: {
           isLive: false,

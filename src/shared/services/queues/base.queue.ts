@@ -32,7 +32,7 @@ type IBaseJobData =
   | IMarkDeleteMessage
   | IMarkReadMessage
   | IReactionMessage
-  | IUpdateUser 
+  | IUpdateUser
   | AuthPayload
   | string;
 

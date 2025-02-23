@@ -1,4 +1,3 @@
-
 import { model, Model, Schema } from 'mongoose';
 import { IGoLive } from '../interfaces/goLive.interface';
 import { Utils } from '@globals/helpers/utils';
@@ -8,28 +7,26 @@ const GoLiveModel: Schema = new Schema<IGoLive>({
     type: String,
     unique: true,
     index: true,
-    default: Utils.generateStreamKey(),
+    default: Utils.generateStreamKey()
   },
   authId: {
     type: Schema.Types.ObjectId,
     required: true,
-    ref: 'User',
+    ref: 'User'
   },
   title: {
-    type: String,
+    type: String
   },
   description: {
-    type: String,
+    type: String
   },
   isLive: {
     type: Boolean,
-    default: false,
+    default: false
   },
   privacy: {
-    type: String,
+    type: String
   }
-
-    
 });
 
 const GoLive: Model<IGoLive> = model<IGoLive>('GoLive', GoLiveModel, 'GoLive');

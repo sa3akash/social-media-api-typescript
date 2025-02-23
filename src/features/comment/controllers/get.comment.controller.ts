@@ -1,37 +1,33 @@
-import { ICommentDocument } from '@comment/interfaces/comment.interface';
+import { CommentModel } from '@comment/models/comment.model';
 import { BadRequestError } from '@globals/helpers/errorHandler';
-import { commentCache } from '@services/cache/comment.cache';
-import { commentService } from '@services/db/comment.services';
 import { Request, Response } from 'express';
-
-const PAGE_SIZE = 10;
 
 export class GetCommentController {
   public async getAllComments(req: Request, res: Response): Promise<void> {
     const { postId } = req.params;
-    const page = Number(req.query.page) || 1;
-    const skip: number = (page - 1) * PAGE_SIZE;
-    const limit: number = PAGE_SIZE * page;
+    const { lastCreatedAt, limit } = req.query;
 
-    const newSkip: number = skip === 0 ? skip : skip + 1;
-    if (!postId) throw new BadRequestError('Invalid conversationId.');
+    if (!postId) throw new BadRequestError('Post ID is required');
 
-    // comment in cache
-    const commentsFromCache: ICommentDocument[] = await commentCache.getAllCommentsCache(`${postId}`, newSkip, limit);
-    // get comment count in cahce
-    const commentsCountCache: number = await commentCache.getAllCommentsCountCache(`${postId}`);
+    const comments = await CommentModel.getCommentsWithReplyCount(
+      postId,
+      lastCreatedAt ? new Date(lastCreatedAt as string) : null,
+      Number(limit) || 10
+    );
+    res.status(200).json(comments);
+  }
 
-    const allComments: ICommentDocument[] = commentsFromCache.length
-      ? commentsFromCache
-      : await commentService.getCommentsDB(`${postId}`, skip, limit);
+  public async getReplies(req: Request, res: Response): Promise<void> {
+    const { commentId } = req.params;
+    const { lastCreatedAt, limit } = req.query;
 
-    const numberOfCommentPages: number = commentsCountCache ? commentsCountCache : await commentService.getCommentsCountDB(`${postId}`);
+    if (!commentId) throw new BadRequestError('Comment ID is required');
 
-    res.status(200).json({
-      message: 'Comment added successfully.',
-      comments: allComments,
-      currentPage: Number(page),
-      numberOfPages: Math.ceil(numberOfCommentPages / PAGE_SIZE)
-    });
+    const replies = await CommentModel.getRepliesWithReplyCount(
+      commentId,
+      lastCreatedAt ? new Date(lastCreatedAt as string) : null,
+      Number(limit) || 10
+    );
+    res.status(200).json(replies);
   }
 }

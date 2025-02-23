@@ -17,7 +17,7 @@ const messageSchema: Schema = new Schema({
       url: { type: String },
       size: { type: Number },
       resulation: { type: Number },
-      duration: { type: Number },
+      duration: { type: Number }
     }
   ],
   reaction: Array,

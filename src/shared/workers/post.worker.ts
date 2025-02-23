@@ -1,7 +1,7 @@
 // import { deleteFile } from '@globals/helpers/cloudinaryUpload';
+import { CommentModel } from '@comment/models/comment.model';
 import { fileUtils } from '@globals/helpers/fileUtils';
 import { IFiles, IPostDocument } from '@post/interfaces/post.interfaces';
-import { commentService } from '@services/db/comment.services';
 import { postServices } from '@services/db/post.services';
 import { reactionService } from '@services/db/reaction.services';
 import { DoneCallback, Job } from 'bull';
@@ -29,7 +29,7 @@ class PostWorker {
 
       if (post.files.length > 0) {
         post.files.forEach(async (file) => {
-           fileUtils.deleteFile(file.url!);
+          fileUtils.deleteFile(file.url!);
         });
       }
 
@@ -39,7 +39,7 @@ class PostWorker {
 
       await postServices.deletePost(postId, authId);
       await reactionService.allDeleteReactionById(postId);
-      await commentService.allDeleteCommentsByPostId(postId);
+      await CommentModel.deleteMany({ postId: post._id });
       // add method to save data in db
       job.progress(100);
       done(null, job.data);
@@ -54,11 +54,11 @@ class PostWorker {
 
       const files = job.data?.files as IFiles[];
 
-      if(getPostById.files?.length > 0){
+      if (getPostById.files?.length > 0) {
         getPostById.files.forEach(async (file) => {
-          if(files.length > 0){
+          if (files.length > 0) {
             const found = files.find((f) => f.url === file.url);
-            if(!found){
+            if (!found) {
               fileUtils.deleteFile(file.url!);
             }
           } else {

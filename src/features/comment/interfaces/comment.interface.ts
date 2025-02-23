@@ -1,15 +1,18 @@
 import { NameDoc } from '@auth/interfaces/auth.interface';
-import { ObjectId } from 'mongodb';
-import { Document } from 'mongoose';
+import { IReactions } from '@reaction/interfaces/reaction.interface';
+import { Document, ObjectId } from 'mongoose';
 
 export interface ICommentDocument extends Document {
-  _id?: string | ObjectId;
-  postId: string;
-  commentedUser: string | CreatorNotification;
-  comment: string;
-  createdAt?: Date;
-  creator?: CreatorNotification;
-  // userTo?: string | ObjectId;
+  content: string;
+  author: ObjectId;
+  postId: ObjectId;
+  parentId: ObjectId | null;
+  replyToUser: ObjectId | null;
+  path: ObjectId[];
+  depth: number;
+  reactions?: IReactions;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface ICommentJob {

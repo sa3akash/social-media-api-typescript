@@ -187,7 +187,7 @@ class PostCache extends BaseCache {
       }
 
       const postReply: Record<string, string> | null = await this.client.HGETALL(`posts:${postId}`);
-   
+
       if (!postReply?._id) {
         // throw new BadRequestError('Post not found.');
         return null;
@@ -266,7 +266,7 @@ class PostCache extends BaseCache {
             username: user.username,
             createdAt: `${user.createdAt}`
           }),
-          (post.commentsCount = Number(`${post.commentsCount}`));
+            (post.commentsCount = Number(`${post.commentsCount}`));
           post.files = Utils.parseJson(`${post.files}`);
           post.reactions = Utils.parseJson(`${post.reactions}`);
           post.createdAt = new Date(`${post.createdAt}`);
@@ -319,7 +319,7 @@ class PostCache extends BaseCache {
             username: user.username,
             createdAt: `${user.createdAt}`
           }),
-          (post.commentsCount = Number(`${post.commentsCount}`));
+            (post.commentsCount = Number(`${post.commentsCount}`));
           post.files = Utils.parseJson(`${post.files}`);
           post.reactions = Utils.parseJson(`${post.reactions}`);
           post.createdAt = new Date(`${post.createdAt}`);

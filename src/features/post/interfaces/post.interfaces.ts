@@ -21,13 +21,13 @@ export interface IPostDocument extends Document {
   createdAt?: Date | string;
 }
 export interface IFiles {
-  mimetype?: string,
-  size?: number,
-  url?:string,
-  name?: string,
-  duration?: number
-  resulation?: string
-  display_aspect_ratio?: string
+  mimetype?: string;
+  size?: number;
+  url?: string;
+  name?: string;
+  duration?: number;
+  resulation?: string;
+  display_aspect_ratio?: string;
 }
 export interface ICreator {
   authId: string | ObjectId; // authId

@@ -12,7 +12,7 @@ import HTTP_STATUS from 'http-status-codes';
 export class UpdatePostController {
   @joiValidation(postSchema)
   public async postUpdate(req: Request, res: Response): Promise<void> {
-    const { post, bgColor, privacy, feelings, gifUrl,files,description } = req.body;
+    const { post, bgColor, privacy, feelings, gifUrl, files, description } = req.body;
 
     const getSinglePostCache = await postCache.getPostByIdFromCache(`${req.params?.postId}`);
 
