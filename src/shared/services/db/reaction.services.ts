@@ -19,7 +19,7 @@ class ReactionService {
   }
 
   public async allDeleteReactionById(postId: string): Promise<void> {
-    await ReactionModel.deleteMany({ postId: postId });
+    await ReactionModel.deleteMany({ targetId: postId });
   }
 
   public async updateReactionById(reactionId: string, type: string): Promise<void> {

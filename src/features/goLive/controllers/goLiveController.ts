@@ -4,6 +4,7 @@ import { GoLive } from '../models/GoLive';
 import { Utils } from '@globals/helpers/utils';
 import { liveQueue } from '@services/queues/live.queue';
 import axios from 'axios';
+import { socketIoUserObject } from '@sockets/user.socket';
 
 export class GoLiveController {
   public async authenticateStream(req: Request, res: Response) {
@@ -53,15 +54,17 @@ export class GoLiveController {
     res.status(HTTP_STATUS.OK).json({ message: 'live start' });
   }
   public async clean(req: Request, res: Response) {
-    console.log(req.body);
+    const { name } = req.body;
 
-    res.status(HTTP_STATUS.OK).json({ message: 'live start' });
+    socketIoUserObject.emit('stop-stream', { name });
+
+    res.status(HTTP_STATUS.OK).json({ message: 'live end' });
   }
 
   public async streamRecordEnd(req: Request, res: Response) {
     const { name, path } = req.body;
 
-    const originalPath = `/uploads/recorded/${path.split('/').pop()}`;
+    const originalPath = `recorded/${path.split('/').pop()}`;
 
     // save data in db
     // const stremData = await GoLive.findOne({ streamKey: name });

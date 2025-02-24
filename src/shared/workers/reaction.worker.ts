@@ -89,7 +89,7 @@ class ReactionWorker {
       // save data in db
       const { previousReaction, type }: IReactionJob = job.data;
 
-      const postUpdate: IPostDocument = await postServices.getSinglePostById(previousReaction.targetId);
+      const postUpdate: IPostDocument = await postServices.getSinglePostById(`${previousReaction.targetId!}`);
 
       if (previousReaction.type === type) {
         // remove

@@ -51,7 +51,7 @@ class FileUtils {
   public async getVideoMetadata(pathURl: string): Promise<ffmpeg.FfprobeData> {
     this.ready();
 
-    const videoUrl = path.join(global.root, pathURl);
+    const videoUrl = path.join(global.root, `uploads/${pathURl}`);
 
     return await new Promise((resolve, reject) => {
       ffmpeg.ffprobe(videoUrl, (err, metadata) => {
@@ -78,7 +78,7 @@ class FileUtils {
     return filesData;
   }
   public moveFile(srcPath: string, destPath: string) {
-    const srcUrl = path.join(global.root, srcPath);
+    const srcUrl = path.join(global.root, `uploads/${srcPath}`);
     const destUrl = path.join(global.root, `uploads/${destPath}`);
 
     // Ensure the destination directory exists

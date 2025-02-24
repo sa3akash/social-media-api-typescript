@@ -3,7 +3,6 @@ import { DeleteChatController } from '@chat/controllers/delete.controller';
 import { getConversationController } from '@chat/controllers/get.chat.controller';
 import { ReactionChatController } from '@chat/controllers/reaction.controller';
 import { authMiddleware } from '@globals/helpers/authMiddleware';
-import { upload } from '@globals/helpers/cloudinaryUpload';
 import express, { Router } from 'express';
 
 class ChatRoutes {
@@ -13,7 +12,7 @@ class ChatRoutes {
   }
 
   public routes(): Router {
-    this.router.post('/chat/message', authMiddleware.verifyUser, upload.array('file'), AddChatController.prototype.message);
+    this.router.post('/chat/message', authMiddleware.verifyUser, AddChatController.prototype.message);
     this.router.post('/chat/message/add-chat-user', authMiddleware.verifyUser, AddChatController.prototype.addChatUsers);
     this.router.post('/chat/message/remove-chat-user', authMiddleware.verifyUser, AddChatController.prototype.removeChatUsers);
     this.router.get('/chat/conversations', authMiddleware.verifyUser, getConversationController.prototype.getConversations);

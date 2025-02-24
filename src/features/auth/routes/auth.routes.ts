@@ -6,7 +6,6 @@ import { SigninController } from '@auth/controllers/signin.controller';
 import { SignOut } from '@auth/controllers/signout.controller';
 import { SignupController } from '@auth/controllers/signup.controller';
 import { authMiddleware } from '@globals/helpers/authMiddleware';
-import { upload } from '@globals/helpers/cloudinaryUpload';
 import express, { Router } from 'express';
 
 class AuthRoutes {
@@ -29,10 +28,9 @@ class AuthRoutes {
     this.router.put(
       '/update-profile-picture',
       authMiddleware.verifyUser,
-      upload.single('file'),
       ImageAuthController.prototype.profileImage
     );
-    this.router.put('/update-cover-picture', authMiddleware.verifyUser, upload.single('file'), ImageAuthController.prototype.coverImage);
+    this.router.put('/update-cover-picture', authMiddleware.verifyUser, ImageAuthController.prototype.coverImage);
     this.router.get('/check-username', authMiddleware.verifyUser, ImageAuthController.prototype.checkUsername);
     this.router.put('/update-username', authMiddleware.verifyUser, ImageAuthController.prototype.updateUsername);
     this.router.get('/login-user-data', authMiddleware.verifyUser, LoginUserData.prototype.getData);

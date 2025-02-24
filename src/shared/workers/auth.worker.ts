@@ -1,8 +1,8 @@
 import { DoneCallback, Job } from 'bull';
 import { authService } from '@services/db/auth.services';
 import { IAuthDocument } from '@auth/interfaces/auth.interface';
-import { deleteFile, getPublicId } from '@globals/helpers/cloudinaryUpload';
 import { GoLive } from '@root/features/goLive/models/GoLive';
+import { fileUtils } from '@globals/helpers/fileUtils';
 
 class AuthWorker {
   async addAuthWorker(job: Job, done: DoneCallback): Promise<void> {
@@ -29,7 +29,7 @@ class AuthWorker {
       const authData: IAuthDocument = await authService.getAuthUserByAuthId(authId);
 
       if (authData.profilePicture.length) {
-        await deleteFile(getPublicId(authData.profilePicture));
+        fileUtils.deleteFile(authData.profilePicture);
       }
 
       await authService.updateProfilePicture(authId, imageUrl);
@@ -47,7 +47,7 @@ class AuthWorker {
       const authData: IAuthDocument = await authService.getAuthUserByAuthId(authId);
 
       if (authData.coverPicture.length) {
-        await deleteFile(getPublicId(authData.profilePicture));
+        fileUtils.deleteFile(authData.coverPicture);
       }
 
       await authService.updateCoverPicture(authId, imageUrl);
