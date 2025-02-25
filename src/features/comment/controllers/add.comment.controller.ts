@@ -4,7 +4,7 @@ import { addCommentSchema } from '@comment/schemas/comment.schema.joi';
 import { joiValidation } from '@globals/decorators/joiValidationDecorators';
 import { BadRequestError } from '@globals/helpers/errorHandler';
 import { PostModel } from '@post/models/post.models';
-import { postCache } from '@services/cache/post.cache';
+import { notificationQueue } from '@services/queues/notification.queue';
 import { Request, Response } from 'express';
 import { ObjectId } from 'mongoose';
 
@@ -48,12 +48,7 @@ export class AddCommentController {
     const newComment = new CommentModel({ content, author, postId, parentId, replyToUser, path, depth });
     await newComment.save();
 
-    await post.updateOne({ $inc: { commentsCount: 1 } },{new:true});
-
-    await postCache.updatePostFromCache({
-      ...post.toJSON(),
-      commentsCount: post.commentsCount + 1
-    });
+    notificationQueue.commentNotification('commentNotification', newComment._id);
 
     res.status(201).json({
       ...newComment.toJSON(),
@@ -66,13 +61,7 @@ export class AddCommentController {
     const { commentId } = req.params;
     if (!commentId) throw new BadRequestError('Comment ID is required');
 
-    const comment = await CommentModel.findById(commentId);
-
-    if (!comment) throw new BadRequestError('Comment not found.');
-
-    await PostModel.findOneAndUpdate({ _id: comment?.postId }, { $inc: { commentsCount: -1 } });
-    // await CommentModel.findByIdAndDelete(commentId);
-    await comment?.deleteOne();
+    notificationQueue.commentNotification('commentDelete', commentId);
 
     res.status(200).json({ message: 'Comment deleted successfully.' });
   }

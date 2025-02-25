@@ -7,6 +7,8 @@ class NotificationQueue extends BaseQueue {
     super('notificationQueue');
     this.processJob('updateNotification', 5, notificationWorker.updateNotificationDB);
     this.processJob('deleteNotification', 5, notificationWorker.deleteNotificationDB);
+    this.processJob('commentNotification', 5, notificationWorker.commentNotification);
+    this.processJob('commentDelete', 5, notificationWorker.deleteComment);
   }
 
   public updateNotificationJob(name: string, data: INotificationJobData): void {
@@ -14,6 +16,9 @@ class NotificationQueue extends BaseQueue {
   }
 
   public removeNotificationJob(name: string, data: INotificationJobData): void {
+    this.addJob(name, data);
+  }
+  public commentNotification(name: string, data: string): void {
     this.addJob(name, data);
   }
 }
