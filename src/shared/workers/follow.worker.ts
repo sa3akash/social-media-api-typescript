@@ -35,7 +35,8 @@ class FollowWorker {
           message: `${authData.name.first} is now following you.`,
           notificationType: 'follow',
           entityId: authData.authId,
-          createdItemId: `${followDoc._id}`
+          createdItemId: `${followDoc._id}`,
+            createdAt: `${new Date()}`
         } as INotification;
 
         // send to socketio

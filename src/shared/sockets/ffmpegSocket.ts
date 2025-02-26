@@ -7,94 +7,7 @@ import { liveQueue } from '@services/queues/live.queue';
 
 const log = config.createLogger('ffmpeg socket for go live using camera');
 
-// export const ffmpegSocket = (socket: Socket) => {
-//   if (config.NODE_ENV === 'development') {
-//     ffmpeg.setFfmpegPath(`${global.root}/uploads/bin/ffmpeg.exe`);
-//   }
 
-//   const authId = socket.handshake.query.authId as string;
-//   let command: ffmpeg.FfmpegCommand | null = null;
-//   const inputStream = new PassThrough();
-
-//   socket.on('start-live', async ({ title, description, privacy }) => {
-//     const data = {
-//       title,
-//       description,
-//       privacy,
-//       authId
-//     };
-
-//     const doc = await GoLive.findOne({ authId });
-//     if (!doc) {
-//       socket.emit('live-error', 'Could not find the stream key');
-//       return;
-//     }
-//     if (doc.isLive) {
-//       socket.emit('live-error', 'your already in live');
-//       return;
-//     }
-
-//     liveQueue.addPostJob('goLive', JSON.stringify(data));
-
-//     command = ffmpeg()
-//       .input(inputStream)
-//       .inputFormat('webm') // Match the format of the incoming stream
-//       .videoCodec('libx264')
-//       .audioCodec('aac')
-//       .format('flv')
-//       .output(`rtmp://localhost:1935/live/${doc.streamKey}`) // Replace with your RTMP server URL
-//       .outputOptions([
-//         '-preset veryfast',
-//         '-b:v 2500k', // Video bitrate
-//         '-b:a 128k', // Audio bitrate
-//         '-g 30', // Keyframe interval
-//         '-r 30', // Frame rate
-//         '-vf scale=1280:720', // Resize video
-//         '-strict experimental',
-//         '-f flv'
-//       ])
-//       .on('start', () => {
-//         console.log('FFmpeg process started');
-//       })
-//       .on('error', (err) => {
-//         console.error('FFmpeg error:', err.message);
-//         command = null;
-//       })
-//       .on('end', () => {
-//         console.log('FFmpeg process ended');
-//         command = null;
-//       });
-
-//     command.run();
-//   });
-
-//   socket.on('go-stream', async (stream: Uint8Array) => {
-//     if (inputStream.writable) {
-//       inputStream.write(Buffer.from(stream));
-//     }
-//   });
-
-//   socket.on('stop-stream', () => {
-//     if (command) {
-//       command.on('end', () => {
-//         log.info('FFmpeg process ended gracefully after stop-stream');
-//         command = null; // Reset command reference
-//       });
-//       command.kill('SIGINT'); // Gracefully stop the FFmpeg process
-//       log.info('Stream stopped');
-//     }
-//   });
-
-//   socket.on('disconnect', () => {
-//     // Clean up on disconnect
-//     if (command) {
-//       command.kill('SIGINT'); // Ensure the FFmpeg process stops
-//       command = null; // Reset command reference
-//     }
-//   });
-// };
-
-// ==============================================================================
 
 export const ffmpegSocket = (socket: Socket) => {
   if (config.NODE_ENV === 'development') {
@@ -214,3 +127,95 @@ export const ffmpegSocket = (socket: Socket) => {
     }
   };
 };
+
+
+
+
+// export const ffmpegSocket = (socket: Socket) => {
+//   if (config.NODE_ENV === 'development') {
+//     ffmpeg.setFfmpegPath(`${global.root}/uploads/bin/ffmpeg.exe`);
+//   }
+
+//   const authId = socket.handshake.query.authId as string;
+//   let command: ffmpeg.FfmpegCommand | null = null;
+//   const inputStream = new PassThrough();
+
+//   socket.on('start-live', async ({ title, description, privacy }) => {
+//     const data = {
+//       title,
+//       description,
+//       privacy,
+//       authId
+//     };
+
+//     const doc = await GoLive.findOne({ authId });
+//     if (!doc) {
+//       socket.emit('live-error', 'Could not find the stream key');
+//       return;
+//     }
+//     if (doc.isLive) {
+//       socket.emit('live-error', 'your already in live');
+//       return;
+//     }
+
+//     liveQueue.addPostJob('goLive', JSON.stringify(data));
+
+//     command = ffmpeg()
+//       .input(inputStream)
+//       .inputFormat('webm') // Match the format of the incoming stream
+//       .videoCodec('libx264')
+//       .audioCodec('aac')
+//       .format('flv')
+//       .output(`rtmp://localhost:1935/live/${doc.streamKey}`) // Replace with your RTMP server URL
+//       .outputOptions([
+//         '-preset veryfast',
+//         '-b:v 2500k', // Video bitrate
+//         '-b:a 128k', // Audio bitrate
+//         '-g 30', // Keyframe interval
+//         '-r 30', // Frame rate
+//         '-vf scale=1280:720', // Resize video
+//         '-strict experimental',
+//         '-f flv'
+//       ])
+//       .on('start', () => {
+//         console.log('FFmpeg process started');
+//       })
+//       .on('error', (err) => {
+//         console.error('FFmpeg error:', err.message);
+//         command = null;
+//       })
+//       .on('end', () => {
+//         console.log('FFmpeg process ended');
+//         command = null;
+//       });
+
+//     command.run();
+//   });
+
+//   socket.on('go-stream', async (stream: Uint8Array) => {
+//     if (inputStream.writable) {
+//       inputStream.write(Buffer.from(stream));
+//     }
+//   });
+
+//   socket.on('stop-stream', () => {
+//     if (command) {
+//       command.on('end', () => {
+//         log.info('FFmpeg process ended gracefully after stop-stream');
+//         command = null; // Reset command reference
+//       });
+//       command.kill('SIGINT'); // Gracefully stop the FFmpeg process
+//       log.info('Stream stopped');
+//     }
+//   });
+
+//   socket.on('disconnect', () => {
+//     // Clean up on disconnect
+//     if (command) {
+//       command.kill('SIGINT'); // Ensure the FFmpeg process stops
+//       command = null; // Reset command reference
+//     }
+//   });
+// };
+
+// ==============================================================================

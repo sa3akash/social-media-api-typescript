@@ -71,6 +71,7 @@ export class UploadFileController {
         //   name: name
         // });
 
+
         const readyObject: IFiles = {
           size: Number(size),
           mimetype: type,

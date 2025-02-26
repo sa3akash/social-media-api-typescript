@@ -58,7 +58,7 @@ class NotificationWorker {
 
         socketIoPostObject.emit('update-comment', postData, commentDoc?.author);
 
-        if (commentDoc && post.authId !== commentDoc?.author) {
+        if (commentDoc && `${post.authId}` !== `${commentDoc?.author}`) {
           const authData = await AuthModel.findById(commentDoc?.author);
 
           const notificationData: INotification = {
